@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Bridal light palette — ivory / champagne gold / blush */
+    --color-background: #FFFDFB;
+    --color-surface: #FAF6F2;
+    --color-surface-2: #F1E9E2;
+    --color-border: #E3D8CE;
+    --color-border-subtle: #F1E9E2;
+
+    --color-foreground: #2B2320;
+    --color-muted: #8C7E75;
+    --color-subtle: #C2B4A9;
+
+    --color-primary: #B08D57;
+    --color-primary-hover: #9A7A46;
+    --color-primary-fg: #FFFFFF;
+    --color-primary-soft: #F5EBDD;
+
+    --color-accent: #D8A7B1;
+    --color-accent-hover: #C88F9B;
+    --color-accent-fg: #3A2A2E;
+    --color-accent-soft: #F9EDEF;
+
+    --color-danger: #C4485B;
+    --color-danger-soft: #FBE9EC;
+
+    --color-success: #5B8C6E;
+    --color-success-soft: #E7F1EA;
+
+    --color-warning: #C9A227;
+    --color-warning-soft: #FAF0D6;
+  }
+
+  .dark {
+    --color-background: #14100E;
+    --color-surface: #1E1917;
+    --color-surface-2: #2A2320;
+    --color-border: #3A312C;
+    --color-border-subtle: #241E1B;
+
+    --color-foreground: #EFE7E0;
+    --color-muted: #A2938A;
+    --color-subtle: #6E6058;
+
+    --color-primary: #C9A063;
+    --color-primary-hover: #DBB77E;
+    --color-primary-fg: #241B10;
+    --color-primary-soft: #3A2E1C;
+
+    --color-accent: #D8A7B1;
+    --color-accent-hover: #E6BDC5;
+    --color-accent-fg: #2B1B20;
+    --color-accent-soft: #3A272C;
+
+    --color-danger: #E06A7B;
+    --color-danger-soft: #3D2027;
+
+    --color-success: #7BB394;
+    --color-success-soft: #1E3328;
+
+    --color-warning: #D9B24C;
+    --color-warning-soft: #3A2F14;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+@layer utilities {
+  /* Story ring / accent CTA — oltin va pudra o'tishi */
+  .bg-brand-gradient {
+    background: linear-gradient(
+      45deg,
+      #B08D57 0%,
+      #D8A7B1 45%,
+      #E8D9C0 75%,
+      #B08D57 100%
+    );
+  }
+
+  .bg-overlay-dark {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  .bg-overlay-dark-strong {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+  .bg-overlay-light {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
+  .bg-overlay-gradient-b {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0) 60%
+    );
+  }
+}
