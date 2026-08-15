@@ -33,6 +33,13 @@
 
     --color-warning: #C9A227;
     --color-warning-soft: #FAF0D6;
+
+    /*
+     * Pastki tizim paneli uchun maksimal joy.
+     * Android 3-tugmali navigatsiyada env(safe-area-inset-bottom) 48px gacha chiqadi
+     * (Redmi Note 11 Pro) — bunda BottomNav 64+48=112px bo'lib ketadi. Shuning uchun cheklaymiz.
+     */
+    --safe-bottom-max: 1rem;
   }
 
   .dark {
@@ -83,6 +90,17 @@
 }
 
 @layer utilities {
+  /* Ilova qobig'i balandligi — dvh'siz brauzerlar uchun 100vh fallback */
+  .h-screen-safe {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* Gesture bar / navigatsiya tugmalari uchun cheklangan pastki joy */
+  .pb-safe {
+    padding-bottom: min(env(safe-area-inset-bottom, 0px), var(--safe-bottom-max));
+  }
+
   /* Story ring / accent CTA — oltin va pudra o'tishi */
   .bg-brand-gradient {
     background: linear-gradient(

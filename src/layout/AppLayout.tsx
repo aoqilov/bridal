@@ -12,7 +12,7 @@ export default function AppLayout() {
   const hideHeader = HIDDEN_HEADER_PATHS.includes(pathname);
 
   return (
-    <div className="flex h-[100dvh] flex-col">
+    <div className="h-screen-safe flex flex-col overflow-hidden">
       {!hideHeader && <Header />}
       <main className="flex-1 overflow-y-auto">
         <AppRoutes />

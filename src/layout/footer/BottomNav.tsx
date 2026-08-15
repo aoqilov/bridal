@@ -14,7 +14,7 @@ const NAV_ITEMS = [
 
 export default function BottomNav() {
   return (
-    <nav className="shrink-0 border-t border-border-subtle bg-background pb-[env(safe-area-inset-bottom)]">
+    <nav className="pb-safe shrink-0 border-t border-border-subtle bg-background">
       <ul className="mx-auto flex h-16 max-w-md items-stretch justify-between">
         {NAV_ITEMS.map(({ to, label, Icon }) => (
           <li key={to} className="flex-1">

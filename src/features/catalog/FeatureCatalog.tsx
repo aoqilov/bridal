@@ -79,7 +79,7 @@ export default function FeatureCatalog() {
     [kindFilter.kind],
   );
 
-  const { activeCategory, activeCategoryId, setActiveCategoryId } =
+  const { activeCategoryId, visibleCategories, setActiveCategoryId } =
     useActiveCategory(categoriesToShow);
 
   // Sanoq: barcha mavjud tovarlar (filterdan mustaqil)
@@ -216,11 +216,12 @@ export default function FeatureCatalog() {
             activeCategoryId={activeCategoryId}
             selectedCategoryIds={filter.selectedCategoryIds}
             selectedSubcategoryIds={filter.selectedSubcategoryIds}
+            totalSelectedCount={filter.count}
             onSelect={setActiveCategoryId}
             className="w-[88px] shrink-0"
           />
           <SubcategoryGrid
-            category={activeCategory}
+            categories={visibleCategories}
             countsByCategory={countsByCategory}
             countsBySubcategory={countsBySubcategory}
             selectedCategoryIds={filter.selectedCategoryIds}
