@@ -18,6 +18,9 @@ export function itemPath(slug: string): string {
   return `/catalog/${slug}`;
 }
 
+/** Katalogni "Категории" ko'rinishida ochish (param — `features/catalog/hooks/useViewMode.ts`) */
+export const CATALOG_CATEGORIES_PATH = `${ROUTES.CATALOG}?view=categories`;
+
 export function newsPath(slug: string): string {
   return `/news/${slug}`;
 }

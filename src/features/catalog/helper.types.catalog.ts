@@ -76,6 +76,8 @@ export type Subcategory = {
   slug: string;
   name: string;
   categoryId: string;
+  /** Katalog grid'idagi kvadrat kartochka rasmi */
+  image?: string;
 };
 
 export type Category = {
@@ -84,7 +86,10 @@ export type Category = {
   name: string;
   /** Kategoriya qaysi turdagi elementlarni saqlaydi */
   kind: ItemKind;
+  /** Chap ustundagi dumaloq avatar va "Все модели" kartochkasi uchun */
   image?: string;
+  /** Chap ustun tor — uzun nom o'rniga qisqasi ko'rsatiladi */
+  shortName?: string;
   subcategories?: Subcategory[];
 };
 

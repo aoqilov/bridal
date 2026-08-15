@@ -1,12 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { ROUTES } from "@/constants/routes";
+import { CATALOG_CATEGORIES_PATH, ROUTES } from "@/constants/routes";
 import { GoHome } from "react-icons/go";
 import { LuStar, LuCalendarHeart, LuSearch } from "react-icons/lu";
 import { TbUserSquareRounded } from "react-icons/tb";
 
 const NAV_ITEMS = [
   { to: ROUTES.HOME, label: "Главная", Icon: GoHome },
-  { to: ROUTES.CATALOG, label: "Каталог", Icon: LuSearch },
+  { to: CATALOG_CATEGORIES_PATH, label: "Каталог", Icon: LuSearch },
   { to: ROUTES.BOOKING, label: "Примерка", Icon: LuCalendarHeart },
   { to: ROUTES.REVIEW, label: "Отзывы", Icon: LuStar },
   { to: ROUTES.PROFILE, label: "Профиль", Icon: TbUserSquareRounded },

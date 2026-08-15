@@ -8,10 +8,12 @@ type Props = {
   onSubmit?: (value: string) => void;
   placeholder?: string;
   autoFocus?: boolean;
+  /** Panel yopiq turganda -1 — tab bilan yashirin input'ga tushib qolmaslik uchun */
+  tabIndex?: number;
 };
 
 const SearchBar = forwardRef<HTMLInputElement, Props>(function SearchBar(
-  { value, onChange, onSubmit, placeholder = 'Платье, фата, размер, цвет...', autoFocus },
+  { value, onChange, onSubmit, placeholder = 'Платье, фата, размер, цвет...', autoFocus, tabIndex },
   ref,
 ) {
   return (
@@ -28,6 +30,7 @@ const SearchBar = forwardRef<HTMLInputElement, Props>(function SearchBar(
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         autoFocus={autoFocus}
+        tabIndex={tabIndex}
         type="search"
         enterKeyHint="search"
         leftIcon={<FiSearch size={18} />}

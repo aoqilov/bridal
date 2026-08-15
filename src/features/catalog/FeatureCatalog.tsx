@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MdCategory, MdApps, MdGridView, MdViewAgenda } from 'react-icons/md';
+import { FiSearch } from 'react-icons/fi';
 import CusSegment, { type SegmentItem } from '@/components/ui/segment/CusSegment';
 import { useToast } from '@/components/ui';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -12,24 +13,29 @@ import ItemThumb from './components/ItemThumb';
 import ItemPostCard from './components/ItemPostCard';
 import SearchBar from './components/SearchBar';
 import RecentSearches from './components/RecentSearches';
-import CategoriesAccordion from './components/CategoriesAccordion';
+import CategoryRail from './components/CategoryRail';
+import SubcategoryGrid from './components/SubcategoryGrid';
 import ShowResultsButton from './components/ShowResultsButton';
 import EmptyState from './components/EmptyState';
 import { useRecentSearches } from './hooks/useRecentSearches';
 import { useSearchItems } from './hooks/useSearchItems';
 import { useCategoryFilter } from './hooks/useCategoryFilter';
-import { useKindFilter, type KindValue } from './hooks/useKindFilter';
-
-type ViewMode = 'categories' | 'grid-3' | 'grid-2' | 'post';
+import { useActiveCategory } from './hooks/useActiveCategory';
+import { useKindFilter } from './hooks/useKindFilter';
+import { useViewMode, type ViewMode } from './hooks/useViewMode';
 
 export default function FeatureCatalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
   const inputRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<ViewMode>('grid-2');
+  const { view, setView } = useViewMode();
+  // Qidiruv paneli yopiq turadi; URL'da `q` bo'lsa ochiq holatda ochiladi
+  const [searchOpen, setSearchOpen] = useState(() => query.length > 0);
+  const isCategories = view === 'categories';
   const { hidden: headerHidden } = useHideOnScroll(headerRef, {
     threshold: 200,
+    disabled: isCategories,
   });
 
   const setQuery = (next: string) => {
@@ -50,10 +56,6 @@ export default function FeatureCatalog() {
   const kindFilter = useKindFilter();
   const { recent, add, remove, clear: clearRecent } = useRecentSearches();
   const toast = useToast();
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   const hasQuery = debouncedQuery.trim().length > 0;
   const hasFilter = filter.count > 0;
@@ -77,6 +79,9 @@ export default function FeatureCatalog() {
     [kindFilter.kind],
   );
 
+  const { activeCategory, activeCategoryId, setActiveCategoryId } =
+    useActiveCategory(categoriesToShow);
+
   // Sanoq: barcha mavjud tovarlar (filterdan mustaqil)
   const { countsByCategory, countsBySubcategory } = useMemo(() => {
     const byCat: Record<string, number> = {};
@@ -97,12 +102,6 @@ export default function FeatureCatalog() {
     return base.filter(kindFilter.matches).filter(filter.matches);
   }, [hasQuery, searched, filter, kindFilter]);
 
-  const kindItems: SegmentItem<KindValue>[] = [
-    { value: 'all', label: 'Все' },
-    { value: 'dress', label: 'Платья' },
-    { value: 'accessory', label: 'Аксессуары' },
-  ];
-
   const segmentItems: SegmentItem<ViewMode>[] = [
     {
       value: 'categories',
@@ -115,6 +114,13 @@ export default function FeatureCatalog() {
     { value: 'post', label: 'Пост', icon: <MdViewAgenda size={16} />, ariaLabel: 'Лента постов' },
   ];
 
+  const toggleSearch = () => {
+    const next = !searchOpen;
+    setSearchOpen(next);
+    if (next) requestAnimationFrame(() => inputRef.current?.focus());
+    else inputRef.current?.blur();
+  };
+
   const handleSubmit = (value: string) => {
     const trimmed = value.trim();
     if (trimmed) add(trimmed);
@@ -126,50 +132,75 @@ export default function FeatureCatalog() {
     inputRef.current?.focus();
   };
 
+  // Action bar: tanlanganlar 3 ustunli plitkada ochiladi
   const handleShowResults = () => {
-    setView('grid-2');
+    setView('grid-3');
   };
 
   const emptyByFilter =
     itemsToShow.length === 0 && (hasQuery || hasFilter || kindFilter.kind !== 'all');
 
   return (
-    <div className="mx-auto flex min-h-full max-w-md flex-col">
+    <div className={cn('mx-auto flex max-w-md flex-col', isCategories ? 'h-full' : 'min-h-full')}>
       <div
         ref={headerRef}
         className={cn(
-          'sticky top-0 z-10 space-y-3 border-b border-border-subtle bg-background/95 px-4 pb-3 pt-3 backdrop-blur transition-transform duration-300 ease-out',
+          'sticky top-0 z-10 border-b border-border-subtle bg-background/95 px-4 pb-3 pt-3 backdrop-blur transition-transform duration-300 ease-out',
           headerHidden && '-translate-y-full',
         )}
       >
-        <SearchBar
-          ref={inputRef}
-          value={query}
-          onChange={setQuery}
-          onSubmit={handleSubmit}
-          autoFocus
-        />
+        {/* Qidiruv — tugma bosilganda tepadan pastga ochiladi */}
+        <div
+          className={cn(
+            '-mx-1 grid transition-all duration-300 ease-out',
+            searchOpen ? 'grid-rows-[1fr] pb-3 opacity-100' : 'grid-rows-[0fr] opacity-0',
+          )}
+          aria-hidden={!searchOpen}
+        >
+          <div className="overflow-hidden p-1">
+            <SearchBar
+              ref={inputRef}
+              value={query}
+              onChange={setQuery}
+              onSubmit={handleSubmit}
+              tabIndex={searchOpen ? 0 : -1}
+            />
+          </div>
+        </div>
 
-        <CusSegment
-          items={kindItems}
-          value={kindFilter.kind}
-          onChange={kindFilter.setKind}
-          size="sm"
-          fullWidth
-        />
-
-        <div className="flex justify-end">
+        <div className="flex items-stretch gap-2">
           <CusSegment
             items={segmentItems}
             value={view}
             onChange={setView}
             size="sm"
             fullWidth
+            className="flex-1"
           />
+
+          <span className="w-px shrink-0 bg-border" aria-hidden="true" />
+
+          <button
+            type="button"
+            onClick={toggleSearch}
+            aria-expanded={searchOpen}
+            aria-label={searchOpen ? 'Скрыть поиск' : 'Поиск'}
+            className={cn(
+              'relative grid w-10 shrink-0 place-items-center rounded-xl border transition-colors',
+              searchOpen
+                ? 'border-primary bg-primary-soft text-primary'
+                : 'border-border-subtle bg-surface-2 text-muted hover:text-foreground',
+            )}
+          >
+            <FiSearch size={16} />
+            {hasQuery && !searchOpen && (
+              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
+            )}
+          </button>
         </div>
       </div>
 
-      {!hasQuery && recent.length > 0 && view !== 'categories' && (
+      {searchOpen && !hasQuery && recent.length > 0 && (
         <RecentSearches
           items={recent}
           onSelect={handleSelectRecent}
@@ -178,58 +209,71 @@ export default function FeatureCatalog() {
         />
       )}
 
-      <div className="flex-1">
-        {view === 'categories' ? (
-          <CategoriesAccordion
+      {isCategories ? (
+        <div className="flex min-h-0 flex-1">
+          <CategoryRail
             categories={categoriesToShow}
+            activeCategoryId={activeCategoryId}
+            selectedCategoryIds={filter.selectedCategoryIds}
+            selectedSubcategoryIds={filter.selectedSubcategoryIds}
+            onSelect={setActiveCategoryId}
+            className="w-[88px] shrink-0"
+          />
+          <SubcategoryGrid
+            category={activeCategory}
             countsByCategory={countsByCategory}
             countsBySubcategory={countsBySubcategory}
             selectedCategoryIds={filter.selectedCategoryIds}
             selectedSubcategoryIds={filter.selectedSubcategoryIds}
             onToggleCategory={filter.toggleCategory}
             onToggleSubcategory={filter.toggleSubcategory}
+            className="min-w-0 flex-1"
           />
-        ) : emptyByFilter ? (
-          <EmptyState
-            title="Ничего не найдено"
-            description={
-              hasQuery && hasFilter
-                ? `По запросу «${debouncedQuery}» с выбранными фильтрами ничего не найдено. Попробуйте изменить запрос или сбросить фильтры.`
-                : hasQuery
-                  ? `По запросу «${debouncedQuery}» ничего не найдено. Попробуйте изменить запрос.`
-                  : 'По выбранным фильтрам ничего не найдено. Попробуйте выбрать другие категории.'
-            }
-          />
-        ) : view === 'grid-3' ? (
-          <section className="grid grid-cols-3 gap-0.5 p-0.5">
-            {itemsToShow.map((i) => (
-              <ItemThumb key={i.id} item={i} />
-            ))}
-          </section>
-        ) : view === 'grid-2' ? (
-          <section className="p-4">
-            {(hasQuery || hasFilter) && (
-              <p className="mb-3 text-xs text-muted">
-                Найдено:{' '}
-                <span className="font-semibold text-foreground">{itemsToShow.length}</span>
-              </p>
-            )}
-            <div className="grid grid-cols-2 gap-3">
+        </div>
+      ) : (
+        <div className="flex-1">
+          {emptyByFilter ? (
+            <EmptyState
+              title="Ничего не найдено"
+              description={
+                hasQuery && hasFilter
+                  ? `По запросу «${debouncedQuery}» с выбранными фильтрами ничего не найдено. Попробуйте изменить запрос или сбросить фильтры.`
+                  : hasQuery
+                    ? `По запросу «${debouncedQuery}» ничего не найдено. Попробуйте изменить запрос.`
+                    : 'По выбранным фильтрам ничего не найдено. Попробуйте выбрать другие категории.'
+              }
+            />
+          ) : view === 'grid-3' ? (
+            <section className="grid grid-cols-3 gap-0.5 p-0.5">
               {itemsToShow.map((i) => (
-                <ItemCard key={i.id} item={i} />
+                <ItemThumb key={i.id} item={i} />
               ))}
-            </div>
-          </section>
-        ) : (
-          <section className="divide-y divide-border-subtle">
-            {itemsToShow.map((i) => (
-              <ItemPostCard key={i.id} item={i} />
-            ))}
-          </section>
-        )}
-      </div>
+            </section>
+          ) : view === 'grid-2' ? (
+            <section className="p-4">
+              {(hasQuery || hasFilter) && (
+                <p className="mb-3 text-xs text-muted">
+                  Найдено:{' '}
+                  <span className="font-semibold text-foreground">{itemsToShow.length}</span>
+                </p>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                {itemsToShow.map((i) => (
+                  <ItemCard key={i.id} item={i} />
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section className="divide-y divide-border-subtle">
+              {itemsToShow.map((i) => (
+                <ItemPostCard key={i.id} item={i} />
+              ))}
+            </section>
+          )}
+        </div>
+      )}
 
-      {view === 'categories' && (
+      {isCategories && (
         <ShowResultsButton
           count={itemsToShow.length}
           onClick={handleShowResults}
