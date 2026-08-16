@@ -6,6 +6,7 @@ export const ROUTES = {
   BOOKING: '/booking',
   FAVORITES: '/favorites',
   REVIEW: '/review',
+  REVIEW_DETAIL: '/review/:id',
   PROFILE: '/profile',
   PREVIEW: '/preview',
   PROMOTIONS: '/promotions',
@@ -20,6 +21,11 @@ export function itemPath(slug: string): string {
 
 /** Katalogni "Категории" ko'rinishida ochish (param — `features/catalog/hooks/useViewMode.ts`) */
 export const CATALOG_CATEGORIES_PATH = `${ROUTES.CATALOG}?view=categories`;
+
+/** Sharh detali — rasmlar galereyasi va belgilangan tovar */
+export function reviewPath(id: string): string {
+  return `/review/${id}`;
+}
 
 export function newsPath(slug: string): string {
   return `/news/${slug}`;

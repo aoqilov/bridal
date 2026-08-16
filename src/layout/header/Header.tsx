@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { LuHeart, LuSparkles } from 'react-icons/lu';
+import { LuHeart } from 'react-icons/lu';
 import { ROUTES } from '@/constants/routes';
 import { APP_NAME } from '@/constants/app';
 
@@ -15,14 +15,6 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-2">
-          <Link
-            to={ROUTES.NEW_ARRIVALS}
-            aria-label="Новинки"
-            title="Новинки"
-            className="rounded-full p-2 text-foreground transition-colors hover:bg-surface-2 hover:text-primary"
-          >
-            <LuSparkles className="h-5 w-5" />
-          </Link>
           <Link
             to={ROUTES.FAVORITES}
             aria-label="Избранное"

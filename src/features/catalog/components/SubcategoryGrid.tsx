@@ -45,7 +45,7 @@ export default function SubcategoryGrid({
   }
 
   return (
-    <div className={cn('overflow-y-auto px-3 pb-6', className)}>
+    <div className={cn('subtle-scrollbar overflow-y-auto px-3 pb-6', className)}>
       {categories.map((category) => {
         const total = countsByCategory[category.id] ?? 0;
         const subs = category.subcategories ?? [];

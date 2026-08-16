@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MdCollections, MdLocalOffer, MdStar } from 'react-icons/md';
 import { cn } from '@/utils/cn';
-import { itemPath } from '@/constants/routes';
+import { reviewPath } from '@/constants/routes';
 import type { CatalogItem } from '@/features/catalog';
 import type { Review } from '../helper.types.review';
 
@@ -11,14 +11,14 @@ type Props = {
   className?: string;
 };
 
-/** grid-3 ko'rinishi — kvadrat rasm, butun maydon tovarga olib boradi */
+/** grid-3 ko'rinishi — rasm, butun maydon sharh detaliga olib boradi */
 export default function ReviewThumb({ review, item, className }: Props) {
   return (
     <Link
-      to={itemPath(item.slug)}
+      to={reviewPath(review.id)}
       aria-label={`Отзыв о товаре: ${item.name}`}
       className={cn(
-        'group relative block aspect-square overflow-hidden bg-surface-2',
+        'group relative block aspect-[3/4] overflow-hidden bg-surface-2',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         className,
       )}

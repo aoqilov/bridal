@@ -1,8 +1,9 @@
 import type { Review } from './helper.types.review';
 
 // ---- Helpers ----
-const img = (seed: string, size = 600): string =>
-  `https://picsum.photos/seed/${seed}/${size}/${size}`;
+// Sharh rasmlari — 3:4 (portret), ekranda `aspect-[3/4]` bilan mos
+const img = (seed: string, w = 600, h = 800): string =>
+  `https://picsum.photos/seed/${seed}/${w}/${h}`;
 
 const avatar = (seed: string): string =>
   `https://picsum.photos/seed/${seed}/96/96`;
@@ -12,6 +13,11 @@ const avatar = (seed: string): string =>
  * Auth qo'shilganda `useUserStore.user.id` bilan almashtiriladi.
  */
 export const CURRENT_USER_ID = 'me';
+
+/** Sharhni id bo'yicha topish — detal sahifasi uchun */
+export function getReviewById(id: string): Review | null {
+  return MOCK_REVIEWS.find((r) => r.id === id) ?? null;
+}
 
 // ---- Mijozlar sharhlari (kelin ko'ylaklari va aksessuarlar) ----
 export const MOCK_REVIEWS: Review[] = [
@@ -188,5 +194,239 @@ export const MOCK_REVIEWS: Review[] = [
     createdAt: '2026-06-15T17:00:00Z',
     likeCount: 8,
     isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-013',
+    itemId: 'd-milana',
+    author: { id: 'u-13', name: 'Дилдора Ф.', avatar: avatar('rev-u-13'), city: 'Ташкент' },
+    rating: 5,
+    title: 'Брала маме невесты',
+    description:
+      'Бархат тяжёлый, садится по фигуре и не мнётся. Разрез скромный — маме было комфортно весь вечер.',
+    images: [img('review-milana-1'), img('review-milana-2')],
+    createdAt: '2026-08-12T11:20:00Z',
+    likeCount: 16,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-014',
+    itemId: 'a-belt-pearl',
+    author: { id: 'u-14', name: 'Нигора А.', avatar: avatar('rev-u-14'), city: 'Ташкент' },
+    rating: 5,
+    title: 'Простое платье стало другим',
+    description:
+      'Завязывается сзади, длину лент можно спрятать. Жемчуг пришит крепко — за день ничего не отвалилось.',
+    images: [img('review-belt-1')],
+    createdAt: '2026-08-07T09:40:00Z',
+    likeCount: 11,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-015',
+    itemId: 'd-jasmine',
+    author: { id: 'u-15', name: 'Робия К.', avatar: avatar('rev-u-15'), city: 'Ташкент' },
+    rating: 5,
+    title: 'Шампань выигрышнее белого',
+    description:
+      'На моей коже белый смотрелся бледно, а шампань — тепло. Органза мерцает на видео, но не как ёлка.',
+    images: [img('review-jasmine-1'), img('review-jasmine-2')],
+    createdAt: '2026-06-12T13:15:00Z',
+    likeCount: 29,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-016',
+    itemId: 'a-veil-short',
+    author: { id: 'u-16', name: 'Умида Ж.', avatar: avatar('rev-u-16'), city: 'Самарканд' },
+    rating: 4,
+    title: 'К открытой спине — идеально',
+    description:
+      'Длинная фата закрывала всю спину, а эта короткая как раз оставляет вырез видимым. Кайма чуть жёсткая.',
+    images: [img('review-veilshort-1')],
+    createdAt: '2026-06-08T15:50:00Z',
+    likeCount: 13,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-017',
+    itemId: 'd-laura',
+    author: { id: 'u-17', name: 'Ситора Р.', avatar: avatar('rev-u-17'), city: 'Ташкент' },
+    rating: 5,
+    title: 'Для выездной — лучший выбор',
+    description:
+      'Церемония была в саду, без шлейфа по траве ходить одно удовольствие. Взяли в аренду, потом решили выкупить.',
+    images: [img('review-laura-1'), img('review-laura-2')],
+    createdAt: '2026-06-03T10:30:00Z',
+    likeCount: 24,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-018',
+    itemId: 'a-tiara-grand',
+    author: { id: 'u-18', name: 'Дилафруз Н.', avatar: avatar('rev-u-18'), city: 'Бухара' },
+    rating: 4,
+    title: 'Эффектно, но нужна причёска',
+    description:
+      'На распущенных волосах держится плохо — сделала высокий пучок, и всё встало на место. На фото корона огонь.',
+    images: [img('review-tiaragrand-1'), img('review-tiaragrand-2')],
+    createdAt: '2026-05-30T12:00:00Z',
+    likeCount: 18,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-019',
+    itemId: 'd-nora',
+    author: { id: 'u-19', name: 'Шахло Т.', avatar: avatar('rev-u-19'), city: 'Ташкент' },
+    rating: 5,
+    title: 'Девичник прошёл в нём',
+    description:
+      'Пайетки не осыпались, хотя танцевали до утра. Длина до колена — можно сидеть спокойно.',
+    images: [img('review-nora-1')],
+    createdAt: '2026-05-26T19:10:00Z',
+    likeCount: 22,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-020',
+    itemId: 'a-earrings-dew',
+    author: { id: 'u-20', name: 'Мохира С.', avatar: avatar('rev-u-20'), city: 'Наманган' },
+    rating: 5,
+    title: 'Правда лёгкие',
+    description:
+      'Боялась, что длинные серьги оттянут уши — весь день даже не вспоминала про них. Жемчуг тёплого оттенка.',
+    images: [img('review-earrings-1')],
+    createdAt: '2026-05-21T14:25:00Z',
+    likeCount: 15,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-021',
+    itemId: 'd-patricia',
+    author: { id: 'u-21', name: 'Зулфия К.', avatar: avatar('rev-u-21'), city: 'Ташкент' },
+    rating: 4,
+    title: 'Прошлая коллекция — та же цена пополам',
+    description:
+      'Честно предупредили, что модель со склада. Осмотрела внимательно: следов носки нет, только подшили длину.',
+    images: [img('review-patricia-1'), img('review-patricia-2')],
+    createdAt: '2026-05-17T11:45:00Z',
+    likeCount: 37,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-022',
+    itemId: 'a-underskirt-3',
+    author: { id: 'u-22', name: 'Гулбахор М.', avatar: avatar('rev-u-22'), city: 'Фергана' },
+    rating: 5,
+    title: 'Без него юбка падала',
+    description:
+      'Сняла одно кольцо — объём стал спокойнее, и в машину сесть получилось. Регулировка реально работает.',
+    images: [img('review-underskirt-1')],
+    createdAt: '2026-05-12T16:05:00Z',
+    likeCount: 20,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-023',
+    itemId: 'a-necklace-lace',
+    author: { id: 'u-23', name: 'Дурдона А.', avatar: avatar('rev-u-23'), city: 'Ташкент' },
+    rating: 4,
+    title: 'Тонкое, не спорит с платьем',
+    description:
+      'Брала к платью с открытым верхом. Замочек мелкий — застегнуть самой сложно, попросила подругу.',
+    images: [img('review-necklace-1')],
+    createdAt: '2026-05-07T13:35:00Z',
+    likeCount: 7,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-024',
+    itemId: 'a-gloves-satin',
+    author: { id: 'u-24', name: 'Хилола Б.', avatar: avatar('rev-u-24'), city: 'Ташкент' },
+    rating: 3,
+    title: 'Красиво, но жарко',
+    description:
+      'В августе выше локтя — тяжело, сняла после церемонии. На фото выглядят дорого, к вечернему образу подойдут лучше.',
+    images: [img('review-gloves-1')],
+    createdAt: '2026-05-02T10:15:00Z',
+    likeCount: 6,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-025',
+    itemId: 'd-aurora',
+    author: { id: 'u-25', name: 'Нафиса У.', avatar: avatar('rev-u-25'), city: 'Андижан' },
+    rating: 5,
+    title: 'Приехала из области — не зря',
+    description:
+      'Подобрали за один визит, корсет ушили при мне. Шлейф действительно отстёгивается за секунду.',
+    images: [img('review-aurora-4'), img('review-aurora-5')],
+    createdAt: '2026-04-27T12:50:00Z',
+    likeCount: 41,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-026',
+    itemId: 'd-victoria',
+    author: { id: 'u-26', name: 'Сабина Р.', avatar: avatar('rev-u-26'), city: 'Ташкент' },
+    rating: 4,
+    title: 'Атлас плотный, держит форму',
+    description:
+      'Ткань не просвечивает даже на солнце. Единственное — на атласе видно каждую складку, надо аккуратно сидеть.',
+    images: [img('review-victoria-1')],
+    createdAt: '2026-04-22T15:00:00Z',
+    likeCount: 19,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-027',
+    itemId: 'a-veil-classic',
+    author: { id: 'u-27', name: 'Мунира Х.', avatar: avatar('rev-u-27'), city: 'Самарканд' },
+    rating: 5,
+    title: 'Два метра — как на картинке',
+    description:
+      'Фотограф был доволен: фата красиво ловит ветер. Гребень держит крепко, за вечер ни разу не поправляла.',
+    images: [img('review-veilclassic-1'), img('review-veilclassic-2')],
+    createdAt: '2026-04-18T11:10:00Z',
+    likeCount: 25,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-028',
+    itemId: 'd-bella',
+    author: { id: 'u-28', name: 'Дилноза Р.', avatar: avatar('rev-u-28'), city: 'Ташкент' },
+    rating: 5,
+    title: 'Русалка и правда садится',
+    description:
+      'Думала, что в русалке невозможно есть и танцевать. Подогнали по талии — оказалось, всё реально.',
+    images: [img('review-bella-3')],
+    createdAt: '2026-04-13T17:30:00Z',
+    likeCount: 33,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-029',
+    itemId: 'd-dolce',
+    author: { id: 'u-29', name: 'Юлдуз А.', avatar: avatar('rev-u-29'), city: 'Ташкент' },
+    rating: 5,
+    title: 'Вышивку рассматривали гости',
+    description:
+      'Взяли в аренду — покупать такое на один день не хотелось. Химчистку сделали сами, залог вернули полностью.',
+    images: [img('review-dolce-2'), img('review-dolce-3')],
+    createdAt: '2026-04-08T14:20:00Z',
+    likeCount: 52,
+    isVerifiedPurchase: true,
+  },
+  {
+    id: 'r-030',
+    itemId: 'a-shoes-ivory',
+    author: { id: 'u-30', name: 'Насиба К.', avatar: avatar('rev-u-30'), city: 'Ташкент' },
+    rating: 3,
+    title: 'Размер маломерит',
+    description:
+      'Взяла свой 38 — жали к вечеру. Совет из другого отзыва оказался верным: надо было брать на размер больше.',
+    images: [img('review-shoes-2')],
+    createdAt: '2026-04-03T18:00:00Z',
+    likeCount: 10,
+    isVerifiedPurchase: false,
   },
 ];

@@ -5,7 +5,7 @@ import { MdStar, MdVerified, MdFavoriteBorder } from 'react-icons/md';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { cn } from '@/utils/cn';
-import { itemPath } from '@/constants/routes';
+import { reviewPath } from '@/constants/routes';
 import type { CatalogItem } from '@/features/catalog';
 import type { Review } from '../helper.types.review';
 import { formatReviewDate } from '../utils/formatReviewDate';
@@ -17,12 +17,20 @@ type Props = {
   className?: string;
 };
 
-function ReviewImage({ src, item }: { src: string; item: CatalogItem }) {
+function ReviewImage({
+  src,
+  item,
+  reviewId,
+}: {
+  src: string;
+  item: CatalogItem;
+  reviewId: string;
+}) {
   return (
     <Link
-      to={itemPath(item.slug)}
+      to={reviewPath(reviewId)}
       aria-label={`Отзыв о товаре: ${item.name}`}
-      className="relative block aspect-square overflow-hidden bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+      className="relative block aspect-[3/4] overflow-hidden bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
     >
       <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
     </Link>
@@ -44,12 +52,12 @@ export default function ReviewPostCard({ review, item, className }: Props) {
         >
           {review.images.map((src) => (
             <SwiperSlide key={src}>
-              <ReviewImage src={src} item={item} />
+              <ReviewImage src={src} item={item} reviewId={review.id} />
             </SwiperSlide>
           ))}
         </Swiper>
       ) : (
-        <ReviewImage src={review.images[0]} item={item} />
+        <ReviewImage src={review.images[0]} item={item} reviewId={review.id} />
       )}
 
       <div className="space-y-2 px-4 pt-3">

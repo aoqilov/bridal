@@ -5,16 +5,25 @@ import Header from '@/layout/header/Header';
 import { ROUTES } from '@/constants/routes';
 
 /** Shu sahifalarda layout header ko'rinmaydi — ekran to'liq feature'ga beriladi */
-const HIDDEN_HEADER_PATHS: string[] = [ROUTES.CATALOG];
+const HIDDEN_HEADER_PATHS: string[] = [
+  ROUTES.CATALOG,
+  ROUTES.NEW_ARRIVALS,
+  ROUTES.REVIEW,
+];
+
+/** Ichki sahifalari ham headersiz — o'z "orqaga" tugmasi bor */
+const HIDDEN_HEADER_PREFIXES: string[] = [`${ROUTES.REVIEW}/`];
 
 export default function AppLayout() {
   const { pathname } = useLocation();
-  const hideHeader = HIDDEN_HEADER_PATHS.includes(pathname);
+  const hideHeader =
+    HIDDEN_HEADER_PATHS.includes(pathname) ||
+    HIDDEN_HEADER_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
   return (
     <div className="h-screen-safe flex flex-col overflow-hidden">
       {!hideHeader && <Header />}
-      <main className="flex-1 overflow-y-auto">
+      <main className="subtle-scrollbar flex-1 overflow-y-auto">
         <AppRoutes />
       </main>
       <BottomNav />

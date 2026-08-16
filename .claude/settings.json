@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "PowerShell(git config user.name)",
-      "PowerShell(git config user.email)"
+      "PowerShell(git config user.email)",
+      "Bash(git rm *)",
+      "Bash(echo \"TSC_EXIT=$?\")"
     ]
   }
 }

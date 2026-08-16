@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { cn } from '@/utils/cn';
+import { newsPath } from '@/constants/routes';
 import type { NewsItem } from '../helper.types.news';
 
 type Props = {
   item: NewsItem;
   className?: string;
-  variant?: 'default' | 'slide';
+  /** `wide` — 16:9 muqova (bosh sahifadagi lenta uchun) */
+  variant?: 'default' | 'slide' | 'wide';
 };
 
 function formatDate(iso: string): string {
@@ -20,7 +22,7 @@ function formatDate(iso: string): string {
 export default function NewsCard({ item, className, variant = 'default' }: Props) {
   return (
     <Link
-      to={`/brand-news/${item.slug}`}
+      to={newsPath(item.slug)}
       className={cn(
         'group block overflow-hidden rounded-2xl bg-surface shadow-card transition-shadow hover:shadow-card-hover',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
@@ -28,7 +30,12 @@ export default function NewsCard({ item, className, variant = 'default' }: Props
         className,
       )}
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-surface-2">
+      <div
+        className={cn(
+          'relative overflow-hidden bg-surface-2',
+          variant === 'wide' ? 'aspect-video' : 'aspect-[16/10]',
+        )}
+      >
         <img
           src={item.cover}
           alt={item.title}

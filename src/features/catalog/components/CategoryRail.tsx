@@ -29,7 +29,10 @@ export default function CategoryRail({
   return (
     <nav
       aria-label="Категории"
-      className={cn('overflow-y-auto border-r border-border-subtle bg-surface-2/50', className)}
+      className={cn(
+        'subtle-scrollbar overflow-y-auto border-r border-border-subtle bg-surface-2/50',
+        className,
+      )}
     >
       <ul>
         <li>

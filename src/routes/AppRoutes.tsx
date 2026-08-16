@@ -9,6 +9,7 @@ const NewArrivalsPage = lazy(() => import('@/pages/new-arrivals'));
 const BookingPage = lazy(() => import('@/pages/booking'));
 const FavoritesPage = lazy(() => import('@/pages/favorites'));
 const ReviewPage = lazy(() => import('@/pages/review'));
+const ReviewDetailPage = lazy(() => import('@/pages/review/detail'));
 const ProfilePage = lazy(() => import('@/pages/profile'));
 const PreviewPage = lazy(() => import('@/pages/preview'));
 const PromotionsPage = lazy(() => import('@/pages/promotions'));
@@ -35,6 +36,7 @@ export default function AppRoutes() {
         <Route path={ROUTES.BOOKING} element={<BookingPage />} />
         <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
         <Route path={ROUTES.REVIEW} element={<ReviewPage />} />
+        <Route path={ROUTES.REVIEW_DETAIL} element={<ReviewDetailPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.PREVIEW} element={<PreviewPage />} />
         <Route path={ROUTES.PROMOTIONS} element={<PromotionsPage />} />

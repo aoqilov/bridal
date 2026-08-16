@@ -1,18 +1,13 @@
 import { lazy, Suspense, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-  MdApps,
-  MdGridView,
-  MdViewAgenda,
-  MdFiberNew,
-  MdCalendarMonth,
-} from 'react-icons/md';
+import { MdApps, MdGridView, MdViewAgenda, MdFiberNew } from 'react-icons/md';
 import CusSegment, { type SegmentItem } from '@/components/ui/segment/CusSegment';
-import { CusSheet, CusSkeleton } from '@/components/ui';
+import { CusDayDivider, CusSheet, CusSkeleton } from '@/components/ui';
 
 // Chakra og'ir — kalendar faqat sheet ochilganda yuklansin
 const CusCalendar = lazy(() => import('@/components/ui/calendar/CusCalendar'));
 import { useHideOnScroll } from '@/hooks/useHideOnScroll';
 import { cn } from '@/utils/cn';
+import { groupByDay } from '@/utils/dayGroups';
 import { MOCK_CATALOG, type CatalogItem } from '@/features/catalog';
 import ItemCard from '@/features/catalog/components/ItemCard';
 import ItemThumb from '@/features/catalog/components/ItemThumb';
@@ -35,41 +30,6 @@ const VIEW_ITEMS: SegmentItem<ViewMode>[] = [
     ariaLabel: 'Лента постов',
   },
 ];
-
-type Group = { date: string; label: string; items: CatalogItem[] };
-
-function toDayKey(iso: string): string {
-  return iso.slice(0, 10); // YYYY-MM-DD
-}
-
-function formatDateLabel(iso: string): string {
-  const d = new Date(iso);
-  const now = new Date();
-  const opts: Intl.DateTimeFormatOptions =
-    d.getFullYear() === now.getFullYear()
-      ? { day: 'numeric', month: 'long' }
-      : { day: 'numeric', month: 'long', year: 'numeric' };
-  return d.toLocaleDateString('ru-RU', opts);
-}
-
-function groupByDate(items: CatalogItem[]): Group[] {
-  // O'sish tartibida: eng eski tepada, eng yangi pastda (Telegram chat uslubi)
-  const sorted = [...items].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  );
-  const map = new Map<string, CatalogItem[]>();
-  for (const p of sorted) {
-    const key = toDayKey(p.createdAt);
-    const arr = map.get(key);
-    if (arr) arr.push(p);
-    else map.set(key, [p]);
-  }
-  return Array.from(map.entries()).map(([date, items]) => ({
-    date,
-    label: formatDateLabel(items[0].createdAt),
-    items,
-  }));
-}
 
 function findScrollableAncestor(el: HTMLElement | null): HTMLElement | null {
   let node = el?.parentElement ?? null;
@@ -121,7 +81,11 @@ export default function FeatureNewArrivals() {
 
   const { groups, total } = useMemo(() => {
     const filtered = MOCK_CATALOG.filter((p) => p.isAvailable && p.isNew);
-    return { groups: groupByDate(filtered), total: filtered.length };
+    // O'sish tartibida: eng eski tepada, eng yangi pastda (Telegram chat uslubi)
+    return {
+      groups: groupByDay(filtered, (p) => p.createdAt, 'asc'),
+      total: filtered.length,
+    };
   }, []);
 
   // Kalendarda faqat mahsulot bor kunlar tanlanadi
@@ -147,29 +111,37 @@ export default function FeatureNewArrivals() {
     <div ref={rootRef} className="mx-auto flex min-h-full max-w-md flex-col">
       <div
         ref={headerRef}
-        className={cn(
-          'sticky top-0 z-10 space-y-3 border-b border-border-subtle bg-background/95 px-4 pb-3 pt-3 backdrop-blur transition-transform duration-300 ease-out',
-          headerHidden && '-translate-y-full',
-        )}
+        className="sticky top-0 z-10 border-b border-border-subtle bg-background/95 px-4 backdrop-blur"
       >
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="flex items-center gap-1.5 text-lg font-bold text-foreground">
-              <MdFiberNew size={22} className="text-accent" />
-              Новинки
-            </h1>
-            <p className="text-[11px] text-muted">
-              Свежие поступления · {total}
-            </p>
+        {/* Scroll paytida faqat sarlavha yig'iladi — segment doim ko'rinib turadi */}
+        <div
+          className={cn(
+            'grid transition-all duration-300 ease-out',
+            headerHidden ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100',
+          )}
+        >
+          <div className="overflow-hidden">
+            <div className="min-w-0 pt-3">
+              <h1 className="flex items-center gap-1.5 text-lg font-bold text-foreground">
+                <MdFiberNew size={22} className="text-accent" />
+                Новинки
+              </h1>
+              <p className="text-[11px] text-muted">
+                Свежие поступления · {total}
+              </p>
+            </div>
           </div>
         </div>
-        <CusSegment
-          items={VIEW_ITEMS}
-          value={view}
-          onChange={setView}
-          size="sm"
-          fullWidth
-        />
+
+        <div className="py-3">
+          <CusSegment
+            items={VIEW_ITEMS}
+            value={view}
+            onChange={setView}
+            size="sm"
+            fullWidth
+          />
+        </div>
       </div>
 
       {groups.length === 0 ? (
@@ -182,17 +154,7 @@ export default function FeatureNewArrivals() {
         <div className="flex-1">
           {groups.map((g) => (
             <section key={g.date} id={`day-${g.date}`} className="scroll-mt-28">
-              <div className="sticky top-0 z-[5] flex justify-center py-2">
-                <button
-                  type="button"
-                  onClick={() => setCalendarOpen(true)}
-                  aria-label="Выбрать дату"
-                  className="flex items-center gap-1.5 rounded-full bg-overlay-dark px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white backdrop-blur transition hover:bg-overlay-dark-strong"
-                >
-                  <MdCalendarMonth size={13} />
-                  {g.label}
-                </button>
-              </div>
+              <CusDayDivider label={g.label} onClick={() => setCalendarOpen(true)} />
               <GroupBody items={g.items} view={view} />
             </section>
           ))}

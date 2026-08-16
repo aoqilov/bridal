@@ -1,5 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+import { ROUTES } from '@/constants/routes';
 import { getNewsBySlug } from './mockdata.news';
 
 function formatDate(iso: string): string {
@@ -20,7 +21,7 @@ export default function FeatureNewsDetail() {
       <div className="mx-auto flex min-h-full max-w-md flex-col items-center justify-center gap-3 px-6 py-16 text-center">
         <h1 className="text-lg font-semibold text-foreground">Новость не найдена</h1>
         <Link
-          to="/brand-news"
+          to={ROUTES.NEWS}
           className="mt-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg hover:bg-primary-hover"
         >
           Все новости
@@ -31,7 +32,7 @@ export default function FeatureNewsDetail() {
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
-    else navigate('/brand-news');
+    else navigate(ROUTES.NEWS);
   };
 
   return (

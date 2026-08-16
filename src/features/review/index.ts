@@ -1,5 +1,5 @@
 export type { Review, ReviewAuthor } from './helper.types.review';
-export { MOCK_REVIEWS, CURRENT_USER_ID } from './mockdata.reviews';
+export { MOCK_REVIEWS, CURRENT_USER_ID, getReviewById } from './mockdata.reviews';
 export { formatReviewDate } from './utils/formatReviewDate';
 
 export { default as ReviewThumb } from './components/ReviewThumb';

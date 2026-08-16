@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MdCollections, MdStar, MdVerified } from 'react-icons/md';
 import { cn } from '@/utils/cn';
-import { itemPath } from '@/constants/routes';
+import { reviewPath } from '@/constants/routes';
 import type { CatalogItem } from '@/features/catalog';
 import type { Review } from '../helper.types.review';
 import { formatReviewDate } from '../utils/formatReviewDate';
@@ -23,9 +23,9 @@ export default function ReviewCard({ review, item, className }: Props) {
       )}
     >
       <Link
-        to={itemPath(item.slug)}
+        to={reviewPath(review.id)}
         aria-label={`Отзыв о товаре: ${item.name}`}
-        className="relative block aspect-square shrink-0 overflow-hidden bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+        className="relative block aspect-[3/4] shrink-0 overflow-hidden bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
       >
         <img
           src={review.images[0]}

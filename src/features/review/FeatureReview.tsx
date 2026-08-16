@@ -1,8 +1,13 @@
-import { useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { MdApps, MdGridView, MdViewAgenda, MdStar } from 'react-icons/md';
 import CusSegment, { type SegmentItem } from '@/components/ui/segment/CusSegment';
+import { CusDayDivider, CusSheet, CusSkeleton } from '@/components/ui';
+
+// Chakra og'ir — kalendar faqat sheet ochilganda yuklansin
+const CusCalendar = lazy(() => import('@/components/ui/calendar/CusCalendar'));
 import { useHideOnScroll } from '@/hooks/useHideOnScroll';
 import { cn } from '@/utils/cn';
+import { groupByDay } from '@/utils/dayGroups';
 import { MOCK_CATALOG, getItemById, type CatalogItem } from '@/features/catalog';
 import EmptyState from '@/features/catalog/components/EmptyState';
 import type { Review } from './helper.types.review';
@@ -61,30 +66,40 @@ function ReviewList({ items, view }: { items: ReviewItem[]; view: ViewMode }) {
 
 export default function FeatureReview() {
   const [view, setView] = useState<ViewMode>('grid-3');
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [pickedDate, setPickedDate] = useState<string | null>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const { hidden: headerHidden } = useHideOnScroll(headerRef, {
     threshold: 200,
   });
 
-  const { items, avgRating } = useMemo(() => {
+  const { items, groups, avgRating } = useMemo(() => {
     // Sharhga tovar biriktiriladi; tovari topilmagan sharh ko'rsatilmaydi
     const pairs = MOCK_REVIEWS.map((review) => ({
       review,
       item: getItemById(review.itemId, MOCK_CATALOG),
-    }))
-      .filter((x): x is ReviewItem => x.item !== null && x.item.isAvailable)
-      .sort(
-        (a, b) =>
-          new Date(b.review.createdAt).getTime() -
-          new Date(a.review.createdAt).getTime(),
-      );
+    })).filter((x): x is ReviewItem => x.item !== null && x.item.isAvailable);
+
+    // Sharhlarda eng yangisi tepada — shuning uchun `desc`
+    const byDay = groupByDay(pairs, (x) => x.review.createdAt, 'desc');
 
     const avg = pairs.length
       ? pairs.reduce((sum, x) => sum + x.review.rating, 0) / pairs.length
       : 0;
 
-    return { items: pairs, avgRating: avg };
+    return { items: pairs, groups: byDay, avgRating: avg };
   }, []);
+
+  // Kalendar uchun sanalar o'sish tartibida kerak (min/max)
+  const dates = useMemo(() => groups.map((g) => g.date).reverse(), [groups]);
+
+  const handlePickDate = (date: string) => {
+    setPickedDate(date);
+    setCalendarOpen(false);
+    document
+      .getElementById(`day-${date}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className="mx-auto flex min-h-full max-w-md flex-col">
@@ -124,8 +139,33 @@ export default function FeatureReview() {
         />
       ) : (
         <div className="flex-1">
-          <ReviewList items={items} view={view} />
+          {groups.map((g) => (
+            <section key={g.date} id={`day-${g.date}`} className="scroll-mt-28">
+              <CusDayDivider label={g.label} onClick={() => setCalendarOpen(true)} />
+              <ReviewList items={g.items} view={view} />
+            </section>
+          ))}
         </div>
+      )}
+
+      {items.length > 0 && (
+        <CusSheet
+          open={calendarOpen}
+          onClose={() => setCalendarOpen(false)}
+          title="Выберите дату"
+        >
+          <div className="flex justify-center">
+            <Suspense fallback={<CusSkeleton className="h-64 w-72" />}>
+              <CusCalendar
+                value={pickedDate ?? dates[dates.length - 1]}
+                onChange={handlePickDate}
+                availableDates={dates}
+                min={dates[0]}
+                max={dates[dates.length - 1]}
+              />
+            </Suspense>
+          </div>
+        </CusSheet>
       )}
     </div>
   );
