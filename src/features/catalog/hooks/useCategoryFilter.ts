@@ -76,6 +76,14 @@ export function useCategoryFilter() {
     [selectedCategoryIds, selectedSubcategoryIds, commit],
   );
 
+  /** Faqat shu kategoriya qolsin — subkategoriyasiz kategoriyani ochishda */
+  const selectOnly = useCallback(
+    (categoryId: string) => {
+      commit(new Set([categoryId]), new Set());
+    },
+    [commit],
+  );
+
   const clear = useCallback(() => {
     commit(new Set(), new Set());
   }, [commit]);
@@ -97,6 +105,7 @@ export function useCategoryFilter() {
     selectedSubcategoryIds,
     toggleCategory,
     toggleSubcategory,
+    selectOnly,
     clear,
     matches,
     count,

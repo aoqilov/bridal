@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { LayoutGroup, MotionConfig, motion, useReducedMotion } from 'framer-motion';
 import { MdCategory, MdApps, MdGridView, MdViewAgenda } from 'react-icons/md';
 import { FiSearch } from 'react-icons/fi';
 import CusSegment, { type SegmentItem } from '@/components/ui/segment/CusSegment';
@@ -14,6 +15,7 @@ import ItemPostCard from './components/ItemPostCard';
 import SearchBar from './components/SearchBar';
 import RecentSearches from './components/RecentSearches';
 import CategoryRail from './components/CategoryRail';
+import CategoryOverview from './components/CategoryOverview';
 import SubcategoryGrid from './components/SubcategoryGrid';
 import ShowResultsButton from './components/ShowResultsButton';
 import EmptyState from './components/EmptyState';
@@ -23,6 +25,8 @@ import { useCategoryFilter } from './hooks/useCategoryFilter';
 import { useActiveCategory } from './hooks/useActiveCategory';
 import { useKindFilter } from './hooks/useKindFilter';
 import { useViewMode, type ViewMode } from './hooks/useViewMode';
+import { CATEGORY_SPRING, INSTANT } from './utils/categoryMotion';
+import type { Category } from './helper.types.catalog';
 
 export default function FeatureCatalog() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -79,8 +83,10 @@ export default function FeatureCatalog() {
     [kindFilter.kind],
   );
 
-  const { activeCategoryId, visibleCategories, setActiveCategoryId } =
+  const { activeCategoryId, isOverview, visibleCategories, setActiveCategoryId } =
     useActiveCategory(categoriesToShow);
+
+  const reduceMotion = useReducedMotion();
 
   // Sanoq: barcha mavjud tovarlar (filterdan mustaqil)
   const { countsByCategory, countsBySubcategory } = useMemo(() => {
@@ -134,6 +140,20 @@ export default function FeatureCatalog() {
 
   // Action bar: tanlanganlar 3 ustunli plitkada ochiladi
   const handleShowResults = () => {
+    setView('grid-3');
+  };
+
+  /**
+   * Обзор gridida kategoriya bosildi.
+   * Subkategoriyasi bor — ichkariga (rail + o'ng panel);
+   * yo'q — foydalanuvchini bo'sh panelga tushirmay, to'g'ridan-to'g'ri tovarlarga.
+   */
+  const handleOpenCategory = (category: Category) => {
+    if ((category.subcategories?.length ?? 0) > 0) {
+      setActiveCategoryId(category.id);
+      return;
+    }
+    filter.selectOnly(category.id);
     setView('grid-3');
   };
 
@@ -210,27 +230,49 @@ export default function FeatureCatalog() {
       )}
 
       {isCategories ? (
-        <div className="flex min-h-0 flex-1">
-          <CategoryRail
-            categories={categoriesToShow}
-            activeCategoryId={activeCategoryId}
-            selectedCategoryIds={filter.selectedCategoryIds}
-            selectedSubcategoryIds={filter.selectedSubcategoryIds}
-            totalSelectedCount={filter.count}
-            onSelect={setActiveCategoryId}
-            className="w-[88px] shrink-0"
-          />
-          <SubcategoryGrid
-            categories={visibleCategories}
-            countsByCategory={countsByCategory}
-            countsBySubcategory={countsBySubcategory}
-            selectedCategoryIds={filter.selectedCategoryIds}
-            selectedSubcategoryIds={filter.selectedSubcategoryIds}
-            onToggleCategory={filter.toggleCategory}
-            onToggleSubcategory={filter.toggleSubcategory}
-            className="min-w-0 flex-1"
-          />
-        </div>
+        <MotionConfig transition={reduceMotion ? INSTANT : CATEGORY_SPRING}>
+          <LayoutGroup>
+            {isOverview ? (
+              <CategoryOverview
+                categories={categoriesToShow}
+                countsByCategory={countsByCategory}
+                selectedCategoryIds={filter.selectedCategoryIds}
+                onOpen={handleOpenCategory}
+                className="min-h-0 flex-1"
+              />
+            ) : (
+              <div className="flex min-h-0 flex-1">
+                <CategoryRail
+                  categories={categoriesToShow}
+                  activeCategoryId={activeCategoryId}
+                  selectedCategoryIds={filter.selectedCategoryIds}
+                  selectedSubcategoryIds={filter.selectedSubcategoryIds}
+                  totalSelectedCount={filter.count}
+                  onSelect={setActiveCategoryId}
+                  className="w-[88px] shrink-0"
+                />
+                {/* Rail doiralar morph bo'ladi, o'ng panel esa chetdan siljib kiradi */}
+                <motion.div
+                  key={activeCategoryId}
+                  initial={reduceMotion ? false : { opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="min-w-0 flex-1"
+                >
+                  <SubcategoryGrid
+                    categories={visibleCategories}
+                    countsByCategory={countsByCategory}
+                    countsBySubcategory={countsBySubcategory}
+                    selectedCategoryIds={filter.selectedCategoryIds}
+                    selectedSubcategoryIds={filter.selectedSubcategoryIds}
+                    onToggleCategory={filter.toggleCategory}
+                    onToggleSubcategory={filter.toggleSubcategory}
+                    className="h-full"
+                  />
+                </motion.div>
+              </div>
+            )}
+          </LayoutGroup>
+        </MotionConfig>
       ) : (
         <div className="flex-1">
           {emptyByFilter ? (

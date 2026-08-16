@@ -9,10 +9,14 @@ const HIDDEN_HEADER_PATHS: string[] = [
   ROUTES.CATALOG,
   ROUTES.NEW_ARRIVALS,
   ROUTES.REVIEW,
+  ROUTES.PROFILE,
 ];
 
 /** Ichki sahifalari ham headersiz — o'z "orqaga" tugmasi bor */
-const HIDDEN_HEADER_PREFIXES: string[] = [`${ROUTES.REVIEW}/`];
+const HIDDEN_HEADER_PREFIXES: string[] = [
+  `${ROUTES.REVIEW}/`,
+  `${ROUTES.PROFILE}/`,
+];
 
 export default function AppLayout() {
   const { pathname } = useLocation();

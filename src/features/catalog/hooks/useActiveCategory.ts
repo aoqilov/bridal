@@ -9,7 +9,8 @@ export const ALL_CATEGORY_ID = 'all';
 
 /**
  * Chap ustunda tanlangan kategoriya — holat URL'da (`?cat=wedding`).
- * Default va noma'lum id — «Все»: o'ng panelda hamma kategoriya bo'limlari chiqadi.
+ * `cat` bo'lmasa — обзор holati: 3 ustunli kategoriya gridi (`isOverview`).
+ * Shu sabab telefonning «orqaga» tugmasi обзор'ga qaytaradi.
  */
 export function useActiveCategory(categories: Category[]) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,5 +45,7 @@ export function useActiveCategory(categories: Category[]) {
     [setSearchParams],
   );
 
-  return { activeCategoryId, visibleCategories, setActiveCategoryId };
+  const isOverview = activeCategoryId === ALL_CATEGORY_ID;
+
+  return { activeCategoryId, isOverview, visibleCategories, setActiveCategoryId };
 }

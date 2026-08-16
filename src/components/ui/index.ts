@@ -10,6 +10,7 @@ export type { SegmentItem } from './segment/CusSegment';
 // CusCalendar bu yerda eksport qilinmaydi — u Chakra UI ni tortadi (~150 kB).
 // Kerak joyda lazy import qiling:
 //   const CusCalendar = lazy(() => import('@/components/ui/calendar/CusCalendar'));
+export { default as CusSwitch } from './switch/CusSwitch';
 export { default as CusDayDivider } from './day-divider/CusDayDivider';
 export { default as CusAccordion } from './accordion/CusAccordion';
 export type { AccordionItem } from './accordion/CusAccordion';

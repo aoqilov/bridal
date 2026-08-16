@@ -4,7 +4,9 @@
       "PowerShell(git config user.name)",
       "PowerShell(git config user.email)",
       "Bash(git rm *)",
-      "Bash(echo \"TSC_EXIT=$?\")"
+      "Bash(echo \"TSC_EXIT=$?\")",
+      "Bash(node -p \"'framer-motion@'+require\\('./node_modules/framer-motion/package.json'\\).version\")",
+      "Bash(sort -t'│' -k2 -h)"
     ]
   }
 }

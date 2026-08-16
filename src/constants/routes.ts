@@ -8,6 +8,8 @@ export const ROUTES = {
   REVIEW: '/review',
   REVIEW_DETAIL: '/review/:id',
   PROFILE: '/profile',
+  PROFILE_SETTINGS: '/profile/settings',
+  PROFILE_EDIT: '/profile/edit',
   PREVIEW: '/preview',
   PROMOTIONS: '/promotions',
   PROMOTION_DETAIL: '/promotions/:slug',

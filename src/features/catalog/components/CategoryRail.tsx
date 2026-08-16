@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 import { FiCheck } from 'react-icons/fi';
 import { MdApps } from 'react-icons/md';
 import { cn } from '@/utils/cn';
 import type { Category } from '@/features/catalog';
 import { ALL_CATEGORY_ID } from '../hooks/useActiveCategory';
+import { categoryLayoutId } from '../utils/categoryMotion';
 
 type Props = {
   categories: Category[];
@@ -41,6 +43,7 @@ export default function CategoryRail({
             active={activeCategoryId === ALL_CATEGORY_ID}
             badge={totalSelectedCount > 0 ? totalSelectedCount : null}
             onClick={() => onSelect(ALL_CATEGORY_ID)}
+            aria-label="Все категории"
           >
             <span className="grid h-full w-full place-items-center bg-primary-soft text-primary">
               <MdApps size={22} />
@@ -60,6 +63,7 @@ export default function CategoryRail({
                 active={cat.id === activeCategoryId}
                 badge={wholeSelected ? 'check' : subSelectedCount > 0 ? subSelectedCount : null}
                 onClick={() => onSelect(cat.id)}
+                layoutId={categoryLayoutId(cat.id)}
               >
                 {cat.image && (
                   <img
@@ -84,15 +88,27 @@ type RailItemProps = {
   /** Raqam — nechta subkategoriya tanlangan; 'check' — butun kategoriya tanlangan */
   badge: number | 'check' | null;
   onClick: () => void;
+  /** Обзор gridi bilan umumiy morph identifikatori */
+  layoutId?: string;
   children: ReactNode;
+  'aria-label'?: string;
 };
 
-function RailItem({ label, active, badge, onClick, children }: RailItemProps) {
+function RailItem({
+  label,
+  active,
+  badge,
+  onClick,
+  layoutId,
+  children,
+  'aria-label': ariaLabel,
+}: RailItemProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-current={active ? 'true' : undefined}
+      aria-label={ariaLabel}
       className={cn(
         'relative flex w-full flex-col items-center gap-1.5 px-1.5 py-3 transition-colors',
         active ? 'bg-background' : 'hover:bg-background/60',
@@ -103,14 +119,16 @@ function RailItem({ label, active, badge, onClick, children }: RailItemProps) {
       )}
 
       <span className="relative">
-        <span
+        <motion.span
+          layoutId={layoutId}
+          style={{ borderRadius: 9999 }}
           className={cn(
-            'block h-12 w-12 shrink-0 overflow-hidden rounded-full bg-surface ring-1 transition-colors',
+            'block h-12 w-12 shrink-0 overflow-hidden bg-surface ring-1 transition-colors',
             active || badge !== null ? 'ring-primary' : 'ring-border-subtle',
           )}
         >
           {children}
-        </span>
+        </motion.span>
 
         {badge !== null && (
           <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-fg ring-2 ring-background">

@@ -11,6 +11,8 @@ const FavoritesPage = lazy(() => import('@/pages/favorites'));
 const ReviewPage = lazy(() => import('@/pages/review'));
 const ReviewDetailPage = lazy(() => import('@/pages/review/detail'));
 const ProfilePage = lazy(() => import('@/pages/profile'));
+const ProfileSettingsPage = lazy(() => import('@/pages/profile/settings'));
+const ProfileEditPage = lazy(() => import('@/pages/profile/edit'));
 const PreviewPage = lazy(() => import('@/pages/preview'));
 const PromotionsPage = lazy(() => import('@/pages/promotions'));
 const PromotionDetailPage = lazy(() => import('@/pages/promotions/detail'));
@@ -38,6 +40,8 @@ export default function AppRoutes() {
         <Route path={ROUTES.REVIEW} element={<ReviewPage />} />
         <Route path={ROUTES.REVIEW_DETAIL} element={<ReviewDetailPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+        <Route path={ROUTES.PROFILE_SETTINGS} element={<ProfileSettingsPage />} />
+        <Route path={ROUTES.PROFILE_EDIT} element={<ProfileEditPage />} />
         <Route path={ROUTES.PREVIEW} element={<PreviewPage />} />
         <Route path={ROUTES.PROMOTIONS} element={<PromotionsPage />} />
         <Route path={ROUTES.PROMOTION_DETAIL} element={<PromotionDetailPage />} />

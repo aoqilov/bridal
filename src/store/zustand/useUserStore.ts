@@ -5,10 +5,12 @@ export type UserProfile = {
   name: string;
   phone?: string;
   city?: string;
+  email?: string;
+  /** 256px gacha kichraytirilgan data URL — qurilmada saqlanadi */
   avatar?: string;
 };
 
-type User = ({ id: string; email?: string } & UserProfile) | null;
+type User = ({ id: string } & UserProfile) | null;
 
 type UserState = {
   user: User;
