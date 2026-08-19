@@ -3,7 +3,6 @@ import { Link, useParams } from 'react-router-dom';
 import { useToast } from '@/components/ui';
 import { useFavoritesStore, useRecentlyViewedStore } from '@/store/zustand';
 import {
-  MOCK_CATEGORIES,
   MOCK_CATALOG,
   getItemBySlug,
   getRelatedItems,
@@ -14,10 +13,8 @@ import { ROUTES } from '@/constants/routes';
 import ItemTopBar from './components/ItemTopBar';
 import ItemGallery from './components/ItemGallery';
 import ItemThumbs from './components/ItemThumbs';
-import ItemBadges from './components/ItemBadges';
 import ItemInfo from './components/ItemInfo';
 import ItemSpecs from './components/ItemSpecs';
-import ItemReviews from './components/ItemReviews';
 import ItemActions from './components/ItemActions';
 import RelatedItems from './components/RelatedItems';
 import { useItemSelection } from './hooks/useItemSelection';
@@ -61,9 +58,6 @@ function ItemView({ item }: { item: CatalogItem }) {
   const gallery = useGallery(variant);
 
   const related = useMemo(() => getRelatedItems(item, MOCK_CATALOG, 6), [item]);
-
-  const category = MOCK_CATEGORIES.find((c) => c.id === item.categoryId);
-  const subcategory = category?.subcategories?.find((s) => s.id === item.subcategoryId);
 
   // Profildagi "Просмотренные" ro'yxati uchun
   const pushRecent = useRecentlyViewedStore((s) => s.push);
@@ -127,8 +121,6 @@ function ItemView({ item }: { item: CatalogItem }) {
 
       {/* Kontent kartochkasi — badge qatoridan boshlab rasm ustiga chiqadi */}
       <div className="relative z-10 -mt-10 rounded-t-3xl border-t border-border-subtle bg-background pt-4 shadow-sheet">
-        <ItemBadges item={item} className="mb-3 px-4" />
-
         <ItemThumbs
           images={gallery.images}
           activeIndex={gallery.activeIndex}
@@ -138,10 +130,6 @@ function ItemView({ item }: { item: CatalogItem }) {
         <ItemInfo
           item={item}
           variant={variant}
-          categoryId={category?.id}
-          categoryName={category?.name}
-          subcategoryId={subcategory?.id}
-          subcategoryName={subcategory?.name}
           onVariantChange={setVariantId}
           selectedSize={size}
           onSizeChange={setSize}
@@ -150,8 +138,6 @@ function ItemView({ item }: { item: CatalogItem }) {
         />
 
         <ItemSpecs item={item} />
-
-        <ItemReviews item={item} />
 
         <RelatedItems items={related} />
 

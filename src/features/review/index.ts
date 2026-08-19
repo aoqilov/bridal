@@ -5,4 +5,5 @@ export { formatReviewDate } from './utils/formatReviewDate';
 export { default as ReviewThumb } from './components/ReviewThumb';
 export { default as ReviewCard } from './components/ReviewCard';
 export { default as ReviewPostCard } from './components/ReviewPostCard';
+export { default as ReviewComment } from './components/ReviewComment';
 export { default as ItemTagLink } from './components/ItemTagLink';

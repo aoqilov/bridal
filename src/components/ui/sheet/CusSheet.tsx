@@ -8,6 +8,8 @@ type Props = {
   title?: string;
   children: ReactNode;
   side?: 'bottom' | 'right';
+  /** Kontent o'ramining klasslari — standart ichki bo'shliqni almashtirish uchun */
+  contentClassName?: string;
 };
 
 export default function CusSheet({
@@ -16,6 +18,7 @@ export default function CusSheet({
   title,
   children,
   side = 'bottom',
+  contentClassName,
 }: Props) {
   useEffect(() => {
     if (!open) return;
@@ -34,22 +37,23 @@ export default function CusSheet({
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div className="animate-overlay-in absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
       <div
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'relative z-10 bg-background text-foreground shadow-xl',
-          side === 'bottom' && 'mt-auto w-full max-h-[85vh] rounded-t-2xl',
-          side === 'right' && 'ml-auto h-full w-full max-w-sm rounded-l-2xl',
+          // flex-ustun — uzun kontent panel ichida scroll bo'lsin, tashqariga chiqib ketmasin
+          'relative z-10 flex flex-col overflow-hidden bg-background text-foreground shadow-xl',
+          side === 'bottom' && 'animate-sheet-up mt-auto max-h-[85vh] w-full rounded-t-2xl',
+          side === 'right' && 'animate-sheet-right ml-auto h-full w-full max-w-sm rounded-l-2xl',
         )}
       >
         {side === 'bottom' && (
-          <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-border" />
+          <div className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border" />
         )}
 
         {title && (
-          <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
+          <div className="flex shrink-0 items-center justify-between border-b border-border-subtle px-4 py-3">
             <h2 className="text-base font-semibold">{title}</h2>
             <button
               type="button"
@@ -62,7 +66,14 @@ export default function CusSheet({
           </div>
         )}
 
-        <div className="overflow-y-auto p-4">{children}</div>
+        <div
+          className={cn(
+            'subtle-scrollbar min-h-0 flex-1 overflow-y-auto',
+            contentClassName ?? 'p-4',
+          )}
+        >
+          {children}
+        </div>
       </div>
     </div>,
     document.body,

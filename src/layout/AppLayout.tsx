@@ -19,11 +19,20 @@ const HIDDEN_HEADER_PREFIXES: string[] = [
   `${ROUTES.PROFILE}/`,
 ];
 
+/**
+ * Tovar sahifasida pastki navigatsiya ham yashiriladi — ekran to'liq modelga beriladi,
+ * pastda esa feature'ning o'z paneli turadi ("Записаться на примерку").
+ */
+const HIDDEN_BOTTOM_NAV_PREFIXES: string[] = [`${ROUTES.CATALOG}/`];
+
 export default function AppLayout() {
   const { pathname } = useLocation();
   const hideHeader =
     HIDDEN_HEADER_PATHS.includes(pathname) ||
     HIDDEN_HEADER_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  const hideBottomNav = HIDDEN_BOTTOM_NAV_PREFIXES.some((prefix) =>
+    pathname.startsWith(prefix),
+  );
 
   return (
     <div className="h-screen-safe flex flex-col overflow-hidden">
@@ -31,7 +40,7 @@ export default function AppLayout() {
       <main className="subtle-scrollbar flex-1 overflow-y-auto">
         <AppRoutes />
       </main>
-      <BottomNav />
+      {!hideBottomNav && <BottomNav />}
     </div>
   );
 }

@@ -19,9 +19,10 @@ type Props = {
 export default function ItemActions({ item, offer, onTelegram }: Props) {
   const price = offerPrice(item, offer);
 
+  // Pastki navigatsiya bu sahifada yashirin — gesture bar uchun joyni panel o'zi oladi
   return (
-    <div className="sticky bottom-0 z-20 border-t border-border-subtle bg-background/95 px-4 py-3 backdrop-blur">
-      <div className="mx-auto flex max-w-md items-center gap-3">
+    <div className="pb-safe sticky bottom-0 z-20 border-t border-border-subtle bg-background/95 backdrop-blur">
+      <div className="mx-auto flex max-w-md items-center gap-3 px-4 py-3">
         <div className="min-w-0 shrink-0">
           <p className="text-[11px] uppercase tracking-wide text-muted">
             {OFFER_SHORT_LABELS[offer]}

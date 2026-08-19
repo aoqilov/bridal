@@ -24,21 +24,6 @@ export function itemPath(slug: string): string {
 /** Katalogni "Категории" ko'rinishida ochish (param — `features/catalog/hooks/useViewMode.ts`) */
 export const CATALOG_CATEGORIES_PATH = `${ROUTES.CATALOG}?view=categories`;
 
-/**
- * Katalogni tayyor filtr bilan ochish — "хлебные крошки" havolalari uchun.
- * Param nomlari `features/catalog/hooks/useCategoryFilter.ts` bilan bir xil.
- */
-export function catalogFilterPath(filter: {
-  categoryId?: string;
-  subcategoryId?: string;
-}): string {
-  const params = new URLSearchParams();
-  if (filter.subcategoryId) params.set('subs', filter.subcategoryId);
-  else if (filter.categoryId) params.set('cats', filter.categoryId);
-  const query = params.toString();
-  return query ? `${ROUTES.CATALOG}?${query}` : ROUTES.CATALOG;
-}
-
 /** Sharh detali — rasmlar galereyasi va belgilangan tovar */
 export function reviewPath(id: string): string {
   return `/review/${id}`;

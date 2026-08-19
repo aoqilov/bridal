@@ -1,5 +1,13 @@
 export const APP_NAME = 'Amira Bridal';
 export const APP_VERSION = '1.0.0';
+
+/** Header'da ko'rinadigan nom — brend nomidan farq qilishi mumkin */
+export const HEADER_TITLE = 'iCatalog';
+/**
+ * Header logotipi — `public/` ichidagi fayl (Vite uni ildizdan uzatadi).
+ * Fayl qo'yilmagan bo'lsa header faqat matnni ko'rsatadi.
+ */
+export const HEADER_LOGO_SRC = '/assets/icons/logo.svg';
 /** Barcha localStorage kalitlari shu prefiks bilan */
 export const STORAGE_PREFIX = 'bridal-';
 export const APP_LOCALE = 'ru-RU';

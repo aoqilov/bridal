@@ -108,7 +108,7 @@ Server state (API cache) uchun Zustand ishlatma — kerak bo'lsa alohida yechim 
 | Matn | `text-foreground`, `text-muted`, `text-subtle` |
 | Chegara | `border-border`, `border-border-subtle` |
 
-**Shrift:** `font-sans` (Inter) — asosiy matn; `font-serif` (Cormorant Garamond) — brend nomi va bo'lim sarlavhalari.
+**Shrift:** `font-sans` (Inter) — asosiy matn; `font-serif` (Cormorant Garamond) — model nomi va bo'lim sarlavhalari; `font-logo` (Comic Relief) — faqat header'dagi brend so'zi.
 
 **Utilities (index.css):**
 - `shadow-card`, `shadow-card-hover` — yumshoq soya.
