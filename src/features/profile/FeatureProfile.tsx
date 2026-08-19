@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MdFavoriteBorder, MdGridOn, MdHistory, MdSettings, MdStar } from 'react-icons/md';
+import {
+  MdFavoriteBorder,
+  MdGridOn,
+  MdHistory,
+  MdInstallMobile,
+  MdSettings,
+  MdStar,
+} from 'react-icons/md';
 import { useToast } from '@/components/ui';
 import { ROUTES } from '@/constants/routes';
 import { useFavoritesStore, useRecentlyViewedStore, useUserStore } from '@/store/zustand';
@@ -15,6 +22,8 @@ import {
 import ProfileTopBar from './components/ProfileTopBar';
 import ProfileTabs, { type ProfileTab } from './components/ProfileTabs';
 import ProfileEmpty from './components/ProfileEmpty';
+import InstallGuideSheet from './components/InstallGuideSheet';
+import { useInstallFlow } from './hooks/useInstallFlow';
 
 type Tab = 'favorites' | 'recent' | 'reviews';
 type MyReview = { review: Review; item: CatalogItem };
@@ -26,6 +35,7 @@ export default function FeatureProfile() {
   const favoriteIds = useFavoritesStore((s) => s.ids);
   const recentIds = useRecentlyViewedStore((s) => s.ids);
   const { show } = useToast();
+  const install = useInstallFlow();
 
   const favorites = useMemo(() => toItems(favoriteIds), [favoriteIds]);
   const recent = useMemo(() => toItems(recentIds), [recentIds]);
@@ -78,13 +88,27 @@ export default function FeatureProfile() {
         title={displayName}
         back={false}
         actions={
-          <Link
-            to={ROUTES.PROFILE_SETTINGS}
-            aria-label="Настройки"
-            className="grid h-9 w-9 place-items-center rounded-full text-foreground transition-colors hover:bg-surface-2"
-          >
-            <MdSettings size={22} />
-          </Link>
+          <>
+            {/* O'rnatilgan bo'lsa tugma kerak emas */}
+            {!install.installed && (
+              <button
+                type="button"
+                onClick={install.start}
+                aria-label="Установить приложение"
+                title="Установить приложение"
+                className="grid h-9 w-9 place-items-center rounded-full text-foreground transition-colors hover:bg-surface-2"
+              >
+                <MdInstallMobile size={22} />
+              </button>
+            )}
+            <Link
+              to={ROUTES.PROFILE_SETTINGS}
+              aria-label="Настройки"
+              className="grid h-9 w-9 place-items-center rounded-full text-foreground transition-colors hover:bg-surface-2"
+            >
+              <MdSettings size={22} />
+            </Link>
+          </>
         }
       />
 
@@ -187,6 +211,12 @@ export default function FeatureProfile() {
             action={{ label: 'Все отзывы', to: ROUTES.REVIEW }}
           />
         ))}
+
+      <InstallGuideSheet
+        open={install.guideOpen}
+        onClose={install.closeGuide}
+        isIos={install.isIos}
+      />
     </div>
   );
 }

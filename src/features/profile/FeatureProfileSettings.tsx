@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FiCalendar, FiCreditCard, FiMaximize, FiRefreshCw } from 'react-icons/fi';
 import {
+  MdCheckCircle,
   MdChevronRight,
   MdDarkMode,
   MdDeleteSweep,
@@ -33,8 +34,9 @@ import {
 import { useToast } from '@/components/ui';
 import { cn } from '@/utils/cn';
 import ProfileTopBar from './components/ProfileTopBar';
+import InstallGuideSheet from './components/InstallGuideSheet';
 import { useClearAppData } from './hooks/useClearAppData';
-import { useInstallPrompt } from './hooks/useInstallPrompt';
+import { useInstallFlow } from './hooks/useInstallFlow';
 
 const FAQ: AccordionItem[] = [
   {
@@ -73,7 +75,7 @@ export default function FeatureProfileSettings() {
   const theme = useThemeStore((s) => s.theme);
   const resolved = useThemeStore((s) => s.resolved);
   const setTheme = useThemeStore((s) => s.setTheme);
-  const { canInstall, install } = useInstallPrompt();
+  const install = useInstallFlow();
   const { confirming, clear } = useClearAppData();
   const { show } = useToast();
 
@@ -145,12 +147,23 @@ export default function FeatureProfileSettings() {
             />
           )}
 
-          {canInstall && (
+        </div>
+
+        {/* Ilovani o'rnatish — brauzer taklifi bo'lmasa yo'riqnoma ochiladi */}
+        <div className="overflow-hidden rounded-2xl bg-surface shadow-card">
+          {install.installed ? (
+            <CusListItem
+              icon={<MdCheckCircle size={20} />}
+              title="Приложение установлено"
+              description="Открывается с домашнего экрана"
+              chevron={false}
+            />
+          ) : (
             <CusListItem
               icon={<MdInstallMobile size={20} />}
               title="Установить приложение"
-              description="Быстрый запуск с домашнего экрана"
-              onClick={install}
+              description="Иконка на экране телефона, запуск без браузера"
+              onClick={install.start}
               chevron={false}
             />
           )}
@@ -244,6 +257,12 @@ export default function FeatureProfileSettings() {
           Профиль, избранное и история хранятся только на этом устройстве
         </p>
       </div>
+
+      <InstallGuideSheet
+        open={install.guideOpen}
+        onClose={install.closeGuide}
+        isIos={install.isIos}
+      />
     </div>
   );
 }
