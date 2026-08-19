@@ -43,12 +43,13 @@ export {
   getMatchingAccessories,
 } from './utils/getItem';
 
-export { primaryPrice, secondaryPrice, discountPercent } from './utils/price';
+export { primaryPrice, secondaryPrice, offerPrice, discountPercent } from './utils/price';
 export type { PriceView } from './utils/price';
 
 export {
   KIND_LABELS,
   OFFER_LABELS,
+  OFFER_SHORT_LABELS,
   SILHOUETTE_LABELS,
   NECKLINE_LABELS,
   SLEEVE_LABELS,

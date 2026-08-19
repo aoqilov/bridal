@@ -14,6 +14,7 @@ const HIDDEN_HEADER_PATHS: string[] = [
 
 /** Ichki sahifalari ham headersiz — o'z "orqaga" tugmasi bor */
 const HIDDEN_HEADER_PREFIXES: string[] = [
+  `${ROUTES.CATALOG}/`,
   `${ROUTES.REVIEW}/`,
   `${ROUTES.PROFILE}/`,
 ];

@@ -19,87 +19,95 @@ import {
   SLEEVE_LABELS,
   type CatalogItem,
 } from '@/features/catalog';
+import { cn } from '@/utils/cn';
+import SectionTitle from './SectionTitle';
 
 type Row = {
   icon: ReactNode;
   label: string;
   value: string;
+  /** Uzun qiymat — kartochka ikki ustunni egallaydi */
+  wide?: boolean;
 };
 
 type Props = {
   item: CatalogItem;
 };
 
+const ICON_SIZE = 16;
+
 function buildRows(item: CatalogItem): Row[] {
   const rows: Row[] = [];
 
   if (isDress(item)) {
     rows.push({
-      icon: <MdOutlineStyle size={18} />,
+      icon: <MdOutlineStyle size={ICON_SIZE} />,
       label: 'Силуэт',
       value: SILHOUETTE_LABELS[item.silhouette],
     });
     rows.push({
-      icon: <MdOutlineCheckroom size={18} />,
+      icon: <MdOutlineCheckroom size={ICON_SIZE} />,
       label: 'Вырез',
       value: NECKLINE_LABELS[item.neckline],
     });
     rows.push({
-      icon: <MdOutlineCheckroom size={18} />,
+      icon: <MdOutlineCheckroom size={ICON_SIZE} />,
       label: 'Рукав',
       value: SLEEVE_LABELS[item.sleeve],
     });
     rows.push({
-      icon: <MdOutlineLayers size={18} />,
-      label: 'Ткань',
-      value: item.fabrics.map((f) => FABRIC_LABELS[f]).join(', '),
-    });
-    rows.push({
-      icon: <MdOutlinePalette size={18} />,
+      icon: <MdOutlinePalette size={ICON_SIZE} />,
       label: 'Оттенок',
       value: SHADE_LABELS[item.shade],
     });
     if (item.trainLength) {
       rows.push({
-        icon: <MdOutlineStraighten size={18} />,
+        icon: <MdOutlineStraighten size={ICON_SIZE} />,
         label: 'Шлейф',
         value: `${item.trainLength} см`,
       });
     }
     if (item.hasCorset !== undefined) {
       rows.push({
-        icon: <MdOutlineCheckroom size={18} />,
+        icon: <MdOutlineCheckroom size={ICON_SIZE} />,
         label: 'Корсет',
         value: item.hasCorset ? 'Есть' : 'Нет',
       });
     }
     if (item.collectionYear) {
       rows.push({
-        icon: <MdOutlineCalendarMonth size={18} />,
+        icon: <MdOutlineCalendarMonth size={ICON_SIZE} />,
         label: 'Коллекция',
         value: String(item.collectionYear),
       });
     }
+    rows.push({
+      icon: <MdOutlineLayers size={ICON_SIZE} />,
+      label: 'Ткань',
+      value: item.fabrics.map((f) => FABRIC_LABELS[f]).join(', '),
+      wide: true,
+    });
     return rows;
   }
 
   rows.push({
-    icon: <MdOutlineCategory size={18} />,
+    icon: <MdOutlineCategory size={ICON_SIZE} />,
     label: 'Тип',
     value: ACCESSORY_TYPE_LABELS[item.accessoryType],
   });
-  if (item.material) {
-    rows.push({
-      icon: <MdOutlineLayers size={18} />,
-      label: 'Материал',
-      value: item.material,
-    });
-  }
   rows.push({
-    icon: <MdOutlineStraighten size={18} />,
+    icon: <MdOutlineStraighten size={ICON_SIZE} />,
     label: 'Размер',
     value: item.oneSize ? 'Один размер' : (item.sizeLabels?.join(', ') ?? '—'),
   });
+  if (item.material) {
+    rows.push({
+      icon: <MdOutlineLayers size={ICON_SIZE} />,
+      label: 'Материал',
+      value: item.material,
+      wide: true,
+    });
+  }
   return rows;
 }
 
@@ -107,18 +115,23 @@ export default function ItemSpecs({ item }: Props) {
   const rows = buildRows(item);
 
   return (
-    <section className="px-4 pt-6">
-      <h2 className="mb-3 text-sm font-medium text-foreground">Характеристики</h2>
-      <dl className="divide-y divide-border-subtle rounded-2xl border border-border-subtle bg-surface">
+    <section className="px-4 pt-8">
+      <SectionTitle>Характеристики</SectionTitle>
+
+      <dl className="grid grid-cols-2 gap-2">
         {rows.map((row) => (
-          <div key={row.label} className="flex items-center justify-between px-4 py-3">
-            <dt className="flex items-center gap-2.5 text-sm text-muted">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary-soft text-primary">
-                {row.icon}
-              </span>
+          <div
+            key={row.label}
+            className={cn(
+              'rounded-2xl border border-border-subtle bg-surface p-3',
+              row.wide && 'col-span-2',
+            )}
+          >
+            <dt className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted">
+              <span className="text-primary">{row.icon}</span>
               {row.label}
             </dt>
-            <dd className="max-w-[55%] text-right text-sm font-medium text-foreground">
+            <dd className="mt-1 text-sm font-medium leading-snug text-foreground">
               {row.value}
             </dd>
           </div>
@@ -126,14 +139,16 @@ export default function ItemSpecs({ item }: Props) {
       </dl>
 
       {item.careInstructions && (
-        <div className="mt-4 rounded-2xl border border-border-subtle bg-surface p-4">
-          <h3 className="mb-1 flex items-center gap-2 text-sm font-medium text-foreground">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary-soft text-primary">
-              <MdOutlineWaterDrop size={18} />
-            </span>
-            Уход
-          </h3>
-          <p className="mt-2 text-sm text-foreground/80">{item.careInstructions}</p>
+        <div className="mt-3 flex gap-3 rounded-2xl border border-border-subtle bg-surface p-4">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">
+            <MdOutlineWaterDrop size={18} />
+          </span>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">Уход</h3>
+            <p className="mt-1 text-sm leading-relaxed text-foreground/80">
+              {item.careInstructions}
+            </p>
+          </div>
         </div>
       )}
     </section>

@@ -49,6 +49,8 @@ export default {
       boxShadow: {
         card: '0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03)',
         'card-hover': '0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04)',
+        // Rasm ustidan ko'tariladigan kartochka — soya tepaga tushadi
+        sheet: '0 -8px 24px rgba(0, 0, 0, 0.10)',
       },
     },
   },

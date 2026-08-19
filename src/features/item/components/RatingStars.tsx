@@ -5,6 +5,8 @@ type Props = {
   rating: number;
   reviewCount?: number;
   size?: 'sm' | 'md';
+  /** Yulduzlar yonidagi raqam — katta baho alohida ko'rsatilganda o'chiriladi */
+  showValue?: boolean;
   className?: string;
 };
 
@@ -12,6 +14,7 @@ export default function RatingStars({
   rating,
   reviewCount,
   size = 'sm',
+  showValue = true,
   className,
 }: Props) {
   const filled = Math.round(rating);
@@ -32,9 +35,11 @@ export default function RatingStars({
           );
         })}
       </div>
-      <span className="text-sm font-semibold text-foreground">
-        {rating.toFixed(1)}
-      </span>
+      {showValue && (
+        <span className="text-sm font-semibold text-foreground">
+          {rating.toFixed(1)}
+        </span>
+      )}
       {reviewCount !== undefined && (
         <span className="text-xs text-muted">
           · {reviewCount} {declineReview(reviewCount)}

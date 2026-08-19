@@ -157,4 +157,14 @@
       rgba(0, 0, 0, 0) 60%
     );
   }
+
+  /* Rasm tepasidagi suzuvchi tugmalar o'qilishi uchun — yorug' rasmda ham */
+  .bg-overlay-gradient-t {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.38) 0%,
+      rgba(0, 0, 0, 0.12) 55%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
 }

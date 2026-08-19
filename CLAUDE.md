@@ -67,9 +67,9 @@ src/
 
 `isDress(item)` / `isAccessory(item)` — type guard'lar. Yangi maydon qo'shganda ikkala shoxni ham tekshir (`ItemSpecs`, `ItemInfo`, `useSearchItems`).
 
-**Narx:** hech qachon `item.rentPrice` ni to'g'ridan-to'g'ri ko'rsatma — `primaryPrice(item)` / `secondaryPrice(item)` / `discountPercent(item)` (`utils/price.ts`) ishlat. Ijara mavjud bo'lsa u ustuvor.
+**Narx:** hech qachon `item.rentPrice` ni to'g'ridan-to'g'ri ko'rsatma — `primaryPrice(item)` / `secondaryPrice(item)` / `offerPrice(item, offer)` / `discountPercent(item)` (`utils/price.ts`) ishlat. Ijara mavjud bo'lsa u ustuvor; `offerPrice` — foydalanuvchi tanlagan taklif turi bo'yicha (tovar sahifasidagi "Аренда / Покупка / Пошив" pereklyuchateli).
 
-**Yorliqlar:** enum qiymatini ekranda ko'rsatish uchun `utils/labels.ts` dagi `*_LABELS` map'lari (`SILHOUETTE_LABELS`, `FABRIC_LABELS`, ...). Rus matnini inline yozma.
+**Yorliqlar:** enum qiymatini ekranda ko'rsatish uchun `utils/labels.ts` dagi `*_LABELS` map'lari (`SILHOUETTE_LABELS`, `FABRIC_LABELS`, ...; tor joylar uchun `OFFER_SHORT_LABELS`). Rus matnini inline yozma.
 
 ## Yangi sahifa qo'shish
 1. `constants/routes.ts` → `ROUTES` obyektiga path qo'shish.

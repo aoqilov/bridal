@@ -20,6 +20,13 @@ export const OFFER_LABELS: Record<OfferType, string> = {
   tailoring: 'Пошив на заказ',
 };
 
+/** Segment / chip kabi tor joylar uchun qisqartirilgan yorliqlar */
+export const OFFER_SHORT_LABELS: Record<OfferType, string> = {
+  rent: 'Аренда',
+  sale: 'Покупка',
+  tailoring: 'Пошив',
+};
+
 export const SILHOUETTE_LABELS: Record<Silhouette, string> = {
   'a-line': 'Силуэт «А»',
   mermaid: 'Русалка',

@@ -35,6 +35,24 @@ export function primaryPrice(item: CatalogItem): PriceView | null {
   return null;
 }
 
+/**
+ * Aniq bir taklif turi bo'yicha narx — tovar sahifasidagi "Аренда / Покупка / Пошив"
+ * pereklyuchateli uchun. `tailoring` da narx yo'q (o'lchovdan keyin hisoblanadi).
+ * Chizilgan eski narx faqat asosiy taklifga tegishli.
+ */
+export function offerPrice(item: CatalogItem, offer: OfferType): PriceView | null {
+  const primary = primaryPrice(item);
+  const old = primary?.offer === offer ? primary.old : undefined;
+
+  if (offer === 'rent' && item.rentPrice) {
+    return { amount: item.rentPrice, old, label: OFFER_LABELS.rent, offer: 'rent' };
+  }
+  if (offer === 'sale' && item.salePrice) {
+    return { amount: item.salePrice, old, label: OFFER_LABELS.sale, offer: 'sale' };
+  }
+  return null;
+}
+
 /** Ikkinchi darajali narx — kartada emas, faqat tovar sahifasida */
 export function secondaryPrice(item: CatalogItem): PriceView | null {
   const primary = primaryPrice(item);

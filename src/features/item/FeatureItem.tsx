@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useToast } from '@/components/ui';
 import { useFavoritesStore, useRecentlyViewedStore } from '@/store/zustand';
@@ -7,64 +7,69 @@ import {
   MOCK_CATALOG,
   getItemBySlug,
   getRelatedItems,
-  isDress,
+  type CatalogItem,
 } from '@/features/catalog';
 import { buildTelegramItemLink } from '@/constants/contact';
 import { ROUTES } from '@/constants/routes';
+import ItemTopBar from './components/ItemTopBar';
 import ItemGallery from './components/ItemGallery';
-import GalleryOverlay from './components/GalleryOverlay';
+import ItemThumbs from './components/ItemThumbs';
+import ItemBadges from './components/ItemBadges';
 import ItemInfo from './components/ItemInfo';
 import ItemSpecs from './components/ItemSpecs';
+import ItemReviews from './components/ItemReviews';
 import ItemActions from './components/ItemActions';
 import RelatedItems from './components/RelatedItems';
+import { useItemSelection } from './hooks/useItemSelection';
+import { useGallery } from './hooks/useGallery';
 
 export default function FeatureItem() {
   const { slug = '' } = useParams<{ slug: string }>();
   const item = useMemo(() => getItemBySlug(slug, MOCK_CATALOG), [slug]);
 
+  if (!item) return <ItemNotFound />;
+
+  return <ItemView item={item} />;
+}
+
+function ItemNotFound() {
+  return (
+    <div className="mx-auto flex min-h-full max-w-md flex-col items-center justify-center gap-3 px-6 py-16 text-center">
+      <h1 className="font-serif text-2xl font-semibold text-foreground">
+        Модель не найдена
+      </h1>
+      <p className="text-sm text-muted">
+        Возможно, ссылка неверна или модель больше не в наличии.
+      </p>
+      <Link
+        to={ROUTES.CATALOG}
+        className="mt-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg transition-colors hover:bg-primary-hover"
+      >
+        В каталог
+      </Link>
+    </div>
+  );
+}
+
+function ItemView({ item }: { item: CatalogItem }) {
   const toast = useToast();
   const favorite = useFavoritesStore();
-  const isFavorite = item ? favorite.ids.includes(item.id) : false;
+  const isFavorite = favorite.ids.includes(item.id);
 
-  const [variantId, setVariantId] = useState(item?.defaultVariantId ?? '');
-  const [selectedSize, setSelectedSize] = useState<string | null>(() => {
-    if (!item) return null;
-    if (isDress(item)) return item.sizes.find((s) => s.available)?.label ?? null;
-    return item.sizeLabels?.[0] ?? null;
-  });
+  const { variant, size, offer, setVariantId, setSize, setOffer } =
+    useItemSelection(item);
+  const gallery = useGallery(variant);
 
-  const related = useMemo(
-    () => (item ? getRelatedItems(item, MOCK_CATALOG, 6) : []),
-    [item],
-  );
+  const related = useMemo(() => getRelatedItems(item, MOCK_CATALOG, 6), [item]);
+
+  const category = MOCK_CATEGORIES.find((c) => c.id === item.categoryId);
+  const subcategory = category?.subcategories?.find((s) => s.id === item.subcategoryId);
 
   // Profildagi "Просмотренные" ro'yxati uchun
   const pushRecent = useRecentlyViewedStore((s) => s.push);
   useEffect(() => {
-    if (item) pushRecent(item.id);
-  }, [item, pushRecent]);
-
-  if (!item) {
-    return (
-      <div className="mx-auto flex min-h-full max-w-md flex-col items-center justify-center gap-3 px-6 py-16 text-center">
-        <h1 className="text-lg font-semibold text-foreground">Модель не найдена</h1>
-        <p className="text-sm text-muted">
-          Возможно, ссылка неверна или модель больше не в наличии.
-        </p>
-        <Link
-          to={ROUTES.CATALOG}
-          className="mt-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg hover:bg-primary-hover"
-        >
-          В каталог
-        </Link>
-      </div>
-    );
-  }
-
-  const variant = item.variants.find((v) => v.id === variantId) ?? item.variants[0];
-
-  const category = MOCK_CATEGORIES.find((c) => c.id === item.categoryId);
-  const subcategory = category?.subcategories?.find((s) => s.id === item.subcategoryId);
+    pushRecent(item.id);
+  }, [item.id, pushRecent]);
 
   const currentUrl = window.location.href;
 
@@ -80,14 +85,10 @@ export default function FeatureItem() {
   const handleShare = async () => {
     if (typeof navigator.share === 'function') {
       try {
-        await navigator.share({
-          title: item.name,
-          text: item.name,
-          url: currentUrl,
-        });
+        await navigator.share({ title: item.name, text: item.name, url: currentUrl });
         return;
       } catch {
-        // fallthrough to copy
+        // Foydalanuvchi bekor qildi yoki qo'llab-quvvatlanmaydi — havolani nusxalaymiz
       }
     }
     handleCopy();
@@ -98,34 +99,66 @@ export default function FeatureItem() {
     window.open(link, '_blank', 'noopener,noreferrer');
   };
 
+  const handleToggleFavorite = () => {
+    favorite.toggle(item.id);
+    toast.show(isFavorite ? 'Удалено из избранного' : 'Добавлено в избранное', 'success');
+  };
+
   return (
     <div className="mx-auto flex min-h-full max-w-md flex-col bg-background">
-      <div className="relative">
-        <GalleryOverlay
-          isFavorite={isFavorite}
-          onToggleFavorite={() => favorite.toggle(item.id)}
-          onShare={handleShare}
-        />
-        <ItemGallery variant={variant} itemName={item.name} />
-      </div>
-
-      <ItemInfo
-        item={item}
-        variant={variant}
-        categoryName={category?.name}
-        subcategoryName={subcategory?.name}
-        onVariantChange={setVariantId}
-        selectedSize={selectedSize}
-        onSizeChange={setSelectedSize}
+      <ItemTopBar
+        title={item.name}
+        isFavorite={isFavorite}
+        onToggleFavorite={handleToggleFavorite}
+        onShare={handleShare}
       />
 
-      <ItemSpecs item={item} />
+      {/* Rasm scroll paytida joyida qoladi — pastdagi kartochka uning ustidan ko'tariladi */}
+      <div className="sticky top-0 z-0">
+        <ItemGallery
+          images={gallery.images}
+          variant={variant}
+          itemName={item.name}
+          activeIndex={gallery.activeIndex}
+          onActiveIndexChange={gallery.setActiveIndex}
+          onSwiper={gallery.setSwiper}
+        />
+      </div>
 
-      <RelatedItems items={related} />
+      {/* Kontent kartochkasi — badge qatoridan boshlab rasm ustiga chiqadi */}
+      <div className="relative z-10 -mt-10 rounded-t-3xl border-t border-border-subtle bg-background pt-4 shadow-sheet">
+        <ItemBadges item={item} className="mb-3 px-4" />
 
-      <div className="h-4" />
+        <ItemThumbs
+          images={gallery.images}
+          activeIndex={gallery.activeIndex}
+          onSelect={gallery.goTo}
+        />
 
-      <ItemActions itemId={item.id} onTelegram={handleTelegram} onCopy={handleCopy} />
+        <ItemInfo
+          item={item}
+          variant={variant}
+          categoryId={category?.id}
+          categoryName={category?.name}
+          subcategoryId={subcategory?.id}
+          subcategoryName={subcategory?.name}
+          onVariantChange={setVariantId}
+          selectedSize={size}
+          onSizeChange={setSize}
+          offer={offer}
+          onOfferChange={setOffer}
+        />
+
+        <ItemSpecs item={item} />
+
+        <ItemReviews item={item} />
+
+        <RelatedItems items={related} />
+
+        <div className="h-6" />
+      </div>
+
+      <ItemActions item={item} offer={offer} onTelegram={handleTelegram} />
     </div>
   );
 }
