@@ -7,7 +7,7 @@ import {
 import ItemReviews from './ItemReviews';
 import ItemPricing from './ItemPricing';
 import VariantPicker from './VariantPicker';
-import SizePicker from './SizePicker';
+import ItemSizes from './ItemSizes';
 import ItemAvailability from './ItemAvailability';
 import ItemDescription from './ItemDescription';
 import ItemPerks from './ItemPerks';
@@ -16,8 +16,6 @@ type Props = {
   item: CatalogItem;
   variant: ItemVariant;
   onVariantChange: (id: string) => void;
-  selectedSize: string | null;
-  onSizeChange: (label: string) => void;
   offer: OfferType;
   onOfferChange: (offer: OfferType) => void;
 };
@@ -26,8 +24,6 @@ export default function ItemInfo({
   item,
   variant,
   onVariantChange,
-  selectedSize,
-  onSizeChange,
   offer,
   onOfferChange,
 }: Props) {
@@ -55,7 +51,7 @@ export default function ItemInfo({
         onChange={onVariantChange}
       />
 
-      <SizePicker item={item} selected={selectedSize} onChange={onSizeChange} />
+      <ItemSizes item={item} />
 
       <ItemAvailability item={item} />
 

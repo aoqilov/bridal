@@ -12,7 +12,7 @@ export const MOCK_DRESSES: Dress[] = [
     categoryId: 'wedding',
     subcategoryId: 'wedding-princess',
     tags: ['шлейф', 'корсет', 'блеск'],
-    name: 'Аврора',
+    name: 'Аврора dsfdsf fsdsfdf dsfdsfsdew eeeeew wwwww ssss',
     description:
       'Пышное платье с многослойной юбкой из фатина и расшитым корсетом. Длинный шлейф отстёгивается — удобно для танцев.',
     careInstructions: 'Только сухая химчистка. Хранить в чехле, не складывать корсет.',

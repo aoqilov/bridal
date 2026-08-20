@@ -46,6 +46,8 @@ export {
 export { primaryPrice, secondaryPrice, offerPrice, discountPercent } from './utils/price';
 export type { PriceView } from './utils/price';
 
+export { defaultVariant } from './utils/item';
+
 export {
   KIND_LABELS,
   OFFER_LABELS,

@@ -53,8 +53,7 @@ function ItemView({ item }: { item: CatalogItem }) {
   const favorite = useFavoritesStore();
   const isFavorite = favorite.ids.includes(item.id);
 
-  const { variant, size, offer, setVariantId, setSize, setOffer } =
-    useItemSelection(item);
+  const { variant, offer, setVariantId, setOffer } = useItemSelection(item);
   const gallery = useGallery(variant);
 
   const related = useMemo(() => getRelatedItems(item, MOCK_CATALOG, 6), [item]);
@@ -131,8 +130,6 @@ function ItemView({ item }: { item: CatalogItem }) {
           item={item}
           variant={variant}
           onVariantChange={setVariantId}
-          selectedSize={size}
-          onSizeChange={setSize}
           offer={offer}
           onOfferChange={setOffer}
         />

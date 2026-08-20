@@ -27,12 +27,21 @@
 
     --color-danger: #C4485B;
     --color-danger-soft: #FBE9EC;
+    --color-danger-fg: #FFFFFF;
 
     --color-success: #5B8C6E;
     --color-success-soft: #E7F1EA;
 
     --color-warning: #C9A227;
     --color-warning-soft: #FAF0D6;
+
+    /*
+     * Rasm ustidagi qoplama (`bg-overlay-*`) ustidagi matn.
+     * Qoplamaning o'zi qat'iy rangda — shuning uchun bu ikkisi ham
+     * mavzu bilan almashmaydi (dark rejimda `.dark` ichida qayta e'lon qilinmaydi).
+     */
+    --color-overlay-fg: #FFFFFF;
+    --color-overlay-fg-dark: #2B2320;
 
     /* Scroll polosasi — fonda deyarli ko'rinmaydigan darajada */
     --color-scrollbar: rgba(43, 35, 32, 0.10);
@@ -69,6 +78,8 @@
 
     --color-danger: #E06A7B;
     --color-danger-soft: #3D2027;
+    /* Dark rejimda danger yorug'roq — oq matn kontrasti yetmaydi, to'q matn qo'yamiz */
+    --color-danger-fg: #2B1216;
 
     --color-success: #7BB394;
     --color-success-soft: #1E3328;

@@ -6,6 +6,8 @@ export type ProfileTab = {
   value: string;
   icon: ReactNode;
   label: string;
+  /** Qatordagi element soni — yorliq yonida chipda ko'rsatiladi */
+  count?: number;
 };
 
 type Props<T extends string> = {
@@ -14,7 +16,7 @@ type Props<T extends string> = {
   onChange: (value: T) => void;
 };
 
-/** Instagram uslubidagi ikonkali tab'lar — faol tagida siljiydigan chiziq */
+/** Ikonka + yorliq + soni ko'rinishidagi tab'lar — faol tagida siljiydigan chiziq */
 export default function ProfileTabs<T extends string>({
   tabs,
   value,
@@ -30,14 +32,26 @@ export default function ProfileTabs<T extends string>({
             type="button"
             role="tab"
             aria-selected={active}
-            aria-label={tab.label}
             onClick={() => onChange(tab.value)}
             className={cn(
-              'relative flex flex-1 items-center justify-center py-2.5 transition-colors',
+              'relative flex min-w-0 flex-1 items-center justify-center gap-1.5 py-2.5 transition-colors',
               active ? 'text-foreground' : 'text-subtle hover:text-muted',
             )}
           >
-            {tab.icon}
+            <span className="shrink-0">{tab.icon}</span>
+
+            <span className="truncate text-[11px] font-medium">{tab.label}</span>
+
+            {typeof tab.count === 'number' && (
+              <span
+                className={cn(
+                  'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none',
+                  active ? 'bg-primary text-primary-fg' : 'bg-surface-2 text-muted',
+                )}
+              >
+                {tab.count}
+              </span>
+            )}
 
             {active && (
               <motion.span

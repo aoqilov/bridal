@@ -32,6 +32,13 @@ export default {
         danger: {
           DEFAULT: 'var(--color-danger)',
           soft: 'var(--color-danger-soft)',
+          fg: 'var(--color-danger-fg)',
+        },
+
+        // Rasm ustidagi `bg-overlay-*` qoplamalari uchun matn ranglari
+        overlay: {
+          fg: 'var(--color-overlay-fg)',
+          'fg-dark': 'var(--color-overlay-fg-dark)',
         },
         success: {
           DEFAULT: 'var(--color-success)',

@@ -57,16 +57,25 @@ export default function FeatureProfile() {
   const initial = displayName[0]?.toUpperCase() ?? 'Г';
   const bio = [user?.city, user?.phone].filter(Boolean).join(' · ');
 
-  const stats: { id: Tab; value: number; label: string }[] = [
-    { id: 'favorites', value: favorites.length, label: 'избранных' },
-    { id: 'recent', value: recent.length, label: 'просмотров' },
-    { id: 'reviews', value: reviews.length, label: 'отзывов' },
-  ];
-
   const tabs: (ProfileTab & { value: Tab })[] = [
-    { value: 'favorites', icon: <MdGridOn size={22} />, label: 'Избранное' },
-    { value: 'recent', icon: <MdHistory size={22} />, label: 'Просмотренные' },
-    { value: 'reviews', icon: <MdStar size={22} />, label: 'Мои отзывы' },
+    {
+      value: 'favorites',
+      icon: <MdGridOn size={18} />,
+      label: 'Избранное',
+      count: favorites.length,
+    },
+    {
+      value: 'recent',
+      icon: <MdHistory size={18} />,
+      label: 'Просмотры',
+      count: recent.length,
+    },
+    {
+      value: 'reviews',
+      icon: <MdStar size={18} />,
+      label: 'Отзывы',
+      count: reviews.length,
+    },
   ];
 
   const shareProfile = async () => {
@@ -112,8 +121,8 @@ export default function FeatureProfile() {
         }
       />
 
-      {/* Avatar chapda, sonlar o'ngda */}
-      <section className="flex items-center gap-5 px-4 pt-4">
+      {/* Avatar chapda, ism va bio o'ngda — sonlar tab qatorida */}
+      <section className="flex items-center gap-4 px-4 pt-4">
         <span className="grid h-[86px] w-[86px] shrink-0 place-items-center overflow-hidden rounded-full bg-brand-gradient p-[3px]">
           {user?.avatar ? (
             <img
@@ -128,31 +137,18 @@ export default function FeatureProfile() {
           )}
         </span>
 
-        <div className="flex min-w-0 flex-1 justify-around">
-          {stats.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => setTab(s.id)}
-              className="flex flex-col items-center px-1 transition-opacity hover:opacity-70"
-            >
-              <span className="text-base font-bold text-foreground">{s.value}</span>
-              <span className="text-[11px] text-muted">{s.label}</span>
-            </button>
-          ))}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-base font-semibold text-foreground">
+            {displayName}
+          </p>
+          <p className="mt-0.5 text-xs leading-relaxed text-muted">
+            {bio || 'Заполните профиль, чтобы оформлять заказы быстрее'}
+          </p>
         </div>
       </section>
 
-      {/* Ism va bio */}
-      <section className="px-4 pt-3">
-        <p className="text-sm font-semibold text-foreground">{displayName}</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-muted">
-          {bio || 'Заполните профиль, чтобы оформлять заказы быстрее'}
-        </p>
-      </section>
-
       {/* Tugmalar qatori */}
-      <section className="flex gap-2 px-4 pt-3">
+      <section className="flex gap-2 px-4 pt-4">
         <Link
           to={ROUTES.PROFILE_EDIT}
           className="flex-1 rounded-lg bg-surface-2 py-1.5 text-center text-xs font-semibold text-foreground transition hover:bg-surface"

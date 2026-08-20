@@ -6,11 +6,13 @@ import SizeChartSheet from './SizeChartSheet';
 
 type Props = {
   item: CatalogItem;
-  selected: string | null;
-  onChange: (label: string) => void;
 };
 
-export default function SizePicker({ item, selected, onChange }: Props) {
+/**
+ * O'lchamlar — faqat ko'rsatish uchun (readonly).
+ * Mijoz qaysi o'lchamlar borligini ko'radi, aniq o'lcham примерка paytida tanlanadi.
+ */
+export default function ItemSizes({ item }: Props) {
   const [chartOpen, setChartOpen] = useState(false);
 
   // Ko'ylak — RU o'lchamlar (mavjudligi bilan), aksessuar — oddiy yorliqlar
@@ -26,11 +28,13 @@ export default function SizePicker({ item, selected, onChange }: Props) {
     ) : null;
   }
 
+  const hasAvailable = options.some((o) => o.available);
+
   return (
     <div>
       <div className="mb-2.5 flex items-center justify-between gap-3">
         <p className="text-sm text-muted">
-          Размер: <span className="font-semibold text-foreground">{selected ?? '—'}</span>
+          {hasAvailable ? 'Размеры в наличии' : 'Размеров сейчас нет в наличии'}
         </p>
         {isDress(item) && (
           <button
@@ -44,34 +48,24 @@ export default function SizePicker({ item, selected, onChange }: Props) {
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {options.map((size) => {
-          const active = selected === size.label;
-          return (
-            <button
-              key={size.label}
-              type="button"
-              disabled={!size.available}
-              onClick={() => onChange(size.label)}
-              title={size.available ? undefined : 'Нет в наличии'}
-              className={cn(
-                'min-w-[3.5rem] rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                !size.available &&
-                  'cursor-not-allowed border-border-subtle bg-surface-2 text-subtle line-through',
-                size.available &&
-                  active &&
-                  'border-primary bg-primary text-primary-fg shadow-card',
-                size.available &&
-                  !active &&
-                  'border-border bg-surface text-foreground hover:border-primary',
-              )}
-            >
-              {size.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* Bitta umumiy ramka, ichida bo'linmalar — o'lcham ko'p bo'lsa gorizontal scroll */}
+      <ul className="subtle-scrollbar flex overflow-x-auto rounded-xl border border-border bg-surface">
+        {options.map((size, index) => (
+          <li
+            key={size.label}
+            title={size.available ? undefined : 'Нет в наличии'}
+            className={cn(
+              'min-w-[4.25rem] flex-1 whitespace-nowrap px-2.5 py-2.5 text-center text-sm font-medium',
+              index > 0 && 'border-l border-border-subtle',
+              size.available
+                ? 'text-foreground'
+                : 'bg-surface-2 text-subtle line-through',
+            )}
+          >
+            {size.label}
+          </li>
+        ))}
+      </ul>
 
       {isDress(item) && (
         <p className="mt-2.5 text-xs leading-relaxed text-muted">

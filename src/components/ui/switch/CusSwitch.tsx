@@ -33,10 +33,15 @@ export default function CusSwitch({
         className,
       )}
     >
+      {/*
+        `left` ni aniq berish shart: brauzer <button> ichidagi matnni markazlashtiradi,
+        `left: auto` da esa absolyut element o'sha markazdan boshlanadi va knob
+        yo'lakchadan chiqib ketadi. Yo'lak 44px, knob 20px, chetdan 2px joy.
+      */}
       <span
         className={cn(
-          'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-card transition-transform',
-          checked ? 'translate-x-[1.375rem]' : 'translate-x-0.5',
+          'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-card transition-transform',
+          checked ? 'translate-x-5' : 'translate-x-0',
         )}
       />
     </button>

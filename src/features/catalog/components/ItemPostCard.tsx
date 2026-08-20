@@ -5,7 +5,10 @@ import { itemPath } from '@/constants/routes';
 import type { CatalogItem } from '../helper.types.catalog';
 import { isDress } from '../helper.types.catalog';
 import { ACCESSORY_TYPE_LABELS, SILHOUETTE_LABELS } from '../utils/labels';
-import { discountPercent, primaryPrice } from '../utils/price';
+import { defaultVariant } from '../utils/item';
+import { primaryPrice } from '../utils/price';
+import ItemBadges from './ItemBadges';
+import ItemColorDots from './ItemColorDots';
 
 type Props = {
   item: CatalogItem;
@@ -13,22 +16,12 @@ type Props = {
 };
 
 export default function ItemPostCard({ item, className }: Props) {
-  const variant =
-    item.variants.find((v) => v.id === item.defaultVariantId) ?? item.variants[0];
-
+  const variant = defaultVariant(item);
   const price = primaryPrice(item);
-  const discount = discountPercent(item);
 
   const typeLabel = isDress(item)
     ? SILHOUETTE_LABELS[item.silhouette]
     : ACCESSORY_TYPE_LABELS[item.accessoryType];
-
-  const sizeText = isDress(item)
-    ? item.sizes
-        .filter((s) => s.available)
-        .map((s) => s.label)
-        .join(' · ')
-    : (item.sizeLabels?.join(' · ') ?? (item.oneSize ? 'Один размер' : ''));
 
   return (
     <article className={cn('border-b border-border-subtle pb-4', className)}>
@@ -47,7 +40,6 @@ export default function ItemPostCard({ item, className }: Props) {
               </span>
             )}
           </p>
-          {sizeText && <p className="line-clamp-1 text-[11px] text-muted">{sizeText}</p>}
         </div>
       </header>
 
@@ -59,65 +51,46 @@ export default function ItemPostCard({ item, className }: Props) {
           src={variant.mainImage}
           alt={item.name}
           loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover"
         />
 
-        <div className="absolute left-3 top-3 flex flex-col gap-1">
-          {item.isNew && (
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold uppercase text-accent-fg">
-              Новинка
-            </span>
-          )}
-          {discount > 0 && (
-            <span className="rounded-full bg-danger px-2 py-0.5 text-[11px] font-semibold text-white">
-              −{discount}%
-            </span>
-          )}
-          {item.isPopular && !item.isNew && (
-            <span className="rounded-full bg-overlay-dark px-2 py-0.5 text-[11px] font-semibold text-white">
-              Хит
-            </span>
-          )}
-        </div>
+        <ItemBadges item={item} className="absolute left-3 top-3" />
+
+        <ItemColorDots
+          variants={item.variants}
+          size="md"
+          className="absolute bottom-3 left-3"
+        />
       </Link>
 
       <div className="space-y-1.5 px-4 pt-3">
+        {/* Chapda taklif turi, o'ng chekkada narx */}
         {price && (
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline justify-between gap-3">
             <span className="text-[11px] uppercase tracking-wide text-muted">
               {price.label}
             </span>
-            <span className="text-base font-semibold text-foreground">
-              {formatCurrency(price.amount)}{' '}
-              <span className="text-xs font-normal text-muted">сум</span>
-            </span>
-            {price.old && (
-              <span className="text-xs text-muted line-through">
-                {formatCurrency(price.old)}
+            <span className="flex items-baseline gap-2">
+              <span className="text-base font-semibold text-foreground">
+                {formatCurrency(price.amount)}{' '}
+                <span className="text-xs font-normal text-muted">сум</span>
               </span>
-            )}
+              {price.old && (
+                <span className="text-xs text-muted line-through">
+                  {formatCurrency(price.old)}
+                </span>
+              )}
+            </span>
           </div>
         )}
 
-        <p className="text-sm text-foreground">
-          <span className="font-semibold">{item.name}</span>
-          {item.description && (
-            <span className="text-foreground/80"> — {item.description}</span>
-          )}
+        <p className="font-serif text-[19px] font-semibold leading-snug text-foreground">
+          {item.name}
         </p>
 
-        {item.variants.length > 1 && (
-          <div className="flex items-center gap-1.5 pt-1">
-            <span className="text-[11px] text-muted">Цвета:</span>
-            {item.variants.map((v) => (
-              <span
-                key={v.id}
-                className="h-4 w-4 rounded-full border border-border"
-                style={{ backgroundColor: v.colorHex }}
-                title={v.colorName}
-              />
-            ))}
-          </div>
+        {item.description && (
+          <p className="text-[13px] leading-relaxed text-muted">{item.description}</p>
         )}
       </div>
     </article>
