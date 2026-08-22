@@ -48,3 +48,33 @@ export function daysFromNow(n: number): string {
   d.setDate(d.getDate() + n);
   return d.toISOString().slice(0, 10);
 }
+
+// ================================================================
+// Real rasmlar — public/assets/ ichidagi lokal fayllar
+// (yuqoridagi `img`/`variant` — picsum placeholder, real data'da ishlatilmaydi)
+// ================================================================
+
+/** public/assets/ ichidagi faylga yo'l: photo('w-sweetheart-1-1.jpg') */
+export const photo = (file: string): string => `/assets/${file}`;
+
+/**
+ * Ketma-ket nomlangan fayllar: photoSet('aurora-ivory', 4)
+ * → aurora-ivory-1.webp … aurora-ivory-4.webp
+ */
+export function photoSet(base: string, count: number, ext = 'webp'): string[] {
+  return Array.from({ length: count }, (_, i) => photo(`${base}-${i + 1}.${ext}`));
+}
+
+/**
+ * Rang varianti — lokal fayllar bilan. Birinchi rasm asosiy (kartochkada ko'rinadi).
+ * photoVariant('d-amira-ivory', 'Айвори', '#F5EFE6', photoSet('amira-ivory', 4))
+ */
+export function photoVariant(
+  id: string,
+  colorName: string,
+  colorHex: string,
+  files: string[],
+): ItemVariant {
+  const [main, ...rest] = files;
+  return { id, colorName, colorHex, mainImage: main, otherImages: rest };
+}

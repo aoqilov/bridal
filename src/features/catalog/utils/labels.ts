@@ -38,8 +38,10 @@ export const SILHOUETTE_LABELS: Record<Silhouette, string> = {
 export const NECKLINE_LABELS: Record<Neckline, string> = {
   sweetheart: 'Сердечко',
   'v-neck': 'V-образный',
+  square: 'Квадратный',
   boat: 'Лодочка',
   'off-shoulder': 'Открытые плечи',
+  'one-shoulder': 'На одно плечо',
   closed: 'Закрытый',
   halter: 'Халтер',
 };
@@ -73,8 +75,11 @@ export const SHADE_LABELS: Record<Shade, string> = {
 
 export const ACCESSORY_TYPE_LABELS: Record<AccessoryType, string> = {
   veil: 'Фата',
-  tiara: 'Диадема',
+  'face-veil': 'Вуалетка',
+  tiara: 'Корона',
+  hairpin: 'Заколка',
   jewelry: 'Украшения',
+  bracelet: 'Браслет',
   gloves: 'Перчатки',
   bolero: 'Болеро',
   shoes: 'Обувь',

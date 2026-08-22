@@ -1,4 +1,6 @@
 import type { Category } from './helper.types.catalog';
+import { REAL_CATEGORIES } from './mockdata.categories.real';
+import { USE_REAL_DATA } from './mockdata.real';
 
 // Placeholder rasm helper (keyinchalik CDN URL bilan almashtiriladi)
 const img = (seed: string, w = 800, h = 800): string =>
@@ -10,7 +12,7 @@ const avatar = (seed: string): string => img(seed, 240, 240);
 /** O'ng gridning kvadrat kartochkasi */
 const tile = (seed: string): string => img(seed, 600, 600);
 
-export const MOCK_CATEGORIES: Category[] = [
+const PLACEHOLDER_CATEGORIES: Category[] = [
   {
     id: 'wedding',
     slug: 'wedding',
@@ -176,3 +178,12 @@ export const MOCK_CATEGORIES: Category[] = [
     ],
   },
 ];
+
+/**
+ * Katalogda ko'rinadigan kategoriyalar.
+ * `USE_REAL_DATA = true` — salonning haqiqiy bo'limlari (mockdata.categories.real.ts),
+ * aks holda picsum placeholder daraxti.
+ */
+export const MOCK_CATEGORIES: Category[] = USE_REAL_DATA
+  ? REAL_CATEGORIES
+  : PLACEHOLDER_CATEGORIES;

@@ -24,8 +24,10 @@ export type Silhouette = (typeof SILHOUETTES)[number];
 export const NECKLINES = [
   'sweetheart',
   'v-neck',
+  'square',
   'boat',
   'off-shoulder',
+  'one-shoulder',
   'closed',
   'halter',
 ] as const;
@@ -54,8 +56,11 @@ export type Shade = (typeof SHADES)[number];
 /** Aksessuar turi */
 export const ACCESSORY_TYPES = [
   'veil',
+  'face-veil',
   'tiara',
+  'hairpin',
   'jewelry',
+  'bracelet',
   'gloves',
   'bolero',
   'shoes',

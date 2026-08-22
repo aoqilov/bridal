@@ -9,15 +9,18 @@ import { defaultVariant } from '../utils/item';
 import { primaryPrice } from '../utils/price';
 import ItemBadges from './ItemBadges';
 import ItemColorDots from './ItemColorDots';
+import ItemCollage from './ItemCollage';
 
 type Props = {
   item: CatalogItem;
+  /** Rasm 3 tadan boshlab Telegram uslubidagi kollaj bo'lib chiqadi (/new lentasi) */
+  gallery?: boolean;
   className?: string;
 };
 
-export default function ItemPostCard({ item, className }: Props) {
-  const variant = defaultVariant(item);
+export default function ItemPostCard({ item, gallery = false, className }: Props) {
   const price = primaryPrice(item);
+  const variant = defaultVariant(item);
 
   const typeLabel = isDress(item)
     ? SILHOUETTE_LABELS[item.silhouette]
@@ -43,26 +46,33 @@ export default function ItemPostCard({ item, className }: Props) {
         </div>
       </header>
 
-      <Link
-        to={itemPath(item.slug)}
-        className="relative block aspect-square overflow-hidden bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-      >
-        <img
-          src={variant.mainImage}
-          alt={item.name}
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full object-cover"
-        />
+      <div className="relative">
+        {gallery ? (
+          <ItemCollage item={item} aspect="square" linked />
+        ) : (
+          <Link
+            to={itemPath(item.slug)}
+            className="block aspect-square overflow-hidden bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+          >
+            <img
+              src={variant.mainImage}
+              alt={item.name}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          </Link>
+        )}
 
-        <ItemBadges item={item} className="absolute left-3 top-3" />
+        {/* Overlaylar rasm ustida suzadi — bosish ostidagi havolaga o'tsin */}
+        <ItemBadges item={item} className="pointer-events-none absolute left-3 top-3" />
 
         <ItemColorDots
           variants={item.variants}
           size="md"
-          className="absolute bottom-3 left-3"
+          className="pointer-events-none absolute bottom-3 left-3"
         />
-      </Link>
+      </div>
 
       <div className="space-y-1.5 px-4 pt-3">
         {/* Chapda taklif turi, o'ng chekkada narx */}

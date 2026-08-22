@@ -8,7 +8,6 @@ import ItemReviews from './ItemReviews';
 import ItemPricing from './ItemPricing';
 import VariantPicker from './VariantPicker';
 import ItemSizes from './ItemSizes';
-import ItemAvailability from './ItemAvailability';
 import ItemDescription from './ItemDescription';
 import ItemPerks from './ItemPerks';
 
@@ -33,6 +32,13 @@ export default function ItemInfo({
         <h1 className="font-serif text-[26px] font-semibold leading-tight text-foreground">
           {item.name}
         </h1>
+            <VariantPicker
+        variants={item.variants}
+        selected={variant}
+        onChange={onVariantChange}
+      />
+      <ItemSizes item={item} />
+
 
         {isDress(item) && item.isMaternityFriendly && (
           <span className="inline-flex rounded-full bg-accent px-2.5 py-1 text-[11px] font-medium text-accent-fg">
@@ -40,20 +46,16 @@ export default function ItemInfo({
           </span>
         )}
 
-        <ItemReviews item={item} />
       </header>
 
       <ItemPricing item={item} offer={offer} onOfferChange={onOfferChange} />
+        <ItemReviews item={item} />
 
-      <VariantPicker
-        variants={item.variants}
-        selected={variant}
-        onChange={onVariantChange}
-      />
 
-      <ItemSizes item={item} />
+  
 
-      <ItemAvailability item={item} />
+
+      {/* <ItemAvailability item={item} /> */}
 
       {item.description && <ItemDescription text={item.description} />}
 

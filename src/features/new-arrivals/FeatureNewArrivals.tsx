@@ -46,7 +46,7 @@ function GroupBody({ items, view }: { items: CatalogItem[]; view: ViewMode }) {
     return (
       <div className="grid grid-cols-3 gap-0.5">
         {items.map((p) => (
-          <ItemThumb key={p.id} item={p} />
+          <ItemThumb key={p.id} item={p} gallery />
         ))}
       </div>
     );
@@ -55,7 +55,7 @@ function GroupBody({ items, view }: { items: CatalogItem[]; view: ViewMode }) {
     return (
       <div className="grid grid-cols-2 gap-3 px-4 pb-4">
         {items.map((p) => (
-          <ItemCard key={p.id} item={p} />
+          <ItemCard key={p.id} item={p} gallery />
         ))}
       </div>
     );
@@ -63,7 +63,7 @@ function GroupBody({ items, view }: { items: CatalogItem[]; view: ViewMode }) {
   return (
     <div className="divide-y divide-border-subtle">
       {items.map((p) => (
-        <ItemPostCard key={p.id} item={p} />
+        <ItemPostCard key={p.id} item={p} gallery />
       ))}
     </div>
   );

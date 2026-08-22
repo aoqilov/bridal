@@ -4,13 +4,16 @@ import { itemPath } from '@/constants/routes';
 import type { CatalogItem } from '../helper.types.catalog';
 import { defaultVariant } from '../utils/item';
 import ItemBadges from './ItemBadges';
+import ItemCollage from './ItemCollage';
 
 type Props = {
   item: CatalogItem;
+  /** Rasm 3 tadan ko'p bo'lsa Telegram uslubidagi kollaj chiqadi (/new lentasi) */
+  gallery?: boolean;
   className?: string;
 };
 
-export default function ItemThumb({ item, className }: Props) {
+export default function ItemThumb({ item, gallery = false, className }: Props) {
   const variant = defaultVariant(item);
 
   return (
@@ -24,13 +27,22 @@ export default function ItemThumb({ item, className }: Props) {
       )}
       aria-label={item.name}
     >
-      <img
-        src={variant.mainImage}
-        alt={item.name}
-        loading="lazy"
-        decoding="async"
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-      />
+      {gallery ? (
+        <ItemCollage
+          item={item}
+          size="sm"
+          aspect="fill"
+          imgClassName="transition-transform duration-300 group-hover:scale-105"
+        />
+      ) : (
+        <img
+          src={variant.mainImage}
+          alt={item.name}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      )}
 
       <ItemBadges item={item} size="sm" className="absolute left-1 top-1" />
 

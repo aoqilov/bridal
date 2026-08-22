@@ -7,13 +7,16 @@ import { defaultVariant } from '../utils/item';
 import { primaryPrice } from '../utils/price';
 import ItemBadges from './ItemBadges';
 import ItemColorDots from './ItemColorDots';
+import ItemCollage from './ItemCollage';
 
 type Props = {
   item: CatalogItem;
+  /** Rasm 3 tadan ko'p bo'lsa Telegram uslubidagi kollaj chiqadi (/new lentasi) */
+  gallery?: boolean;
   className?: string;
 };
 
-export default function ItemCard({ item, className }: Props) {
+export default function ItemCard({ item, gallery = false, className }: Props) {
   const variant = defaultVariant(item);
   const price = primaryPrice(item);
 
@@ -28,13 +31,21 @@ export default function ItemCard({ item, className }: Props) {
       )}
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-surface-2">
-        <img
-          src={variant.mainImage}
-          alt={item.name}
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        {gallery ? (
+          <ItemCollage
+            item={item}
+            aspect="fill"
+            imgClassName="transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <img
+            src={variant.mainImage}
+            alt={item.name}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        )}
 
         <ItemBadges item={item} className="absolute left-2 top-2" />
 

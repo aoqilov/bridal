@@ -47,6 +47,44 @@ export const ADDRESSES: AddressPoint[] = [
   },
 ];
 
+export type ContactPerson = {
+  id: string;
+  name: string;        // "Наргиза"
+  role: string;        // "Владелица салона"
+  phone: string;
+  telegram?: string;   // username, "@" siz
+  hours?: string;
+};
+
+/** Salon xodimlari / bo'limlar telefonlari — "Контакты" plitkasi uchun */
+export const CONTACTS: ContactPerson[] = [
+  {
+    id: 'owner',
+    name: 'Наргиза',
+    role: 'Владелица салона',
+    phone: '+998 90 000 00 00',
+    telegram: SALON_TELEGRAM,
+    hours: 'Пн–Вс · 10:00 – 20:00',
+  },
+  {
+    id: 'shop',
+    name: 'Салон · Мустакиллик',
+    role: 'Приём звонков и запись',
+    phone: '+998 71 200 00 78',
+    hours: 'Пн–Вс · 10:00 – 20:00',
+  },
+  {
+    id: 'atelier',
+    name: 'Дилноза',
+    role: 'Ателье · пошив на заказ',
+    phone: '+998 90 000 00 02',
+    hours: 'Пн–Пт · 10:00 – 18:00',
+  },
+];
+
+/** Asosiy kontakt — plitkada ko'rsatiladi */
+export const PRIMARY_CONTACT = CONTACTS[0];
+
 // Yandex map widget URL — iframe uchun (marker bilan)
 export function buildYandexMapWidgetUrl(
   lat: number,

@@ -32,6 +32,8 @@ export {
 } from './helper.types.catalog';
 
 export { MOCK_CATEGORIES } from './mockdata.categories';
+export { REAL_CATEGORIES, PREFIX_MAP } from './mockdata.categories.real';
+export type { PrefixInfo } from './mockdata.categories.real';
 export { MOCK_DRESSES } from './mockdata.dresses';
 export { MOCK_ACCESSORIES } from './mockdata.accessories';
 export { MOCK_CATALOG } from './mockdata.catalog';
