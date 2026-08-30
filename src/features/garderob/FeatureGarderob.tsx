@@ -14,7 +14,7 @@ import WalletPanel from './components/WalletPanel';
 type Step = 'generation' | 'images' | 'payment';
 
 const STEPS: SegmentItem<Step>[] = [
-  { value: 'generation', label: 'Генерация' },
+  { value: 'generation', label: 'Генерация1' },
   { value: 'images', label: 'Изображения' },
   { value: 'payment', label: 'Оплата' },
 ];
