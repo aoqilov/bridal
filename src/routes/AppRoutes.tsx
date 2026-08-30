@@ -8,8 +8,7 @@ const ItemPage = lazy(() => import('@/pages/item'));
 const NewArrivalsPage = lazy(() => import('@/pages/new-arrivals'));
 const BookingPage = lazy(() => import('@/pages/booking'));
 const FavoritesPage = lazy(() => import('@/pages/favorites'));
-const ReviewPage = lazy(() => import('@/pages/review'));
-const ReviewDetailPage = lazy(() => import('@/pages/review/detail'));
+const GarderobPage = lazy(() => import('@/pages/garderob'));
 const ProfilePage = lazy(() => import('@/pages/profile'));
 const ProfileSettingsPage = lazy(() => import('@/pages/profile/settings'));
 const ProfileEditPage = lazy(() => import('@/pages/profile/edit'));
@@ -37,8 +36,7 @@ export default function AppRoutes() {
         <Route path={ROUTES.NEW_ARRIVALS} element={<NewArrivalsPage />} />
         <Route path={ROUTES.BOOKING} element={<BookingPage />} />
         <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
-        <Route path={ROUTES.REVIEW} element={<ReviewPage />} />
-        <Route path={ROUTES.REVIEW_DETAIL} element={<ReviewDetailPage />} />
+        <Route path={ROUTES.GARDEROB} element={<GarderobPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.PROFILE_SETTINGS} element={<ProfileSettingsPage />} />
         <Route path={ROUTES.PROFILE_EDIT} element={<ProfileEditPage />} />

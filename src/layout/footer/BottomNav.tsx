@@ -2,8 +2,8 @@ import { NavLink } from "react-router-dom";
 import type { IconType } from "react-icons";
 import { CATALOG_CATEGORIES_PATH, ROUTES } from "@/constants/routes";
 import { GoHome } from "react-icons/go";
-import { LuStar, LuSearch } from "react-icons/lu";
-import { PiMegaphoneBold } from "react-icons/pi";
+import { LuSearch } from "react-icons/lu";
+import { PiCoatHangerBold, PiMegaphoneBold } from "react-icons/pi";
 import { TbUserSquareRounded } from "react-icons/tb";
 
 type NavItem = {
@@ -23,7 +23,7 @@ const NAV_ITEMS: NavItem[] = [
     Icon: PiMegaphoneBold,
     flip: true,
   },
-  { to: ROUTES.REVIEW, label: "Отзывы", Icon: LuStar },
+  { to: ROUTES.GARDEROB, label: "Гардероб", Icon: PiCoatHangerBold },
   { to: ROUTES.PROFILE, label: "Профиль", Icon: TbUserSquareRounded },
 ];
 

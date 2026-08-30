@@ -14,11 +14,6 @@ const avatar = (seed: string): string =>
  */
 export const CURRENT_USER_ID = 'me';
 
-/** Sharhni id bo'yicha topish — detal sahifasi uchun */
-export function getReviewById(id: string): Review | null {
-  return MOCK_REVIEWS.find((r) => r.id === id) ?? null;
-}
-
 // ---- Mijozlar sharhlari (kelin ko'ylaklari va aksessuarlar) ----
 export const MOCK_REVIEWS: Review[] = [
   {

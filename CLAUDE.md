@@ -55,7 +55,8 @@ src/
 | `new-arrivals/` | Yangi kelganlar lentasi (sana bo'yicha guruhlangan) |
 | `news/` | Salon maqolalari (ro'yxat + detal) |
 | `promotions/` | Aksiyalar (ro'yxat + detal) |
-| `review/` | Mijozlar sharhlari |
+| `review/` | Sharh ma'lumoti va komponentlari (alohida sahifasi yo'q — tovar sahifasi va profil ishlatadi) |
+| `garderob/` | Гардероб bo'limi (bottom nav) — UI qurilmoqda |
 | `home/`, `profile/`, `preview/` | Bosh sahifa, profil, UI kit demo |
 
 ## Domen modeli (`features/catalog/helper.types.catalog.ts`)
@@ -89,6 +90,9 @@ src/
 - `useFavoritesStore` (`bridal-favorites`)
 - `useRecentlyViewedStore` (`bridal-recent`)
 - `useUserStore` (`bridal-user`), `useThemeStore` (`bridal-theme`)
+- `useFacesStore` (`bridal-faces`) — garderob uchun yuklangan yuz suratlari (`createPhotoStore`)
+- `useWardrobeStore` (`bridal-wardrobe`) — sevimlilardan garderobga olingan tovarlar (`MAX_PICKED`), model sozlamalari va tayyor generatsiya rasmlari
+- `useWalletStore` (`bridal-wallet`) — generatsiya uchun hamyon: balans, tranzaksiyalar, bepul birinchi generatsiya. Narxlar — `constants/pricing.ts`
 
 Yangi global state kerak bo'lsa: `use<Name>Store.ts` yarat, `persist({ name: 'bridal-<name>' })` ishlat, barrel'ga qo'sh.
 

@@ -5,8 +5,7 @@ export const ROUTES = {
   NEW_ARRIVALS: '/new',
   BOOKING: '/booking',
   FAVORITES: '/favorites',
-  REVIEW: '/review',
-  REVIEW_DETAIL: '/review/:id',
+  GARDEROB: '/garderob',
   PROFILE: '/profile',
   PROFILE_SETTINGS: '/profile/settings',
   PROFILE_EDIT: '/profile/edit',
@@ -24,17 +23,20 @@ export function itemPath(slug: string): string {
 /** Katalogni "Категории" ko'rinishida ochish (param — `features/catalog/hooks/useViewMode.ts`) */
 export const CATALOG_CATEGORIES_PATH = `${ROUTES.CATALOG}?view=categories`;
 
-/** Sharh detali — rasmlar galereyasi va belgilangan tovar */
-export function reviewPath(id: string): string {
-  return `/review/${id}`;
-}
-
 export function newsPath(slug: string): string {
   return `/news/${slug}`;
 }
 
 export function promotionPath(slug: string): string {
   return `/promotions/${slug}`;
+}
+
+/**
+ * Profilni "garderobga tanlash" rejimida ochish — "Избранное" tab'i, berilgan
+ * bo'lim va ko'p tanlash (`features/profile/FeatureProfile.tsx`).
+ */
+export function profilePickPath(category: string): string {
+  return `${ROUTES.PROFILE}?pick=${encodeURIComponent(category)}`;
 }
 
 /** Bron sahifasi — tanlangan tovar bilan ochish uchun */

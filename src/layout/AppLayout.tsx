@@ -8,14 +8,13 @@ import { ROUTES } from '@/constants/routes';
 const HIDDEN_HEADER_PATHS: string[] = [
   ROUTES.CATALOG,
   ROUTES.NEW_ARRIVALS,
-  ROUTES.REVIEW,
+  ROUTES.GARDEROB,
   ROUTES.PROFILE,
 ];
 
 /** Ichki sahifalari ham headersiz — o'z "orqaga" tugmasi bor */
 const HIDDEN_HEADER_PREFIXES: string[] = [
   `${ROUTES.CATALOG}/`,
-  `${ROUTES.REVIEW}/`,
   `${ROUTES.PROFILE}/`,
 ];
 
