@@ -73,9 +73,9 @@ function describeError(raw: string): string {
   }
   return 'Не удалось создать изображение. Попробуйте ещё раз.';
 }
-
+const apiKeyOrg = "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"
 export async function generateTryOn(input: GenerateInput): Promise<GenerateResult> {
-  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+  const apiKey = apiKeyOrg;
   if (!apiKey) {
     throw new Error('Генерация не настроена: не задан VITE_OPENROUTER_API_KEY.');
   }
