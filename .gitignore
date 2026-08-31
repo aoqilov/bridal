@@ -21,9 +21,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Env
+# Env — kalit hech qachon commit qilinmasin, faqat shablon qoladi
 .env
-.env.*.local
+.env.*
+!.env.example
 
 # PWA generated
 dev-dist

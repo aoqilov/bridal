@@ -10,14 +10,43 @@ import {
 } from '@/constants/setupsModel';
 
 /**
+ * Sozlama guruhlarining o'zi — o'ramchisiz.
+ * Akkordeon ichida ham (`ModelSetup`), sheet ichida ham (`ModelSetupSheet`)
+ * shu bir xil ro'yxat ko'rsatiladi.
+ */
+export function ModelSetupGroups() {
+  const model = useWardrobeStore((s) => s.model);
+  const setModelOption = useWardrobeStore((s) => s.setModelOption);
+
+  return (
+    <div className="space-y-4">
+      {MODEL_GROUPS.map((group) => (
+        <Group
+          key={group.key}
+          group={group}
+          value={model[group.key] ?? null}
+          onSelect={(value) => setModelOption(group.key, value)}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Nechta guruh tanlangani — sarlavhadagi "4 из 4" uchun */
+export function useModelChosenCount(): number {
+  const model = useWardrobeStore((s) => s.model);
+  return MODEL_GROUPS.filter((group) => model[group.key]).length;
+}
+
+/** Jami guruhlar soni */
+export const MODEL_GROUP_COUNT = MODEL_GROUPS.length;
+
+/**
  * "Настройка модели" — примерка modelining bo'yi, gavdasi, pozasi va sochi.
  * Tanlov darrov saqlanadi (`useWardrobeStore.model`), alohida tugma kerak emas.
  */
 export default function ModelSetup() {
-  const model = useWardrobeStore((s) => s.model);
-  const setModelOption = useWardrobeStore((s) => s.setModelOption);
-
-  const chosen = MODEL_GROUPS.filter((group) => model[group.key]).length;
+  const chosen = useModelChosenCount();
 
   return (
     <section aria-label="Настройка модели" className="w-full pb-6 pt-4">
@@ -33,18 +62,7 @@ export default function ModelSetup() {
               chosen > 0
                 ? `Настройка модели · ${chosen} из ${MODEL_GROUPS.length}`
                 : 'Настройка модели',
-            content: (
-              <div className="space-y-4">
-                {MODEL_GROUPS.map((group) => (
-                  <Group
-                    key={group.key}
-                    group={group}
-                    value={model[group.key] ?? null}
-                    onSelect={(value) => setModelOption(group.key, value)}
-                  />
-                ))}
-              </div>
-            ),
+            content: <ModelSetupGroups />,
           },
         ]}
       />

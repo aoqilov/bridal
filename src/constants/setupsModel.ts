@@ -233,9 +233,9 @@ Return ONLY valid JSON.
  * Yangi poza qo'shilsa shu yerga ham nom yoziladi.
  */
 const POSE_TITLES: Record<string, { label: string; hint?: string }> = {
-  pose_01: { label: 'Рука у лица', hint: 'ноги скрещены' },
-  pose_02: { label: 'Модельная стойка', hint: 'поворот корпуса' },
-  pose_03: { label: 'Руки скрещены', hint: 'прямая стойка' },
+  pose_01: { label: 'Модельная стойка', hint: 'руки опущены' },
+  pose_02: { label: 'Рука у плеча', hint: 'поворот корпуса' },
+  pose_03: { label: 'Руки сложены', hint: 'на уровне талии' },
 };
 
 /** Poza variantlari `MODEL_POSE` dan tuziladi — rasm va id o'sha yerdan keladi */
@@ -295,12 +295,45 @@ export const MODEL_GROUPS: ModelGroup[] = [
   {
     key: 'hair',
     title: 'Причёска',
+    // Rasmlar `hair-N.png` — generatsiyaga ham referens bo'lib ketadi.
+    // Yangi variant qo'shsangiz `prompt/modelOptions.ts` dagi `HAIR` ga ham qator qo'shing.
     options: [
-      { value: 'classic', label: 'Собранные', hint: 'классические' },
-      { value: 'loose', label: 'Распущенные' },
-      { value: 'top-bun', label: 'Верхний пучок' },
-      { value: 'low-bun', label: 'Нижний пучок' },
-      { value: 'curls', label: 'Локоны' },
+      {
+        value: 'low-bun',
+        label: 'Гладкий пучок',
+        hint: 'низкий, у шеи',
+        image: '/assets/setup/hair-1.png',
+      },
+      {
+        value: 'half-up',
+        label: 'Полураспущенные',
+        hint: 'верх собран',
+        image: '/assets/setup/hair-2.png',
+      },
+      {
+        value: 'messy-bun',
+        label: 'Мягкий пучок',
+        hint: 'пряди у лица',
+        image: '/assets/setup/hair-3.png',
+      },
+      {
+        value: 'braid',
+        label: 'Коса',
+        hint: 'низкая, мягкая',
+        image: '/assets/setup/hair-4.png',
+      },
+      {
+        value: 'braided-crown',
+        label: 'Коса-ободок',
+        hint: 'вокруг головы',
+        image: '/assets/setup/hair-5.png',
+      },
+      {
+        value: 'ponytail',
+        label: 'Высокий хвост',
+        hint: 'волнистый',
+        image: '/assets/setup/hair-6.png',
+      },
     ],
   },
 ];

@@ -50,7 +50,7 @@ export default function FeatureProfile() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
 
-  // `/profile?pick=dress` — garderob uchun tanlash rejimi (`OutfitStrip` dagi "+")
+  // `/profile?pick=dress` — garderob uchun tanlash rejimi (`OutfitPickRow` dagi "+")
   const pick = params.get('pick');
   const pickMode = isOutfitCategory(pick);
 

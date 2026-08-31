@@ -11,10 +11,8 @@ import {
   useWardrobeStore,
 } from '@/store/zustand';
 import { MOCK_CATALOG, getItemById, defaultVariant } from '@/features/catalog';
+import { generateTryOn } from '../api/generateTryOn';
 import GeneratingModal from './GeneratingModal';
-
-/** Kutish vaqti — backend ulanganda o'rniga haqiqiy so'rov keladi */
-const GENERATION_MS = 20_000;
 
 type Props = {
   /** Rasm tayyor bo'lgach chaqiriladi — "Изображения" bo'limiga o'tish uchun */
@@ -23,35 +21,57 @@ type Props = {
   onNeedTopUp: () => void;
 };
 
+/** Katalogdagi tovarning rasm(lar)i — tanlanmagan bo'lsa bo'sh ro'yxat */
+function itemImages(id: string | null | undefined): string[] {
+  const item = id ? getItemById(id, MOCK_CATALOG) : null;
+  if (!item) return [];
+  const variant = defaultVariant(item);
+  return [variant.mainImage, ...variant.otherImages].filter(Boolean);
+}
+
 /**
  * "Генерация" bo'limining pastki paneli — образ yig'ilgach shu tugma bosiladi.
  * Birinchi generatsiya bepul, keyingilari hamyondan yechiladi.
- * Hozircha natija sifatida tanlangan ko'ylak rasmi saqlanadi (backend yo'q).
+ *
+ * Pul so'rovdan oldin yechiladi (generatsiya davomida balans o'zgarmasin), xato
+ * bo'lsa qaytariladi — foydalanuvchi rasm olmagan holda pul to'lab qolmasligi kerak.
  */
 export default function GenerateBar({ onDone, onNeedTopUp }: Props) {
-  const faceId = useFacesStore((s) => s.selected[NO_CATEGORY]);
+  const faceImage = useFacesStore(
+    (s) => s.items.find((x) => x.id === s.selected[NO_CATEGORY])?.image ?? null,
+  );
   const dressId = useWardrobeStore((s) => s.selected.dress);
+  const veilId = useWardrobeStore((s) => s.selected.veil);
+  const jewelryId = useWardrobeStore((s) => s.selected.jewelry);
+  const model = useWardrobeStore((s) => s.model);
   const addGenerated = useWardrobeStore((s) => s.addGenerated);
 
   const balance = useWalletStore((s) => s.balance);
   const freeUsed = useWalletStore((s) => s.freeUsed);
   const spend = useWalletStore((s) => s.spend);
   const useFree = useWalletStore((s) => s.useFree);
+  const refundFree = useWalletStore((s) => s.refundFree);
+  const topUp = useWalletStore((s) => s.topUp);
 
   const { show } = useToast();
   const [busy, setBusy] = useState(false);
-  const timer = useRef<number>();
 
-  // Sahifa almashsa kutish taymeri osilib qolmasin
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  // Sahifa almashsa tugagan so'rov o'chirilgan komponentga tegmasin
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
 
-  const ready = Boolean(faceId && dressId);
+  const ready = Boolean(faceImage && dressId);
   const free = !freeUsed;
 
-  const start = () => {
-    if (!ready || busy) return;
+  const start = async () => {
+    if (!ready || busy || !faceImage) return;
 
-    // Pul avval yechiladi — generatsiya boshlangach balans o'zgarmasin
+    // Pul avval yechiladi — generatsiya davomida balans o'zgarmasin
     if (free) {
       useFree();
     } else if (!spend(GENERATION_PRICE, 'Генерация образа')) {
@@ -61,20 +81,40 @@ export default function GenerateBar({ onDone, onNeedTopUp }: Props) {
     }
 
     setBusy(true);
-    timer.current = window.setTimeout(() => {
-      const dress = dressId ? getItemById(dressId, MOCK_CATALOG) : null;
-      if (dress) addGenerated(defaultVariant(dress).mainImage);
-      setBusy(false);
+    try {
+      const result = await generateTryOn({
+        faceImage,
+        dressImages: itemImages(dressId),
+        veilImage: itemImages(veilId)[0] ?? null,
+        jewelryImage: itemImages(jewelryId)[0] ?? null,
+        model,
+      });
+
+      if (!alive.current) return;
+      addGenerated(result.image);
       onDone();
-    }, GENERATION_MS);
+    } catch (err) {
+      // Rasm chiqmadi — to'lov qaytariladi
+      if (free) refundFree();
+      else topUp(GENERATION_PRICE, 'Возврат за неудачную генерацию');
+
+      if (!alive.current) return;
+      show(
+        err instanceof Error ? err.message : 'Не удалось создать изображение',
+        'error',
+      );
+    } finally {
+      if (alive.current) setBusy(false);
+    }
   };
 
   return (
     <>
-      <div className="sticky bottom-0 z-[9] mt-auto border-t border-border-subtle bg-background/95 px-4 py-3 backdrop-blur">
+      {/* Joylashuvni ota-komponent belgilaydi — bu yerda faqat ichki bo'shliq */}
+      <div className="border-t border-border-subtle px-4 py-3">
         <button
           type="button"
-          onClick={start}
+          onClick={() => void start()}
           disabled={!ready || busy}
           className={cn(
             'flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition',

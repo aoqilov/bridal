@@ -56,7 +56,7 @@ src/
 | `news/` | Salon maqolalari (ro'yxat + detal) |
 | `promotions/` | Aksiyalar (ro'yxat + detal) |
 | `review/` | Sharh ma'lumoti va komponentlari (alohida sahifasi yo'q — tovar sahifasi va profil ishlatadi) |
-| `garderob/` | Гардероб bo'limi (bottom nav) — UI qurilmoqda |
+| `garderob/` | Гардероб bo'limi (bottom nav) — образ yig'ish, примерка generatsiyasi, hamyon |
 | `home/`, `profile/`, `preview/` | Bosh sahifa, profil, UI kit demo |
 
 ## Domen modeli (`features/catalog/helper.types.catalog.ts`)
@@ -97,6 +97,135 @@ src/
 Yangi global state kerak bo'lsa: `use<Name>Store.ts` yarat, `persist({ name: 'bridal-<name>' })` ishlat, barrel'ga qo'sh.
 
 Server state (API cache) uchun Zustand ishlatma — kerak bo'lsa alohida yechim tanlash uchun so'rab ol.
+
+## Гардероб UI (`features/garderob/components/`)
+
+`FeatureGarderob` — faqat bosqich almashtirgichi (`generation` / `images` / `payment`).
+"Генерация" bosqichi to'liq `components/generation/` da:
+
+```
+GenerationStep.tsx   yuqorida preview, pastda ikki qator — hammasini yig'adi
+OutfitPreview.tsx    faol bo'limda nima tanlanganini ko'rsatadi
+CategoryRow.tsx      1-qator: Лицо · Платье · Фата · Украшения · Настройка →
+PickRowShell.tsx     2-qatorning qobig'i (sanoq, scroll, katak o'lchami)
+PickTile.tsx           bitta katak — rasm, ✓ va ×
+FacePickRow.tsx        yuz: `useFacesStore`, "+" galereyani ochadi
+OutfitPickRow.tsx      kiyim: `useWardrobeStore`, "+" избранное ga olib boradi
+ModelSetupSheet.tsx  "Настройка модели" — sheet ichida
+```
+
+Faol bo'lim (`tab`) — `GenerationStep` ichidagi lokal `useState`. Global state'ga
+chiqarmang: uni boshqa hech kim o'qimaydi va saqlanishi ham shart emas.
+
+Ikki qator manbasi butunlay boshqa — yuzlar galereyadan (data URL, `MAX_PHOTOS`),
+tovarlar sevimlilardan (faqat `id`, `MAX_PICKED`). Shu sababli bitta universal
+komponent emas, umumiy qobiq + ikkita yupqa adapter.
+
+## Примерка generatsiyasi (`features/garderob/`)
+
+Yuz surati + katalogdagi ko'ylak (va ixtiyoriy fata/taqinchoq) dan realistik to'liq
+bo'y surat yasaydi. Model — OpenRouter orqali `google/gemini-3.1-flash-image`.
+
+```
+api/
+  model.ts              model nomi, rasm limiti, aspect ratio — BITTA joyda
+  imageToDataUrl.ts     /assets/... rasmni kichraytirib data URL ga o'giradi
+  generateTryOn.ts      referenslarni yig'adi va so'rov yuboradi
+prompt/
+  modelOptions.ts       "Настройка модели" tanlovlari → inglizcha prompt bo'laklari
+  buildBridalPrompt.ts  promptning o'zi
+```
+
+**Eng muhim qoida:** promptdagi `IMAGE 1`, `IMAGE 2` raqamlari so'rovdagi
+`input_references` massivining tartibiga bog'langan. Raqamlar qo'lda yozilmaydi —
+`buildBridalPrompt` ularni `kinds` massividan hisoblaydi. Referens qo'shsangiz yoki
+tartibni o'zgartirsangiz prompt o'zi moslashadi; qo'lda raqam yozsangiz — buziladi.
+
+**Kalit:** `.env` dagi `VITE_OPENROUTER_API_KEY` (shablon — `.env.example`).
+`VITE_` prefiksi qiymatni bundle'ga qo'shadi, ya'ni kalit brauzerda **ochiq**.
+Ommaga chiqarishdan oldin so'rovni serverga ko'chirish kerak — o'shanda faqat
+`generateTryOn.ts` o'zgaradi, prompt va qolgan kod joyida qoladi.
+
+**Provayder:** so'rov `IMAGE_PROVIDER` (`model.ts`) orqali **Vertex**'ga yo'naltiriladi.
+Buni olib tashlamang: modelni ikki provayder beradi va `google-ai-studio` yuz surati
+asosidagi generatsiyani muntazam bloklaydi (`400`, `block_reason: OTHER`). Filtr
+barqaror emas, shuning uchun `generateTryOn.ts` blok xatosida bir marta qayta uradi
+(`MAX_ATTEMPTS`) — boshqa xatolarda urinmaydi.
+
+**To'lov:** pul so'rovdan oldin yechiladi, xato bo'lsa qaytariladi
+(`GenerateBar.tsx` — `refundFree()` yoki `topUp()`).
+
+**Rasm o'lchamlari:** yuz `768×768` (`fileToSquarePhoto.ts`), ko'ylak `2048px`
+(`DETAIL_MAX_SIDE`). Ko'ylakni kichraytirsangiz model dantelni loyqa chizadi.
+
+Modelni almashtirsangiz `MAX_INPUT_REFERENCES` ni ham yangi limitga moslang —
+limitlar `GET https://openrouter.ai/api/v1/images/models` da.
+
+**Prompt tanlovlari:** `MODEL_GROUPS` (`constants/setupsModel.ts`) ga yangi variant
+qo'shsangiz, `prompt/modelOptions.ts` dagi mos jadvalga ham qator qo'shing —
+jadvalda yo'q qiymat promptga umuman tushmaydi.
+
+**Pozalar:** poza modelga IKKI kanal orqali boradi — `POSE` matni va
+`public/assets/setup/pose-N.png` diagramma rasmi (`poseReferenceImage()` orqali
+referens sifatida yuboriladi). Promptda **rasm ustuvor** deb yozilgan, chunki matn
+qo'l holatini ushlab turolmaydi: model ko'tarilgan qo'lni belga tushiradi.
+Shu sababli matn va rasm bir-biriga mos bo'lishi SHART — ziddiyat bo'lsa rasm
+yutadi. Pozani o'zgartirsangiz rasmni ham, `POSE_TITLES` yorlig'ini ham yangilang.
+Tavsif fotografning ko'rsatmasi kabi yoziladi (og'irlik qaysi oyoqda, tirsak
+tanadan uzoqmi, barmoqlar qanday); "modeldek turadi" model uchun bo'sh gap.
+Yuz ifodasi — `EXPRESSION` konstantasi, hozircha sozlama emas.
+
+**Soch:** poza kabi ikki kanal — `HAIR` matni va `hair-N.png` referens rasmi
+(`hairReferenceImage()`). Rasm `MODEL_GROUPS` dagi `image` maydonidan olinadi,
+ya'ni rasmi yo'q variant faqat matn bilan ishlaydi va hech narsa buzilmaydi.
+Rasmdan FAQAT turmak shakli olinadi — **rang, uzunlik va tuzilish yuz suratidan**.
+Bu band majburiy: referens manekenlarning sochi to'q jigarrang, bandsiz qolsa
+har bir mijoz jigarrang sochli chiqadi.
+
+**Diagramma faqat bo'yindan pastga.** Poza rasmidan bosh OLINMAYDI — buni
+`HEAD ANGLE LOCK` boshqaradi va yuz doim kameraga tik qaraydi. Sabab: yuz
+referensi anfas surat, bosh burilsa uning yarmi ko'rinmay qoladi va model
+qolganini o'zi to'qiydi — qiyofa boshqa odamga aylanadi. Yangi poza qo'shsangiz
+tavsifda boshni burmang; tanani burasiz, bo'yin boshni kameraga qaytaradi.
+
+**INKOR QOIDASI — promptga tegishdan oldin o'qing.** Rasm modellari inkorni
+tushunmaydi, ular **so'zlarni** ko'radi. `no bouquet` yozsangiz model promptda
+"bouquet" so'zini ko'radi va gul chizadi. Bu loyihada shu xato uch marta
+takrorlangan:
+
+| Yozilgan | Natijada chiqqan |
+|---|---|
+| `no added sleeves` | yeng yo'qolgan |
+| `no hand on the hip` | qo'l belga qo'yilgan |
+| `no bouquet, no flowers` | qo'lda guldasta paydo bo'lgan |
+
+Shuning uchun **taqiqlangan narsaning nomini promptga yozmang**. Uning o'rniga
+nima BO'LISHI kerakligini ijobiy ayting: `no bouquet` emas, balki
+"HER HANDS ARE EMPTY. Both hands are bare and open... carrying nothing whatsoever".
+`DO NOT` ro'yxati faqat zaxira va u yerda ham xavfli ot ishlatilmaydi
+("nothing held or carried in either hand").
+
+**Ko'ylak qulflari:** `DRESS LOCK` (bezak), `LENGTH LOCK` (uzunlik) va
+`COVERAGE LOCK` (yeng, bo'yin, bandlar, orqa). Uchinchisi kerak, chunki model
+shaffof dantel yengni "ochiq yelka" deb o'qib, ko'ylakni yengsiz qilib chizadi.
+
+**Fon:** `BACKGROUND` (`buildBridalPrompt.ts`) — hamma generatsiya uchun bitta
+studiya: oq devor + **jigarrang yog'och pol**. Fon qulfining o'zi yetarli emas:
+katalog fotolari ko'chada olingan va ular 2048px da yuboriladi, ya'ni rasm matndan
+kuchli. Shuning uchun **har bir referens tavsifida** "bu fotoning joyi, yorug'ligi
+va soyalari olinmaydi" bandi turadi. Yangi referens turi qo'shsangiz shu bandni
+ham yozing — aks holda o'sha rasmning foni natijaga sizib chiqadi. Pol qasddan jigarrang, chunki oq
+ko'ylak etagi oq polda ko'rinmay ketadi. Matn bir xillik uchun juda aniq
+yozilgan, lekin baribir piksel darajasida bir xil fon bermaydi — buning uchun
+tayyor fon rasmi kerak (`RefKind` ga `background` qo'shib, poza diagrammasi
+kabi referens qilib yuboriladi).
+
+**Gavda tavsifi:** `BUILD` jadvaliga yorliq emas, anatomiya yoziladi (yelka, qo'l,
+ko'krak, qorin, son, yuz — alohida-alohida). Modelning "kelin fotosi = ozg'in
+manekenchi" moyilligi juda kuchli: `plus-size` kabi mavhum so'z e'tiborga
+olinmaydi. Shu sababli gavda promptga uch joyda tushadi — birinchi qatorda
+(`short`), `BODY` bo'limida (`full`) va `DO NOT` ro'yxatida. Uchtasidan birini
+olib tashlasangiz natija yana ozg'in tomonga siljiydi.
 
 ## Ranglar tizimi
 `src/index.css` da CSS variables (light + dark), `tailwind.config.js` da Tailwind token'lariga map qilingan. **Hech qachon hex kod yozma**, doim token ishlat:

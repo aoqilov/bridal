@@ -1,8 +1,15 @@
-/** Doiralar 64–83px — 320px zaxira bilan yetarli, kvota ham to'lmaydi */
-const FACE_SIZE = 320;
+/**
+ * Saqlanadigan surat tomoni (px).
+ *
+ * Doiralar ekranda 64–83px, ya'ni ko'rinish uchun 320px ham yetardi. Lekin shu
+ * surat примерка generatsiyasiga yuz referensi bo'lib ketadi — u yerda model
+ * yuzni tanishi kerak, 320px esa buning uchun kam. 768×768 jpeg ≈ 80–120 KB,
+ * `MAX_PHOTOS = 5` bilan jami ~0.5 MB — localStorage kvotasiga bemalol sig'adi.
+ */
+const FACE_SIZE = 768;
 
 /**
- * Tanlangan faylni 320×320 (markazdan "cover" kesim) jpeg data URL ga aylantiradi.
+ * Tanlangan faylni kvadrat (markazdan "cover" kesim) jpeg data URL ga aylantiradi.
  * Original faylni saqlash localStorage kvotasini to'ldirib qo'yadi.
  */
 export async function fileToSquarePhoto(file: File): Promise<string> {

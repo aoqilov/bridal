@@ -2,11 +2,8 @@ import { useState } from 'react';
 import { MdPhotoLibrary } from 'react-icons/md';
 import { PiCoatHangerBold } from 'react-icons/pi';
 import CusSegment, { type SegmentItem } from '@/components/ui/segment/CusSegment';
-import { useFacesStore, useWardrobeStore } from '@/store/zustand';
-import PhotoStrip from './components/PhotoStrip';
-import OutfitStrip from './components/OutfitStrip';
-import ModelSetup from './components/ModelSetup';
-import GenerateBar from './components/GenerateBar';
+import { useWardrobeStore } from '@/store/zustand';
+import GenerationStep from './components/generation/GenerationStep';
 import ImagePreview from './components/ImagePreview';
 import WalletPanel from './components/WalletPanel';
 
@@ -48,26 +45,10 @@ export default function FeatureGarderob() {
       </div>
 
       {step === 'generation' && (
-        <>
-          <PhotoStrip
-            title="Выберите лицо"
-            emptyHint="Добавьте своё фото — примерим образ на вас."
-            store={useFacesStore}
-            required
-          />
-
-          {/* Shart/ixtiyoriyligi `REQUIRED_CATEGORIES` dan olinadi */}
-          <OutfitStrip category="dress" />
-          <OutfitStrip category="veil" />
-          <OutfitStrip category="jewelry" />
-
-          <ModelSetup />
-
-          <GenerateBar
-            onDone={() => setStep('images')}
-            onNeedTopUp={() => setStep('payment')}
-          />
-        </>
+        <GenerationStep
+          onDone={() => setStep('images')}
+          onNeedTopUp={() => setStep('payment')}
+        />
       )}
 
       {step === 'images' &&

@@ -20,6 +20,8 @@ export type WalletState = {
   spend: (amount: number, note: string) => boolean;
   /** Bepul generatsiyani ishlatilgan deb belgilaydi */
   useFree: () => void;
+  /** Generatsiya xato bilan tugasa bepul urinishni qaytaradi */
+  refundFree: () => void;
 };
 
 function txId(): string {
@@ -54,6 +56,7 @@ export const useWalletStore = create<WalletState>()(
         return true;
       },
       useFree: () => set({ freeUsed: true }),
+      refundFree: () => set({ freeUsed: false }),
     }),
     { name: 'bridal-wallet' },
   ),

@@ -1,8 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-/** Bitta bo'limdan garderobga olinadigan buyumlar soni */
-export const MAX_PICKED = 5;
+/**
+ * Bitta bo'limdan garderobga olinadigan buyumlar soni.
+ * Faqat `id` saqlanadi, shuning uchun chegarani oshirish localStorage'ga
+ * deyarli bosim bermaydi (yuz suratlari — `MAX_PHOTOS` — bundan farqli).
+ */
+export const MAX_PICKED = 10;
 
 /** Garderobga olingan tovar — `CatalogItem.id` va u tushgan bo'lim */
 export type PickedItem = {
