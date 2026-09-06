@@ -6,7 +6,7 @@
  * turmagi rasmlari hali tayyor emas).
  */
 
-export type ModelGroupKey = 'height' | 'build' | 'pose' | 'hair';
+export type ModelGroupKey = 'height' | 'build' | 'pose' | 'hair' | 'scarf';
 
 export type ModelOption = {
   value: string;
@@ -337,3 +337,44 @@ export const MODEL_GROUPS: ModelGroup[] = [
     ],
   },
 ];
+
+/**
+ * "Платок" — hijab ko'ylagi tanlanganda "Причёска" o'rniga ko'rsatiladigan guruh.
+ *
+ * `MODEL_GROUPS` ga QO'SHILMAYDI: bu guruh hamma uchun emas, faqat hijab
+ * ko'ylagida chiqadi va sarlavhadagi "N из 4" sanog'ini buzmasligi kerak.
+ * Ro'mol va soch bir-birini almashtiradi — ikkalasi bir vaqtda bo'lmaydi.
+ *
+ * Rasmlar hali tayyor emas (`image` yo'q → kartochkada ikonka turadi).
+ * `/assets/setup/scarf-N.png` qo'shilganda shu yerga `image` yozing — o'shanda
+ * rasm generatsiyaga referens bo'lib ham ketadi (`scarfReferenceImage`).
+ * Yangi variant qo'shsangiz `prompt/modelOptions.ts` dagi `SCARF` ga ham qator qo'shing.
+ */
+export const SCARF_GROUP: ModelGroup = {
+  key: 'scarf',
+  title: 'Платок',
+  options: [
+    { value: 'classic', label: 'Классический', hint: 'закрытая шея' },
+    { value: 'draped', label: 'С драпировкой', hint: 'конец на плечо' },
+    { value: 'turban', label: 'Тюрбан', hint: 'объёмная намотка' },
+    { value: 'smooth', label: 'Гладкий', hint: 'под фату' },
+  ],
+};
+
+/** `useWardrobeStore.model` dagi kalit: bosh qanday ko'rinadi — soch yoki ro'mol */
+export const HEAD_KEY = 'head';
+
+export type HeadMode = 'hair' | 'scarf';
+
+/**
+ * Bosh rejimi: "Причёска" yoki "Платок".
+ *
+ * Hijab ko'ylagida sukut bo'yicha ro'mol — "Настройка модели" ni umuman ochmagan
+ * mijoz ham to'g'ri natija oladi; xohlasa pereklyuchatel bilan sochga qaytaradi.
+ * Oddiy ko'ylakda doim soch: pereklyuchatel u yerda ko'rinmaydi, ya'ni saqlanib
+ * qolgan `scarf` tanlovi bekor qilib bo'lmaydigan holatga olib kelardi.
+ */
+export function headMode(model: Record<string, string>, hijab: boolean): HeadMode {
+  if (!hijab) return 'hair';
+  return model[HEAD_KEY] === 'hair' ? 'hair' : 'scarf';
+}

@@ -1,5 +1,9 @@
 import { buildBridalPrompt, type RefKind } from '../prompt/buildBridalPrompt';
-import { hairReferenceImage, poseReferenceImage } from '../prompt/modelOptions';
+import {
+  hairReferenceImage,
+  poseReferenceImage,
+  scarfReferenceImage,
+} from '../prompt/modelOptions';
 import { DETAIL_MAX_SIDE, imageToDataUrl } from './imageToDataUrl';
 import {
   ASPECT_RATIO,
@@ -28,8 +32,14 @@ export type GenerateInput = {
   /** Ixtiyoriy — tanlanmagan bo'lsa `null` */
   veilImage?: string | null;
   jewelryImage?: string | null;
-  /** `useWardrobeStore.model` — bo'y, gavda, poza, soch */
+  /** `useWardrobeStore.model` — bo'y, gavda, poza, soch/ro'mol */
   model: Record<string, string>;
+  /**
+   * Tanlangan ko'ylak hijab kategoriyasidanmi (`isHijabItem`).
+   * Foydalanuvchi "Причёска / Платок" pereklyuchatelini bosmagan bo'lsa sukut
+   * qiymatni shu belgilaydi — hijab ko'ylagida bosh ro'mol bilan chiziladi.
+   */
+  hijab?: boolean;
 };
 
 export type GenerateResult = {
@@ -80,9 +90,13 @@ export async function generateTryOn(input: GenerateInput): Promise<GenerateResul
     throw new Error('Генерация не настроена: не задан VITE_OPENROUTER_API_KEY.');
   }
 
-  // Poza va soch — matn bilan yetarli aniqlik chiqmaydi, rasm ham yuboriladi
+  // Poza va soch — matn bilan yetarli aniqlik chiqmaydi, rasm ham yuboriladi.
+  // Soch va ro'mol bir-birini almashtiradi: rejimni `headMode` hal qiladi va
+  // ikkalasidan ko'pi bilan bittasi rasm qaytaradi.
+  const hijab = input.hijab ?? false;
   const poseImage = poseReferenceImage(input.model);
-  const hairImage = hairReferenceImage(input.model);
+  const hairImage = hairReferenceImage(input.model, hijab);
+  const scarfImage = scarfReferenceImage(input.model, hijab);
 
   // Tartib muhim: promptdagi IMAGE raqamlari aynan shu ketma-ketlikka bog'langan
   const references: Reference[] = [
@@ -96,6 +110,7 @@ export async function generateTryOn(input: GenerateInput): Promise<GenerateResul
       ? [{ kind: 'jewelry' as const, src: input.jewelryImage }]
       : []),
     ...(hairImage ? [{ kind: 'hair' as const, src: hairImage }] : []),
+    ...(scarfImage ? [{ kind: 'scarf' as const, src: scarfImage }] : []),
     ...(poseImage ? [{ kind: 'pose' as const, src: poseImage }] : []),
   ];
 
@@ -117,6 +132,7 @@ export async function generateTryOn(input: GenerateInput): Promise<GenerateResul
   const prompt = buildBridalPrompt(
     references.map((ref) => ref.kind),
     input.model,
+    hijab,
   );
 
   const body = JSON.stringify({

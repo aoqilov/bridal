@@ -8,7 +8,12 @@
  * UI matni rus tilida, prompt — inglizcha. Aralashtirilmaydi.
  */
 
-import { MODEL_GROUPS, MODEL_POSE } from '@/constants/setupsModel';
+import {
+  headMode,
+  MODEL_GROUPS,
+  MODEL_POSE,
+  SCARF_GROUP,
+} from '@/constants/setupsModel';
 
 /** Bo'y — `MODEL_GROUPS[height]` */
 const HEIGHT: Record<string, string> = {
@@ -119,6 +124,35 @@ const HAIR: Record<string, string> = {
     'drawn up into a high ponytail: the hair swept up smoothly from the nape and the sides, with soft volume over the crown, and tied high at the back of the head; the length then falls from the tie in long, loose waves down the back and over one shoulder. The front is brushed back cleanly so the face, ears and neck stay clear',
 };
 
+/**
+ * Ro'mol o'rami — `SCARF_GROUP` (hijab ko'ylagida "Причёска" o'rniga chiqadi).
+ *
+ * Soch jadvali kabi bu yerda ham GEOMETRIYA yoziladi: mato qayerdan boshlanadi,
+ * nimani yopadi, uchi qayerga tushadi. Har bir tavsifda uchta narsa bo'lishi
+ * SHART — toj/chakka/quloq, bo'yin va yuzning ochiqligi. Bittasi tushib qolsa
+ * model o'sha joyni "odatiy" qilib chizadi.
+ *
+ * INKOR QOIDASI (CLAUDE.md): bu yerga taqiqni yozmang. "sochi ko'rinmasin"
+ * emas — "mato tojni, chakkani, quloqni va butun bo'ynini yopadi" deb yoziladi.
+ */
+const SCARF: Record<string, string> = {
+  classic:
+    'wrapped closely and smoothly around the head: its front edge sits across the forehead just above the eyebrows, the fabric passes back over the crown, down over the temples and the ears, comes forward along both sides of the jaw, crosses under the chin and is pinned there, and the ends are tucked in under the neckline of the dress so the throat and the whole neck stay covered. The fabric lies flat and close, following the natural round shape of the head, with one clean unbroken edge framing the face',
+
+  draped:
+    'wrapped closely over the crown, the temples, the ears and the whole neck, with its front edge across the forehead just above the eyebrows and its edge pinned under the chin, and one long end left free: that end is carried back over the shoulder and falls down the front of the bodice in soft vertical folds, long enough to reach the waist, its weight visible in the drape',
+
+  turban:
+    'wound in a turban style: a close under-layer first covers the ears, the jawline and the whole neck and is tucked into the neckline of the dress, then the outer fabric is wrapped over it in several smooth overlapping bands that rise from the forehead back across the crown and finish in a soft folded knot set to one side above the temple. The wrap has visible sculpted volume on top of the head, and the front edge still crosses the forehead just above the eyebrows so the face stays open',
+
+  smooth:
+    'wrapped as a single sleek layer that follows the shape of the head exactly: the front edge across the forehead just above the eyebrows, the fabric flat and unbroken over the crown, the temples, the ears and the whole neck, pinned invisibly and tucked into the neckline, with a smooth matte surface and no volume on the crown, so that a veil laid over it reads clearly against it',
+};
+
+/** Ro'mol rejimida variant tanlanmaganda — eng neytral yopiq o'ram */
+const DEFAULT_SCARF =
+  'wrapped closely and smoothly around the head: its front edge across the forehead just above the eyebrows, the fabric covering the crown, the temples, the ears and the whole neck, pinned under the chin and tucked in under the neckline of the dress, lying flat and following the natural round shape of the head';
+
 /** Poza tanlanmaganda — neytral, to'liq bo'y kadr uchun eng xavfsiz turish */
 const DEFAULT_POSE =
   'standing straight and facing the camera, weight settled evenly, shoulders down and back, both arms relaxed along her sides and held a little away from the body, hands soft with the fingers gently curved; she looks into the lens';
@@ -135,7 +169,13 @@ export type ModelPrompt = {
   height: string | null;
   build: BuildDescription | null;
   pose: string;
-  hair: string;
+  /**
+   * Bosh — soch turmagi YOKI ro'mol o'rami. Ikkalasidan aynan bittasi `null`
+   * bo'lmaydi: `headMode` qaysi rejim ekanini hal qiladi, prompt esa mos
+   * bo'limni chizadi. Ikkalasi bir vaqtda bo'lsa model ikkisini aralashtiradi.
+   */
+  hair: string | null;
+  scarf: string | null;
 };
 
 /**
@@ -158,21 +198,51 @@ export function poseReferenceImage(model: Record<string, string>): string | null
  * referens bilan, rasmi yo'q variant faqat matn bilan ishlaydi. Yangi turmak
  * qo'shganda rasmni keyinroq qo'ysangiz ham hech narsa buzilmaydi.
  */
-export function hairReferenceImage(model: Record<string, string>): string | null {
+export function hairReferenceImage(
+  model: Record<string, string>,
+  hijab = false,
+): string | null {
+  // Ro'mol rejimida ochiq sochli maneken rasmi o'ramga qarshi ishlaydi
+  if (headMode(model, hijab) === 'scarf') return null;
   if (!HAIR[model.hair]) return null;
   const group = MODEL_GROUPS.find((item) => item.key === 'hair');
   return group?.options.find((opt) => opt.value === model.hair)?.image ?? null;
 }
 
 /**
- * `useWardrobeStore.model` dagi tanlovlarni prompt bo'laklariga aylantiradi.
- * Bo'y va gavda ixtiyoriy; poza va soch uchun har doim qiymat bo'ladi (default bilan).
+ * Tanlangan ro'mol o'ramining referens rasmi.
+ *
+ * `SCARF_GROUP` da hozircha rasm yo'q — funksiya `null` qaytaradi va o'ram faqat
+ * matn bilan ishlaydi (soch kabi, hech narsa buzilmaydi). `scarf-N.png` lar
+ * qo'shilib `image` yozilgach, rasm o'zi referenslarga qo'shiladi.
  */
-export function describeModel(model: Record<string, string>): ModelPrompt {
+export function scarfReferenceImage(
+  model: Record<string, string>,
+  hijab = false,
+): string | null {
+  if (headMode(model, hijab) !== 'scarf') return null;
+  if (!SCARF[model.scarf]) return null;
+  return SCARF_GROUP.options.find((opt) => opt.value === model.scarf)?.image ?? null;
+}
+
+/**
+ * `useWardrobeStore.model` dagi tanlovlarni prompt bo'laklariga aylantiradi.
+ *
+ * Bo'y va gavda ixtiyoriy; poza uchun har doim qiymat bo'ladi (default bilan).
+ * Bosh — `headMode` bo'yicha: soch YOKI ro'mol, hech qachon ikkalasi.
+ * `hijab` — hijab kategoriyasidagi ko'ylak tanlanganmi (`isHijabItem`).
+ */
+export function describeModel(
+  model: Record<string, string>,
+  hijab = false,
+): ModelPrompt {
+  const scarfMode = headMode(model, hijab) === 'scarf';
+
   return {
     height: HEIGHT[model.height] ?? null,
     build: BUILD[model.build] ?? null,
     pose: POSE[model.pose] ?? DEFAULT_POSE,
-    hair: HAIR[model.hair] ?? DEFAULT_HAIR,
+    hair: scarfMode ? null : (HAIR[model.hair] ?? DEFAULT_HAIR),
+    scarf: scarfMode ? (SCARF[model.scarf] ?? DEFAULT_SCARF) : null,
   };
 }

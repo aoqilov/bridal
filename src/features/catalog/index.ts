@@ -48,7 +48,7 @@ export {
 export { primaryPrice, secondaryPrice, offerPrice, discountPercent } from './utils/price';
 export type { PriceView } from './utils/price';
 
-export { defaultVariant } from './utils/item';
+export { defaultVariant, isHijabItem, HIJAB_CATEGORY_ID } from './utils/item';
 
 export {
   KIND_LABELS,

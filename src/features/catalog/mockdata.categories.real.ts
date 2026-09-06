@@ -308,6 +308,17 @@ export const PREFIX_MAP: Record<string, PrefixInfo> = {
     numbering: 'model',
     count: 1,
   },
+  // Yangi to'plam: bitta prefiks ostida ham накидкали, ham tik yoqali modellar
+  // bor, shuning uchun subkategoriya `mockdata.real.ts` da har model uchun
+  // alohida qo'yilgan — bu yerdagi `subcategoryId` faqat sukut qiymat.
+  'w-hidjab': {
+    categoryId: 'hijab',
+    subcategoryId: 'hijab-cape',
+    kind: 'dress',
+    neckline: 'closed',
+    numbering: 'model',
+    count: 7,
+  },
 
   // ---- Oyoq kiyim ----
   'shoes-classic': {

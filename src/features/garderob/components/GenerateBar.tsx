@@ -10,7 +10,12 @@ import {
   useWalletStore,
   useWardrobeStore,
 } from '@/store/zustand';
-import { MOCK_CATALOG, getItemById, defaultVariant } from '@/features/catalog';
+import {
+  MOCK_CATALOG,
+  getItemById,
+  defaultVariant,
+  isHijabItem,
+} from '@/features/catalog';
 import { generateTryOn } from '../api/generateTryOn';
 import GeneratingModal from './GeneratingModal';
 
@@ -21,11 +26,16 @@ type Props = {
   onNeedTopUp: () => void;
 };
 
+/** Katalogdagi tovar — tanlanmagan bo'lsa `null` */
+function item(id: string | null | undefined) {
+  return id ? getItemById(id, MOCK_CATALOG) : null;
+}
+
 /** Katalogdagi tovarning rasm(lar)i — tanlanmagan bo'lsa bo'sh ro'yxat */
 function itemImages(id: string | null | undefined): string[] {
-  const item = id ? getItemById(id, MOCK_CATALOG) : null;
-  if (!item) return [];
-  const variant = defaultVariant(item);
+  const found = item(id);
+  if (!found) return [];
+  const variant = defaultVariant(found);
   return [variant.mainImage, ...variant.otherImages].filter(Boolean);
 }
 
@@ -88,6 +98,9 @@ export default function GenerateBar({ onDone, onNeedTopUp }: Props) {
         veilImage: itemImages(veilId)[0] ?? null,
         jewelryImage: itemImages(jewelryId)[0] ?? null,
         model,
+        // Hijab ko'ylagi bo'lsa bosh sukut bo'yicha ro'mol bilan chiziladi —
+        // "Настройка модели" ni ochmagan mijoz ham to'g'ri natija oladi
+        hijab: isHijabItem(item(dressId)),
       });
 
       if (!alive.current) return;

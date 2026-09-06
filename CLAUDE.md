@@ -161,6 +161,27 @@ barqaror emas, shuning uchun `generateTryOn.ts` blok xatosida bir marta qayta ur
 Modelni almashtirsangiz `MAX_INPUT_REFERENCES` ni ham yangi limitga moslang —
 limitlar `GET https://openrouter.ai/api/v1/images/models` da.
 
+**Hijab:** ko'ylak hijab kategoriyasidanmi — `isHijabItem(item)` (`categoryId === 'hijab'`).
+`neckline: 'closed'` bo'yicha aniqlamang: yopiq yoqa oddiy ko'ylaklarda ham bor.
+Bosh rejimi — `headMode(model, hijab)` (`constants/setupsModel.ts`): `model.head`
+tanlanmagan bo'lsa hijab ko'ylagida **ro'mol**, boshqasida soch. Shu sababli
+"Настройка модели" ni ochmagan mijoz ham to'g'ri natija oladi.
+UI da "Причёска" guruhi tepasida `Причёска | Платок` pereklyuchateli chiqadi
+(`ModelSetup.tsx` — `HeadGroup`), variantlar `SCARF_GROUP` da.
+**Hijabda yeng hech qachon ochiq bo'lmaydi** — `MODEST COVERAGE` bo'limi
+(`buildBridalPrompt.ts`, `modest = hijab`). Bu `DRESS LOCK` ning "referensda yo'q
+yengni o'ylab topma" bandiga qarshi turadi, shuning uchun ustuvorlik promptda
+ochiq yozilgan va o'sha band hijabda boshqa matn bilan almashadi — ikkita
+qarama-qarshi buyruq qolsa model ulardan birini tasodifan tanlaydi. Qulf bosh
+rejimiga emas, **ko'ylak kategoriyasiga** bog'langan: mijoz ro'mol o'rniga sochni
+tanlasa ham ko'ylak yopiq qoladi. `DO NOT` ro'yxatida ham hijab rejimida
+"sleeveless", "bare arms" kabi otlar yozilmaydi — inkor qoidasiga qarang.
+
+Promptda soch va ro'mol **bir vaqtda bo'lmaydi**: `describeModel` ikkisidan birini
+`null` qiladi, `HAIR` bo'limi butunlay `HEADSCARF` ga almashadi, `hair` referens
+rasmi yuborilmaydi va yuz referensi tavsifidan soch bandi olib tashlanadi —
+ochiq sochli maneken rasmi yoki bitta "soch" jumlasi ham boshni ochib qo'yadi.
+
 **Prompt tanlovlari:** `MODEL_GROUPS` (`constants/setupsModel.ts`) ga yangi variant
 qo'shsangiz, `prompt/modelOptions.ts` dagi mos jadvalga ham qator qo'shing —
 jadvalda yo'q qiymat promptga umuman tushmaydi.
