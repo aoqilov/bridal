@@ -22,7 +22,7 @@ export default function ModelSetupSheet({ open, onClose }: Props) {
       onClose={onClose}
       title="Настройка модели"
       side="right"
-      panelClassName="max-w-none rounded-none"
+      panelClassName="rounded-none"
       contentClassName="p-0"
     >
       {/* px-4 — guruh kartochkalari `-mx-4` bilan chetdan boshlanadi */}

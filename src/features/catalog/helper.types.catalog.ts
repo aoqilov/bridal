@@ -137,6 +137,15 @@ type BaseItem = {
   slug: string; // URL: /catalog/<slug>
   sku?: string; // Ichki artikul
 
+  /** Brend / kolleksiya nomi — filtrda alohida bo'lim */
+  brand?: string;
+  /**
+   * Bezakdagi toshlar ("Кристаллы", "Жемчуг", ...) — erkin matn, chunki
+   * ro'yxat salon assortimentiga qarab o'zgaradi. Filtr variantlari
+   * katalogdagi qiymatlardan yig'iladi (`buildFilterOptions`).
+   */
+  stones?: string[];
+
   // Kategoriya / teg
   categoryId: string;
   subcategoryId?: string;

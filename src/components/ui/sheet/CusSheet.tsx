@@ -11,8 +11,12 @@ type Props = {
   /** Kontent o'ramining klasslari — standart ichki bo'shliqni almashtirish uchun */
   contentClassName?: string;
   /**
-   * Panelning o'zi uchun klasslar — o'lcham va radiusni bosib o'tish uchun
-   * (masalan butun ekranni egallovchi filtr: `max-w-none rounded-none`).
+   * Panel o'lchami uchun klasslar — berilsa standart o'lcham/radius klasslari
+   * QO'SHILMAYDI, ular butunlay shu qiymat bilan almashadi.
+   *
+   * Shunday qilingani bejiz emas: `cn()` oddiy birlashtiruvchi, tailwind-merge
+   * emas. `max-w-sm` va `max-w-none` birga tursa g'olibni CSS tartibi hal
+   * qiladi (va `max-w-sm` yutadi) — ya'ni "bosib o'tish" ishlamaydi.
    */
   panelClassName?: string;
 };
@@ -50,9 +54,9 @@ export default function CusSheet({
         className={cn(
           // flex-ustun — uzun kontent panel ichida scroll bo'lsin, tashqariga chiqib ketmasin
           'relative z-10 flex flex-col overflow-hidden bg-background text-foreground shadow-xl',
-          side === 'bottom' && 'animate-sheet-up mt-auto max-h-[85vh] w-full rounded-t-2xl',
-          side === 'right' && 'animate-sheet-right ml-auto h-full w-full max-w-sm rounded-l-2xl',
-          panelClassName,
+          side === 'bottom' ? 'animate-sheet-up mt-auto w-full' : 'animate-sheet-right ml-auto h-full w-full',
+          panelClassName ??
+            (side === 'bottom' ? 'max-h-[85vh] rounded-t-2xl' : 'max-w-sm rounded-l-2xl'),
         )}
       >
         {/* Tortish tayoqchasi — pastdagi panelda gorizontal, yondagida vertikal */}

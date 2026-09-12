@@ -32,10 +32,10 @@ export default function NewsSlider() {
         </Link>
       </div>
 
-      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-5 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto px-4 pb-5 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((item) => (
           <div key={item.id} className="w-[62%] max-w-[240px] shrink-0 snap-start">
-            <NewsCard item={item} variant="plate" />
+            <NewsCard item={item} variant="plate" className="h-full" />
           </div>
         ))}
       </div>

@@ -24,6 +24,7 @@ import { useSearchItems } from './hooks/useSearchItems';
 import { useCategoryFilter } from './hooks/useCategoryFilter';
 import { useActiveCategory } from './hooks/useActiveCategory';
 import { useKindFilter } from './hooks/useKindFilter';
+import { useAttributeFilter } from './hooks/useAttributeFilter';
 import { useViewMode, type ViewMode } from './hooks/useViewMode';
 import { CATEGORY_SPRING, INSTANT } from './utils/categoryMotion';
 import type { Category } from './helper.types.catalog';
@@ -55,11 +56,12 @@ export default function FeatureCatalog() {
   const searched = useSearchItems(debouncedQuery, MOCK_CATALOG, MOCK_CATEGORIES);
   const filter = useCategoryFilter();
   const kindFilter = useKindFilter();
+  const attrFilter = useAttributeFilter();
   const { recent, add, remove, clear: clearRecent } = useRecentSearches();
   const toast = useToast();
 
   const hasQuery = debouncedQuery.trim().length > 0;
-  const hasFilter = filter.count > 0;
+  const hasFilter = filter.count + attrFilter.count > 0;
   const hasAnyParam = query.length > 0 || hasFilter || kindFilter.kind !== 'all';
 
   const handleCopyLink = async () => {
@@ -109,8 +111,21 @@ export default function FeatureCatalog() {
   // Query + kind tab + kategoriya filtri kombinatsiyasi
   const itemsToShow = useMemo(() => {
     const base = hasQuery ? searched : MOCK_CATALOG.filter((i) => i.isAvailable);
-    return base.filter(kindFilter.matches).filter(filter.matches);
-  }, [hasQuery, searched, filter, kindFilter]);
+    return base
+      .filter(kindFilter.matches)
+      .filter(filter.matches)
+      .filter(attrFilter.matches);
+  }, [hasQuery, searched, filter, kindFilter, attrFilter]);
+
+  /**
+   * Filtr panelidagi brend / rang / material / tosh variantlari shu ro'yxatdan
+   * yig'iladi: kind tabi hisobga olinadi, kategoriya tanlovi esa yo'q — aks
+   * holda tanlangan variant ro'yxatdan yo'qolib, uni yechib bo'lmay qolardi.
+   */
+  const attrSource = useMemo(
+    () => MOCK_CATALOG.filter((i) => i.isAvailable).filter(kindFilter.matches),
+    [kindFilter],
+  );
 
   // "Категории" alohida segment — ko'rinish ikonkalaridan ajralib turadi,
   // lekin uslubi bir xil bo'lishi uchun o'sha CusSegment ishlatiladi
@@ -159,6 +174,12 @@ export default function FeatureCatalog() {
    * faqat pastdagi "Показать N товаров" orqali — shunda tanlov bir xil
    * yo'l bilan yig'iladi va bir bosishda ko'rinish almashib ketmaydi.
    */
+  /** "Сбросить" — kategoriya va xususiyat filtrlari birga tozalanadi */
+  const clearFilters = () => {
+    filter.clear();
+    attrFilter.clear();
+  };
+
   const handleOpenCategory = (category: Category) => {
     setActiveCategoryId(category.id);
   };
@@ -241,7 +262,7 @@ export default function FeatureCatalog() {
             <FiSliders size={16} />
             {hasFilter && (
               <span className="absolute -right-1 -top-1 grid h-4 min-w-[1rem] place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-primary-fg">
-                {filter.count}
+                {filter.count + attrFilter.count}
               </span>
             )}
           </button>
@@ -268,7 +289,7 @@ export default function FeatureCatalog() {
                 onOpen={handleOpenCategory}
                 totalCount={totalInKind}
                 allSelected={!hasFilter}
-                onSelectAll={filter.clear}
+                onSelectAll={clearFilters}
                 className="min-h-0 flex-1"
               />
             ) : (
@@ -351,13 +372,16 @@ export default function FeatureCatalog() {
         open={filterOpen}
         onClose={() => setFilterOpen(false)}
         categories={categoriesToShow}
+        items={attrSource}
         countsByCategory={countsByCategory}
         countsBySubcategory={countsBySubcategory}
         selectedCategoryIds={filter.selectedCategoryIds}
         selectedSubcategoryIds={filter.selectedSubcategoryIds}
         onToggleCategory={filter.toggleCategory}
         onToggleSubcategory={filter.toggleSubcategory}
-        onClear={filter.clear}
+        selectedAttributes={attrFilter.selected}
+        onToggleAttribute={attrFilter.toggle}
+        onClear={clearFilters}
         kind={kindFilter.kind}
         onKindChange={kindFilter.setKind}
         resultCount={itemsToShow.length}
@@ -371,7 +395,7 @@ export default function FeatureCatalog() {
         <ShowResultsButton
           count={itemsToShow.length}
           onClick={handleShowResults}
-          onClear={filter.clear}
+          onClear={clearFilters}
           onCopy={handleCopyLink}
           showCopy={hasAnyParam}
         />

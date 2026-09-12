@@ -30,10 +30,12 @@ export default function NewsCard({ item, className, variant = 'default' }: Props
     <Link
       to={newsPath(item.slug)}
       className={cn(
-        'group block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        'group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         plate
-          ? 'rounded-xl bg-surface p-2 shadow-card transition-shadow hover:shadow-card-hover'
-          : 'overflow-hidden rounded-2xl bg-surface shadow-card transition-shadow hover:shadow-card-hover',
+          ? // flex-ustun: matn bloki qolgan joyni egallaydi, shunda yonma-yon
+            // turgan kartochkalarning pastki cheti bir chiziqda tugaydi
+            'flex flex-col rounded-xl bg-surface p-2 shadow-card transition-shadow hover:shadow-card-hover'
+          : 'block overflow-hidden rounded-2xl bg-surface shadow-card transition-shadow hover:shadow-card-hover',
         variant === 'slide' && 'h-full',
         className,
       )}
@@ -61,7 +63,11 @@ export default function NewsCard({ item, className, variant = 'default' }: Props
         </div>
       </div>
 
-      <div className={cn(plate ? 'mt-3 space-y-1.5 px-1 pb-1' : 'space-y-1.5 p-3')}>
+      <div
+        className={cn(
+          plate ? 'mt-3 flex-1 space-y-1.5 px-1 pb-1' : 'space-y-1.5 p-3',
+        )}
+      >
         <p
           className={cn(
             plate

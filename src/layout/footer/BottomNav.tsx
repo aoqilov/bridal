@@ -37,9 +37,11 @@ export default function BottomNav() {
               to={to}
               className={({ isActive }) =>
                 `group flex h-full flex-col items-center justify-center gap-1 transition-colors ${
+                  // Faol bo'lmagan bo'lim eng so'nik tokenda — pastki panel
+                  // ko'zni tortmasin, faol bo'lim esa o'zi ajralib tursin
                   isActive
                     ? "text-foreground"
-                    : "text-muted hover:text-foreground"
+                    : "text-subtle hover:text-foreground"
                 }`
               }
             >

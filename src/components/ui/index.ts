@@ -5,6 +5,8 @@ export { default as CusBadge } from './badge/CusBadge';
 export { default as CusSkeleton } from './skeleton/CusSkeleton';
 export { default as CusSheet } from './sheet/CusSheet';
 export { default as CusSegment } from './segment/CusSegment';
+export { default as CusSelect } from './select/CusSelect';
+export type { SelectOption } from './select/CusSelect';
 export { default as CusListItem } from './list-item/CusListItem';
 export { default as CusPlate } from './plate/CusPlate';
 export {
