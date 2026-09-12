@@ -66,6 +66,17 @@ export const REAL_CATEGORIES: Category[] = [
         categoryId: 'wedding',
         image: photo('w-onesh-1-1.jpg'),
       },
+      /*
+       * Qolganlari yoqa shakli bo'yicha ajratilgan, bu esa uzunlik bo'yicha —
+       * qisqa ko'ylakni mijoz aynan shu belgi bilan qidiradi (ЗАГС, ikkinchi kun).
+       */
+      {
+        id: 'wedding-short',
+        slug: 'short',
+        name: 'Короткие',
+        categoryId: 'wedding',
+        image: photo('w-short-1-1.jpg'),
+      },
     ],
   },
   {
@@ -281,6 +292,14 @@ export const PREFIX_MAP: Record<string, PrefixInfo> = {
     neckline: 'one-shoulder',
     numbering: 'model',
     count: 5,
+  },
+  // Uzunlik bo'yicha guruh — yoqa har modelda har xil, shuning uchun `neckline` yo'q
+  'w-short': {
+    categoryId: 'wedding',
+    subcategoryId: 'wedding-short',
+    kind: 'dress',
+    numbering: 'model',
+    count: 3,
   },
 
   // ---- Hijobli ko'ylaklar ----

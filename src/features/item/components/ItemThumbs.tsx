@@ -1,3 +1,4 @@
+import { PLATE_FRAME, PLATE_BORDER, PLATE_BORDER_ACTIVE } from '@/components/ui';
 import { cn } from '@/utils/cn';
 
 type Props = {
@@ -34,14 +35,22 @@ export default function ItemThumbs({
             aria-label={`Фото ${idx + 1}`}
             aria-current={active}
             className={cn(
-              'h-20 w-16 shrink-0 overflow-hidden rounded-xl border transition-all duration-200',
+              PLATE_FRAME,
+              'h-20 w-16 shrink-0 transition-all duration-200',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               active
-                ? 'border-primary ring-2 ring-primary-soft'
-                : 'border-border-subtle opacity-60 hover:opacity-100',
+                ? PLATE_BORDER_ACTIVE
+                : cn(PLATE_BORDER, 'opacity-60 hover:opacity-100'),
             )}
           >
-            <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+            <span className="block h-full w-full overflow-hidden rounded-sm">
+              <img
+                src={src}
+                alt=""
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            </span>
           </button>
         );
       })}

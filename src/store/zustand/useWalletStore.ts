@@ -32,7 +32,8 @@ function txId(): string {
 export const useWalletStore = create<WalletState>()(
   persist(
     (set, get) => ({
-      balance: 0,
+      // Test uchun boshlang'ich balans — ishga tushirishdan oldin 0 ga qaytariladi
+      balance: 5_000_000,
       transactions: [],
       freeUsed: false,
       topUp: (amount, note) =>

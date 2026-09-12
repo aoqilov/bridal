@@ -1,3 +1,4 @@
+import type { HemLength } from '@/features/catalog';
 import { buildBridalPrompt, type RefKind } from '../prompt/buildBridalPrompt';
 import {
   hairReferenceImage,
@@ -32,6 +33,11 @@ export type GenerateInput = {
   /** Ixtiyoriy — tanlanmagan bo'lsa `null` */
   veilImage?: string | null;
   jewelryImage?: string | null;
+  /**
+   * Tufli — faqat etagi kalta ko'ylakda beriladi. Polgacha ko'ylakda oyoq etak
+   * ostida qoladi, ya'ni referens ham, prompt bandi ham bekorga ketadi.
+   */
+  shoesImage?: string | null;
   /** `useWardrobeStore.model` — bo'y, gavda, poza, soch/ro'mol */
   model: Record<string, string>;
   /**
@@ -40,6 +46,11 @@ export type GenerateInput = {
    * qiymatni shu belgilaydi — hijab ko'ylagida bosh ro'mol bilan chiziladi.
    */
   hijab?: boolean;
+  /**
+   * Ko'ylak etagi qayerda tugaydi (`hemLengthOf`). Prompt shunga qarab
+   * LENGTH LOCK, FOOTWEAR va DO NOT bo'limlarini boshqacha yozadi.
+   */
+  hemLength?: HemLength;
 };
 
 export type GenerateResult = {
@@ -109,6 +120,7 @@ export async function generateTryOn(input: GenerateInput): Promise<GenerateResul
     ...(input.jewelryImage
       ? [{ kind: 'jewelry' as const, src: input.jewelryImage }]
       : []),
+    ...(input.shoesImage ? [{ kind: 'shoes' as const, src: input.shoesImage }] : []),
     ...(hairImage ? [{ kind: 'hair' as const, src: hairImage }] : []),
     ...(scarfImage ? [{ kind: 'scarf' as const, src: scarfImage }] : []),
     ...(poseImage ? [{ kind: 'pose' as const, src: poseImage }] : []),
@@ -133,6 +145,7 @@ export async function generateTryOn(input: GenerateInput): Promise<GenerateResul
     references.map((ref) => ref.kind),
     input.model,
     hijab,
+    input.hemLength ?? 'floor',
   );
 
   const body = JSON.stringify({

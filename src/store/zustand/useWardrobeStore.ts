@@ -21,6 +21,22 @@ export type GeneratedImage = {
   createdAt: string;
 };
 
+/**
+ * Tayyor примерка videosi.
+ *
+ * `url` — OpenRouter tomonidagi manzil, ya'ni u vaqt o'tib ishlamay qolishi mumkin.
+ * Shuning uchun `poster` (video yasalgan rasm) ham saqlanadi: havola o'lsa ham
+ * galereyada nima borligi ko'rinib turadi. Doimiy saqlash uchun video o'z
+ * saqlagichimizga ko'chirilishi kerak — bu server paydo bo'lgandan keyin.
+ */
+export type GeneratedVideo = {
+  id: string;
+  url: string;
+  /** Birinchi kadr — video yasalgan примерка rasmi */
+  poster: string;
+  createdAt: string;
+};
+
 export type WardrobeState = {
   picked: PickedItem[];
   /** Har bo'lim uchun alohida faol buyum — образ qismlari bir-birini o'chirmaydi */
@@ -38,9 +54,19 @@ export type WardrobeState = {
   countIn: (category: string) => number;
   /** Tayyor bo'lgan примерка rasmlari — yangisi birinchi */
   generated: GeneratedImage[];
-  addGenerated: (image: string) => void;
+  /** `addGenerated` yangi yozuvning `id` sini qaytaradi — tasdiqlash oqimi shunga tayanadi */
+  addGenerated: (image: string) => string;
   removeGenerated: (id: string) => void;
+  /** Tayyor videolar — yangisi birinchi */
+  videos: GeneratedVideo[];
+  addVideo: (url: string, poster: string) => string;
+  removeVideo: (id: string) => void;
 };
+
+/** Yozuv identifikatori — rasm va video uchun umumiy */
+function newId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
 
 /** Eski (v1) shakl — `picked` faqat id'lar ro'yxati bo'lgan */
 type LegacyState = {
@@ -56,19 +82,31 @@ export const useWardrobeStore = create<WardrobeState>()(
       selected: {},
       model: {},
       generated: [],
-      addGenerated: (image) =>
+      videos: [],
+      addGenerated: (image) => {
+        const id = newId();
         set((state) => ({
           generated: [
-            {
-              id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
-              image,
-              createdAt: new Date().toISOString(),
-            },
+            { id, image, createdAt: new Date().toISOString() },
             ...state.generated,
           ],
-        })),
+        }));
+        return id;
+      },
       removeGenerated: (id) =>
         set((state) => ({ generated: state.generated.filter((x) => x.id !== id) })),
+      addVideo: (url, poster) => {
+        const id = newId();
+        set((state) => ({
+          videos: [
+            { id, url, poster, createdAt: new Date().toISOString() },
+            ...state.videos,
+          ],
+        }));
+        return id;
+      },
+      removeVideo: (id) =>
+        set((state) => ({ videos: state.videos.filter((x) => x.id !== id) })),
       setModelOption: (key, value) =>
         set((state) => {
           const model = { ...state.model };

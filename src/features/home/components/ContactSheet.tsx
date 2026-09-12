@@ -88,7 +88,7 @@ function ContactRow({ person }: { person: ContactPerson }) {
       <div className="mt-2.5 flex items-center gap-2">
         <a
           href={buildPhoneLink(person.phone)}
-          className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2.5 text-xs font-semibold text-primary-fg transition hover:bg-primary-hover"
+          className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent px-3 py-2.5 text-xs font-semibold text-accent-fg transition hover:bg-accent-hover"
         >
           <FiPhone size={14} className="shrink-0" />
           <span className="line-clamp-1">{person.phone}</span>

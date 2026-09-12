@@ -6,6 +6,13 @@ export { default as CusSkeleton } from './skeleton/CusSkeleton';
 export { default as CusSheet } from './sheet/CusSheet';
 export { default as CusSegment } from './segment/CusSegment';
 export { default as CusListItem } from './list-item/CusListItem';
+export { default as CusPlate } from './plate/CusPlate';
+export {
+  PLATE_FRAME,
+  PLATE_BORDER,
+  PLATE_BORDER_ACTIVE,
+  PLATE_INNER,
+} from './plate/CusPlate';
 export type { SegmentItem } from './segment/CusSegment';
 // CusCalendar bu yerda eksport qilinmaydi — u Chakra UI ni tortadi (~150 kB).
 // Kerak joyda lazy import qiling:

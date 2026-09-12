@@ -32,15 +32,13 @@ export default function FeatureItem() {
 function ItemNotFound() {
   return (
     <div className="mx-auto flex min-h-full max-w-md flex-col items-center justify-center gap-3 px-6 py-16 text-center">
-      <h1 className="font-serif text-2xl font-semibold text-foreground">
-        Модель не найдена
-      </h1>
+      <h1 className="font-serif text-2xl text-foreground">Модель не найдена</h1>
       <p className="text-sm text-muted">
         Возможно, ссылка неверна или модель больше не в наличии.
       </p>
       <Link
         to={ROUTES.CATALOG}
-        className="mt-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg transition-colors hover:bg-primary-hover"
+        className="mt-2 rounded bg-accent px-4 py-2.5 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
       >
         В каталог
       </Link>
@@ -119,7 +117,10 @@ function ItemView({ item }: { item: CatalogItem }) {
       </div>
 
       {/* Kontent kartochkasi — badge qatoridan boshlab rasm ustiga chiqadi */}
-      <div className="relative z-10 -mt-10 rounded-t-3xl border-t border-border-subtle bg-background pt-4 shadow-sheet">
+      <div className="relative z-10 -mt-10 rounded-t-3xl border-t border-border-subtle bg-background pt-2 shadow-sheet">
+        {/* Panel tayoqchasi — CusSheet dagi bilan bir xil */}
+        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border" />
+
         <ItemThumbs
           images={gallery.images}
           activeIndex={gallery.activeIndex}

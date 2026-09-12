@@ -107,7 +107,7 @@ function AddressDetails({ point }: { point: AddressPoint }) {
         href={buildYandexMapsRouteUrl(point.lat, point.lng)}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2.5 text-xs font-semibold text-primary-fg transition hover:bg-primary-hover"
+        className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-accent px-3 py-2.5 text-xs font-semibold text-accent-fg transition hover:bg-accent-hover"
       >
         <FiNavigation size={14} />
         Построить маршрут

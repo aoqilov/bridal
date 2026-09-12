@@ -6,6 +6,7 @@ const HomePage = lazy(() => import('@/pages/home'));
 const CatalogPage = lazy(() => import('@/pages/catalog'));
 const ItemPage = lazy(() => import('@/pages/item'));
 const NewArrivalsPage = lazy(() => import('@/pages/new-arrivals'));
+const NewArrivalsCalendarPage = lazy(() => import('@/pages/new-arrivals/calendar'));
 const BookingPage = lazy(() => import('@/pages/booking'));
 const FavoritesPage = lazy(() => import('@/pages/favorites'));
 const GarderobPage = lazy(() => import('@/pages/garderob'));
@@ -34,6 +35,10 @@ export default function AppRoutes() {
         <Route path={ROUTES.CATALOG} element={<CatalogPage />} />
         <Route path={ROUTES.ITEM} element={<ItemPage />} />
         <Route path={ROUTES.NEW_ARRIVALS} element={<NewArrivalsPage />} />
+        <Route
+          path={ROUTES.NEW_ARRIVALS_CALENDAR}
+          element={<NewArrivalsCalendarPage />}
+        />
         <Route path={ROUTES.BOOKING} element={<BookingPage />} />
         <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
         <Route path={ROUTES.GARDEROB} element={<GarderobPage />} />

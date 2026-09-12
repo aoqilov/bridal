@@ -14,7 +14,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const VARIANT_STYLES: Record<Variant, string> = {
-  primary: 'bg-primary text-primary-fg hover:bg-primary-hover active:bg-primary-hover',
+  primary: 'bg-accent text-accent-fg hover:bg-accent-hover active:bg-accent-hover',
   secondary: 'bg-surface-2 text-foreground hover:bg-border-subtle active:bg-border',
   ghost: 'bg-transparent text-foreground hover:bg-surface-2',
   danger: 'bg-danger text-white hover:opacity-90 active:opacity-80',

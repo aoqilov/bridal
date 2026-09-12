@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { FiMapPin, FiPhone } from 'react-icons/fi';
-import { ADDRESSES, CONTACTS, PRIMARY_CONTACT } from '@/constants/contact';
+import { useState, type ComponentType, type ReactNode } from 'react';
+import { FiInstagram, FiMapPin, FiPhone } from 'react-icons/fi';
+import { ADDRESSES, CONTACTS } from '@/constants/contact';
 import { SOCIALS } from '@/constants/social';
-import { cn } from '@/utils/cn';
 import { plural } from '@/utils/plural';
 import SocialSheet from './SocialSheet';
 import AddressSheet from './AddressSheet';
@@ -18,71 +17,29 @@ export default function ContactTiles() {
   const addressCount = ADDRESSES.length;
   const contactCount = CONTACTS.length;
 
-  // 4 tadan ko'p bo'lsa — 3 ta logotip va "+N" katakchasi
-  const visibleSocials = SOCIALS.slice(0, socialCount > 4 ? 3 : 4);
-  const restSocials = socialCount - visibleSocials.length;
-
   return (
     <>
       <section className="grid grid-cols-3 gap-2.5 px-4">
         <Tile
+          icon={FiInstagram}
           title="Соцсети"
-          subtitle={`${socialCount} ${plural(socialCount, ['площадка', 'площадки', 'площадок'])}`}
+          caption={`${socialCount} ${plural(socialCount, ['площадка', 'площадки', 'площадок'])}`}
           onClick={() => setSheet('social')}
-        >
-          {/* Logotiplar bir-birining ustiga chiqib turadi */}
-          <div className="flex items-center justify-center -space-x-2">
-            {visibleSocials.map((s) => {
-              const Icon = s.icon;
-              return (
-                <span
-                  key={s.id}
-                  className={cn(
-                    'grid h-8 w-8 place-items-center rounded-full ring-2 ring-surface',
-                    s.color,
-                  )}
-                >
-                  <Icon size={15} />
-                </span>
-              );
-            })}
-            {restSocials > 0 && (
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-surface-2 text-[11px] font-semibold text-muted ring-2 ring-surface">
-                +{restSocials}
-              </span>
-            )}
-          </div>
-        </Tile>
+        />
 
         <Tile
+          icon={FiMapPin}
           title="Адреса"
-          subtitle={`${addressCount} ${plural(addressCount, ['салон', 'салона', 'салонов'])}`}
+          caption={`${addressCount} ${plural(addressCount, ['салон', 'салона', 'салонов'])}`}
           onClick={() => setSheet('address')}
-        >
-          <div className="flex flex-col items-center gap-1.5">
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-primary-soft text-primary">
-              <FiMapPin size={18} />
-            </span>
-            <p className="line-clamp-2 text-[10px] leading-tight text-muted">
-              {ADDRESSES[0]?.address}
-            </p>
-          </div>
-        </Tile>
+        />
 
         <Tile
+          icon={FiPhone}
           title="Контакты"
-          subtitle={`${contactCount} ${plural(contactCount, ['номер', 'номера', 'номеров'])}`}
+          caption={`${contactCount} ${plural(contactCount, ['номер', 'номера', 'номеров'])}`}
           onClick={() => setSheet('contact')}
-        >
-          <div className="flex flex-col items-center gap-1.5">
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-soft text-accent">
-              <FiPhone size={18} />
-            </span>
-            <p className="line-clamp-1 text-[10px] font-semibold leading-tight text-foreground">
-              {PRIMARY_CONTACT?.name}
-            </p>
-          </div>
-        </Tile>
+        />
       </section>
 
       <SocialSheet open={sheet === 'social'} onClose={() => setSheet(null)} />
@@ -93,29 +50,29 @@ export default function ContactTiles() {
 }
 
 type TileProps = {
+  icon: ComponentType<{ size?: number; className?: string }>;
   title: string;
-  subtitle: string;
+  caption: string;
   onClick: () => void;
-  children: React.ReactNode;
 };
 
-function Tile({ title, subtitle, onClick, children }: TileProps) {
+function Tile({ icon: Icon, title, caption, onClick }: TileProps): ReactNode {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex min-h-[8.75rem] min-w-0 flex-col items-center justify-center gap-3 rounded-2xl bg-surface p-2.5 text-center shadow-card transition hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      className="flex min-h-[6.5rem] min-w-0 flex-col items-center justify-center gap-2 border border-border-subtle bg-surface px-2 py-4 text-center transition-colors hover:border-border hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
-      <div className="flex w-full min-w-0 flex-1 flex-col items-center justify-center">
-        {children}
-      </div>
+      <Icon size={19} className="shrink-0 text-primary" />
 
-      <div className="w-full min-w-0">
-        <p className="line-clamp-1 text-[13px] font-semibold text-foreground">
+      <span className="w-full min-w-0">
+        <span className="line-clamp-1 block font-serif text-[15px] leading-tight text-primary">
           {title}
-        </p>
-        <p className="line-clamp-1 text-[10px] text-muted">{subtitle}</p>
-      </div>
+        </span>
+        <span className="mt-1 line-clamp-1 block text-[9.5px] uppercase tracking-[0.14em] text-subtle">
+          {caption}
+        </span>
+      </span>
     </button>
   );
 }

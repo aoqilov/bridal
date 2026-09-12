@@ -18,7 +18,7 @@ export default function FeatureHome() {
   );
 
   return (
-    <div className="mx-auto flex min-h-full max-w-md flex-col gap-5 bg-background pb-8">
+    <div className="mx-auto flex min-h-full max-w-md flex-col gap-6 bg-background pb-8">
       <BrandHero
         categoryCount={MOCK_CATEGORIES.length}
         subcategoryCount={subcategoryCount}

@@ -2,11 +2,10 @@ import { useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LayoutGroup, MotionConfig, motion, useReducedMotion } from 'framer-motion';
 import { MdCategory, MdApps, MdGridView, MdViewAgenda } from 'react-icons/md';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiSliders } from 'react-icons/fi';
 import CusSegment, { type SegmentItem } from '@/components/ui/segment/CusSegment';
 import { useToast } from '@/components/ui';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useHideOnScroll } from '@/hooks/useHideOnScroll';
 import { cn } from '@/utils/cn';
 import { MOCK_CATEGORIES, MOCK_CATALOG } from '@/features/catalog';
 import ItemCard from './components/ItemCard';
@@ -18,6 +17,7 @@ import CategoryRail from './components/CategoryRail';
 import CategoryOverview from './components/CategoryOverview';
 import SubcategoryGrid from './components/SubcategoryGrid';
 import ShowResultsButton from './components/ShowResultsButton';
+import FilterSheet from './components/FilterSheet';
 import EmptyState from './components/EmptyState';
 import { useRecentSearches } from './hooks/useRecentSearches';
 import { useSearchItems } from './hooks/useSearchItems';
@@ -32,15 +32,12 @@ export default function FeatureCatalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
   const inputRef = useRef<HTMLInputElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
   const { view, setView } = useViewMode();
   // Qidiruv paneli yopiq turadi; URL'da `q` bo'lsa ochiq holatda ochiladi
   const [searchOpen, setSearchOpen] = useState(() => query.length > 0);
+  // Filtr paneli — o'ngdan butun ekranga ochiladi
+  const [filterOpen, setFilterOpen] = useState(false);
   const isCategories = view === 'categories';
-  const { hidden: headerHidden } = useHideOnScroll(headerRef, {
-    threshold: 200,
-    disabled: isCategories,
-  });
 
   const setQuery = (next: string) => {
     setSearchParams(
@@ -102,22 +99,34 @@ export default function FeatureCatalog() {
     return { countsByCategory: byCat, countsBySubcategory: bySub };
   }, []);
 
+  // Faol kind tabidagi barcha tovarlar — kategoriya filtri hisobga olinmaydi,
+  // chunki "Все товары" kartochkasi aynan shu filtrni tozalaydi
+  const totalInKind = useMemo(
+    () => categoriesToShow.reduce((sum, c) => sum + (countsByCategory[c.id] ?? 0), 0),
+    [categoriesToShow, countsByCategory],
+  );
+
   // Query + kind tab + kategoriya filtri kombinatsiyasi
   const itemsToShow = useMemo(() => {
     const base = hasQuery ? searched : MOCK_CATALOG.filter((i) => i.isAvailable);
     return base.filter(kindFilter.matches).filter(filter.matches);
   }, [hasQuery, searched, filter, kindFilter]);
 
-  const segmentItems: SegmentItem<ViewMode>[] = [
+  // "Категории" alohida segment — ko'rinish ikonkalaridan ajralib turadi,
+  // lekin uslubi bir xil bo'lishi uchun o'sha CusSegment ishlatiladi
+  const categorySegment: SegmentItem<ViewMode>[] = [
     {
       value: 'categories',
       label: 'Категории',
       icon: <MdCategory size={16} />,
       ariaLabel: 'Категории',
     },
+  ];
+
+  const segmentItems: SegmentItem<ViewMode>[] = [
     { value: 'grid-3', icon: <MdApps size={16} />, ariaLabel: 'Плитка 3 в ряд' },
     { value: 'grid-2', icon: <MdGridView size={16} />, ariaLabel: 'Карточки 2 в ряд' },
-    { value: 'post', label: 'Пост', icon: <MdViewAgenda size={16} />, ariaLabel: 'Лента постов' },
+    { value: 'post', icon: <MdViewAgenda size={16} />, ariaLabel: 'Лента постов' },
   ];
 
   const toggleSearch = () => {
@@ -144,17 +153,14 @@ export default function FeatureCatalog() {
   };
 
   /**
-   * Обзор gridida kategoriya bosildi.
-   * Subkategoriyasi bor — ichkariga (rail + o'ng panel);
-   * yo'q — foydalanuvchini bo'sh panelga tushirmay, to'g'ridan-to'g'ri tovarlarga.
+   * Обзор gridida kategoriya bosildi — doim ichkariga (rail + o'ng panel).
+   * Subkategoriyasi yo'q kategoriyada ham panel bo'sh emas: `SubcategoryGrid`
+   * birinchi kartochka sifatida "Все модели" ni chizadi. Tovarlarga o'tish
+   * faqat pastdagi "Показать N товаров" orqali — shunda tanlov bir xil
+   * yo'l bilan yig'iladi va bir bosishda ko'rinish almashib ketmaydi.
    */
   const handleOpenCategory = (category: Category) => {
-    if ((category.subcategories?.length ?? 0) > 0) {
-      setActiveCategoryId(category.id);
-      return;
-    }
-    filter.selectOnly(category.id);
-    setView('grid-3');
+    setActiveCategoryId(category.id);
   };
 
   const emptyByFilter =
@@ -162,13 +168,8 @@ export default function FeatureCatalog() {
 
   return (
     <div className={cn('mx-auto flex max-w-md flex-col', isCategories ? 'h-full' : 'min-h-full')}>
-      <div
-        ref={headerRef}
-        className={cn(
-          'sticky top-0 z-10 border-b border-border-subtle bg-background/95 px-4 pb-3 pt-3 backdrop-blur transition-transform duration-300 ease-out',
-          headerHidden && '-translate-y-full',
-        )}
-      >
+      {/* Panel doim tepada qotib turadi — scrollda yashirinmaydi */}
+      <div className="sticky top-0 z-10 border-b border-border-subtle bg-background/95 px-4 pb-3 pt-3 backdrop-blur">
         {/* Qidiruv — tugma bosilganda tepadan pastga ochiladi */}
         <div
           className={cn(
@@ -189,6 +190,14 @@ export default function FeatureCatalog() {
         </div>
 
         <div className="flex items-stretch gap-2">
+          <CusSegment
+            items={categorySegment}
+            value={view}
+            onChange={setView}
+            size="sm"
+            className="shrink-0"
+          />
+
           <CusSegment
             items={segmentItems}
             value={view}
@@ -217,6 +226,25 @@ export default function FeatureCatalog() {
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
             )}
           </button>
+
+          <button
+            type="button"
+            onClick={() => setFilterOpen(true)}
+            aria-label="Фильтр"
+            className={cn(
+              'relative grid w-10 shrink-0 place-items-center rounded-xl border transition-colors',
+              hasFilter
+                ? 'border-primary bg-primary-soft text-primary'
+                : 'border-border-subtle bg-surface-2 text-muted hover:text-foreground',
+            )}
+          >
+            <FiSliders size={16} />
+            {hasFilter && (
+              <span className="absolute -right-1 -top-1 grid h-4 min-w-[1rem] place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-primary-fg">
+                {filter.count}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -238,6 +266,9 @@ export default function FeatureCatalog() {
                 countsByCategory={countsByCategory}
                 selectedCategoryIds={filter.selectedCategoryIds}
                 onOpen={handleOpenCategory}
+                totalCount={totalInKind}
+                allSelected={!hasFilter}
+                onSelectAll={filter.clear}
                 className="min-h-0 flex-1"
               />
             ) : (
@@ -315,6 +346,26 @@ export default function FeatureCatalog() {
           )}
         </div>
       )}
+
+      <FilterSheet
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        categories={categoriesToShow}
+        countsByCategory={countsByCategory}
+        countsBySubcategory={countsBySubcategory}
+        selectedCategoryIds={filter.selectedCategoryIds}
+        selectedSubcategoryIds={filter.selectedSubcategoryIds}
+        onToggleCategory={filter.toggleCategory}
+        onToggleSubcategory={filter.toggleSubcategory}
+        onClear={filter.clear}
+        kind={kindFilter.kind}
+        onKindChange={kindFilter.setKind}
+        resultCount={itemsToShow.length}
+        onApply={() => {
+          setFilterOpen(false);
+          if (isCategories) setView('grid-3');
+        }}
+      />
 
       {isCategories && (
         <ShowResultsButton

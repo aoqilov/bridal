@@ -32,7 +32,7 @@ export default function CategoryRail({
     <nav
       aria-label="Категории"
       className={cn(
-        'subtle-scrollbar overflow-y-auto border-r border-border-subtle bg-surface-2/50',
+        'subtle-scrollbar overflow-y-auto border-r border-border-subtle bg-surface-2',
         className,
       )}
     >
@@ -111,7 +111,7 @@ function RailItem({
       aria-label={ariaLabel}
       className={cn(
         'relative flex w-full flex-col items-center gap-1.5 px-1.5 py-3 transition-colors',
-        active ? 'bg-background' : 'hover:bg-background/60',
+        active ? 'bg-background' : 'hover:bg-background',
       )}
     >
       {active && (
@@ -123,11 +123,13 @@ function RailItem({
           layoutId={layoutId}
           style={{ borderRadius: 9999 }}
           className={cn(
-            'block h-12 w-12 shrink-0 overflow-hidden bg-surface ring-1 transition-colors',
-            active || badge !== null ? 'ring-primary' : 'ring-border-subtle',
+            'block h-12 w-12 shrink-0 border bg-surface p-[3px] transition-colors',
+            active || badge !== null ? 'border-primary' : 'border-border-subtle',
           )}
         >
-          {children}
+          <span className="block h-full w-full overflow-hidden rounded-full">
+            {children}
+          </span>
         </motion.span>
 
         {badge !== null && (

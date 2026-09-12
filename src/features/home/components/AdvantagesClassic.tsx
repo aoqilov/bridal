@@ -1,25 +1,24 @@
 import { CusAccordion, type AccordionItem } from '@/components/ui';
-import { ADVANTAGES, type AdvantageTone } from '../mockdata.brand';
+import { ADVANTAGES } from '../mockdata.brand';
 
-const ICON_TONE: Record<AdvantageTone, string> = {
-  primary: 'text-primary',
-  accent: 'text-accent',
-  success: 'text-success',
-  warning: 'text-warning',
-};
-
-/** Salonning asosiy ustunliklari — yagona karta, ajratuvchi chiziqlar, chevron */
+/**
+ * Salonning asosiy ustunliklari — yagona karta.
+ * Ramka pastdagi kontakt plitkalari bilan bir xil: yupqa `border-border-subtle`,
+ * to'g'ri burchak — bosh sahifada ikkala blok bitta tilda gapiradi.
+ */
 export default function AdvantagesClassic() {
   const items: AccordionItem[] = ADVANTAGES.map((a) => {
     const Icon = a.icon;
     return {
       id: a.id,
       title: a.title,
-      icon: <Icon size={20} className={ICON_TONE[a.tone]} />,
+      icon: <Icon size={18} className="text-primary" />,
       content: (
         <div>
-          <p className="text-xs font-medium text-muted">{a.short}</p>
-          <p className="mt-1.5 text-sm leading-relaxed text-foreground">{a.body}</p>
+          <p className="text-[10px] uppercase tracking-[0.14em] text-subtle">
+            {a.short}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground">{a.body}</p>
         </div>
       ),
     };
@@ -27,7 +26,9 @@ export default function AdvantagesClassic() {
 
   return (
     <section className="px-4">
-      <CusAccordion items={items} type="single" className="shadow-card" />
+      <div className="border border-border-subtle bg-surface">
+        <CusAccordion items={items} type="single" className="rounded-none" />
+      </div>
     </section>
   );
 }

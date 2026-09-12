@@ -21,13 +21,13 @@ export default function ItemActions({ item, offer, onTelegram }: Props) {
 
   // Pastki navigatsiya bu sahifada yashirin — gesture bar uchun joyni panel o'zi oladi
   return (
-    <div className="pb-safe sticky bottom-0 z-20 border-t border-border-subtle bg-background/95 backdrop-blur">
+    <div className="pb-safe sticky bottom-0 z-20 border-t border-border-subtle bg-background">
       <div className="mx-auto flex max-w-md items-center gap-3 px-4 py-3">
         <div className="min-w-0 shrink-0">
-          <p className="text-[11px] uppercase tracking-wide text-muted">
+          <p className="text-[9.5px] uppercase tracking-[0.14em] text-subtle">
             {OFFER_SHORT_LABELS[offer]}
           </p>
-          <p className="truncate text-base font-bold leading-tight text-foreground">
+          <p className="mt-1 truncate text-base font-bold leading-tight text-foreground tabular-nums">
             {price ? (
               <>
                 {formatCurrency(price.amount)}
@@ -42,7 +42,7 @@ export default function ItemActions({ item, offer, onTelegram }: Props) {
         <button
           type="button"
           onClick={onTelegram}
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-border bg-surface text-foreground transition-colors hover:bg-surface-2"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded border border-border bg-surface text-foreground transition-colors hover:bg-surface-2"
           aria-label="Написать в Telegram"
           title="Написать в Telegram"
         >
@@ -51,7 +51,7 @@ export default function ItemActions({ item, offer, onTelegram }: Props) {
 
         <Link
           to={bookingPath(item.id)}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3.5 text-sm font-semibold text-primary-fg transition-colors hover:bg-primary-hover"
+          className="flex flex-1 items-center justify-center gap-2 rounded bg-accent px-3 py-3.5 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
         >
           <LuCalendarHeart size={18} />
           На примерку

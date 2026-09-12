@@ -2,19 +2,28 @@ import { MdChevronRight, MdCheck } from 'react-icons/md';
 import { cn } from '@/utils/cn';
 
 /** Pastki paneldagi 1-qator bo'limlari — 2-qator shunga qarab almashadi */
-export type PickTab = 'face' | 'dress' | 'veil' | 'jewelry';
+export type PickTab = 'face' | 'dress' | 'veil' | 'jewelry' | 'shoes';
 
-export const PICK_TABS: { value: PickTab; label: string }[] = [
-  { value: 'face', label: 'Лицо' },
-  { value: 'dress', label: 'Платье' },
-  { value: 'veil', label: 'Фата' },
-  { value: 'jewelry', label: 'Украшения' },
-];
+export const PICK_TAB_LABELS: Record<PickTab, string> = {
+  face: 'Лицо',
+  dress: 'Платье',
+  veil: 'Фата',
+  jewelry: 'Украшения',
+  shoes: 'Туфли',
+};
+
+/**
+ * Doimiy bo'limlar. "Туфли" bu yerda yo'q — u faqat etagi kalta ko'ylakda
+ * qo'shiladi (`GenerationStep`), chunki polgacha ko'ylakda oyoq ko'rinmaydi.
+ */
+export const PICK_TABS: PickTab[] = ['face', 'dress', 'veil', 'jewelry'];
 
 /** Tanlanmasa генерация boshlanmaydi — chipda oltin nuqta bilan belgilanadi */
 export const REQUIRED_TABS: PickTab[] = ['face', 'dress'];
 
 type Props = {
+  /** Ko'rsatiladigan bo'limlar — ko'ylakka qarab o'zgaradi */
+  tabs: PickTab[];
   value: PickTab;
   onChange: (tab: PickTab) => void;
   /** Bo'limda tanlov borligi — ✓ nishoni uchun */
@@ -32,6 +41,7 @@ type Props = {
  * sozlamalari oynasini ochadi.
  */
 export default function CategoryRow({
+  tabs,
   value,
   onChange,
   filled,
@@ -45,28 +55,28 @@ export default function CategoryRow({
       aria-label="Части образа"
       className="flex items-center gap-2 overflow-x-auto px-4 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
-      {PICK_TABS.map((tab) => {
-        const active = value === tab.value;
-        const done = filled[tab.value];
+      {tabs.map((tab) => {
+        const active = value === tab;
+        const done = filled[tab];
         // Majburiy-yu hali tanlanmagan bo'lim — e'tibor tortadigan nuqta
-        const missing = REQUIRED_TABS.includes(tab.value) && !done;
+        const missing = REQUIRED_TABS.includes(tab) && !done;
 
         return (
           <button
-            key={tab.value}
+            key={tab}
             type="button"
             role="tab"
             aria-selected={active}
-            onClick={() => onChange(tab.value)}
+            onClick={() => onChange(tab)}
             className={cn(
               'flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               active
-                ? 'border-primary bg-primary text-primary-fg'
+                ? 'border-accent bg-accent text-accent-fg'
                 : 'border-border text-muted hover:border-primary hover:text-primary',
             )}
           >
-            {tab.label}
+            {PICK_TAB_LABELS[tab]}
             {done && (
               <MdCheck
                 size={13}

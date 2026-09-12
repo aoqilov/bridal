@@ -24,7 +24,7 @@ export default function ItemCard({ item, gallery = false, className }: Props) {
     <Link
       to={itemPath(item.slug)}
       className={cn(
-        'group flex h-full flex-col overflow-hidden rounded-2xl bg-surface shadow-card',
+        'group flex h-full flex-col overflow-hidden rounded border border-border bg-surface shadow-card',
         'transition-[box-shadow,transform] duration-200 hover:shadow-card-hover active:scale-[0.98]',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         className,
@@ -53,21 +53,23 @@ export default function ItemCard({ item, gallery = false, className }: Props) {
       </div>
 
       {/* Narx pastga yopishadi — qatordagi qo'shni kartada ham bir tekisda turadi */}
-      <div className="flex flex-1 flex-col p-3">
-        <h3 className="line-clamp-2 font-serif text-[15px] font-semibold leading-snug text-foreground">
+      <div className="flex flex-1 flex-col border-t border-border-subtle px-3 py-2.5">
+        <h3 className="line-clamp-2 font-serif text-[15px] leading-snug text-foreground">
           {item.name}
         </h3>
 
         {price && (
-          <div className="mt-auto pt-1.5">
-            <p className="text-[10px] uppercase tracking-wide text-muted">{price.label}</p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-foreground">
+          <div className="mt-auto pt-2">
+            <p className="text-[9.5px] uppercase tracking-[0.14em] text-subtle">
+              {price.label}
+            </p>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="text-[15px] font-semibold leading-none text-foreground tabular-nums">
                 {formatCurrency(price.amount)}{' '}
-                <span className="text-xs font-normal text-muted">сум</span>
+                <span className="text-[11px] font-normal text-muted">сум</span>
               </span>
               {price.old && (
-                <span className="text-xs text-muted line-through">
+                <span className="text-[11px] text-muted line-through tabular-nums">
                   {formatCurrency(price.old)}
                 </span>
               )}

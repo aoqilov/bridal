@@ -1,4 +1,5 @@
-import type { CatalogItem, ItemVariant } from '../helper.types.catalog';
+import type { CatalogItem, HemLength, ItemVariant } from '../helper.types.catalog';
+import { isDress } from '../helper.types.catalog';
 
 /**
  * Kartochkalarda ko'rsatiladigan rang varianti.
@@ -21,4 +22,26 @@ export const HIJAB_CATEGORY_ID = 'hijab';
  */
 export function isHijabItem(item: CatalogItem | null | undefined): boolean {
   return item?.categoryId === HIJAB_CATEGORY_ID;
+}
+
+/**
+ * Ko'ylak etagi qayerda tugaydi.
+ *
+ * `hemLength` yozilmagan bo'lsa siluetdan taxmin qilinadi: `short` siluet —
+ * kalta ko'ylak, qolgani polgacha. Taxmin faqat zaxira; aniq qiymat kerak
+ * bo'lganda mockdata'ga `hemLength` yozing.
+ */
+export function hemLengthOf(item: CatalogItem | null | undefined): HemLength {
+  if (!item || !isDress(item)) return 'floor';
+  if (item.hemLength) return item.hemLength;
+  return item.silhouette === 'short' ? 'short' : 'floor';
+}
+
+/**
+ * Etak ostidan oyoq (va demak tufli) ko'rinadimi.
+ * Примерка'da tufli bo'limi shu shart bilan ochiladi — polgacha ko'ylakda
+ * tanlangan tufli natijada ko'rinmaydi, referens esa bekorga ketadi.
+ */
+export function showsFeet(item: CatalogItem | null | undefined): boolean {
+  return hemLengthOf(item) !== 'floor';
 }

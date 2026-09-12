@@ -19,10 +19,10 @@ export default function RelatedItems({ items }: Props) {
           action={
             <Link
               to={CATALOG_CATEGORIES_PATH}
-              className="flex shrink-0 items-center gap-0.5 text-xs font-medium text-primary transition-colors hover:text-primary-hover"
+              className="flex shrink-0 items-center gap-1 text-[9.5px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-foreground"
             >
               В каталог
-              <FiChevronRight size={14} />
+              <FiChevronRight size={13} />
             </Link>
           }
         >

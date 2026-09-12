@@ -1,16 +1,25 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { MdClose, MdDelete, MdFileDownload } from 'react-icons/md';
+import { MdClose, MdDelete, MdFileDownload, MdMovie } from 'react-icons/md';
+import { VIDEO_PRICE } from '@/constants/pricing';
 import type { GeneratedImage } from '@/store/zustand';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 type Props = {
   item: GeneratedImage | null;
   onClose: () => void;
   onDelete: (id: string) => void;
+  /** Berilsa — shu kadrdan video yasash tugmasi chiqadi */
+  onCreateVideo?: (image: string) => void;
 };
 
 /** Tayyor rasmni to'liq ekranda ko'rish — yuklab olish va o'chirish tugmalari bilan */
-export default function ImagePreview({ item, onClose, onDelete }: Props) {
+export default function ImagePreview({
+  item,
+  onClose,
+  onDelete,
+  onCreateVideo,
+}: Props) {
   useEffect(() => {
     if (!item) return;
     const onEsc = (e: KeyboardEvent) => {
@@ -62,27 +71,44 @@ export default function ImagePreview({ item, onClose, onDelete }: Props) {
         />
       </div>
 
-      <div className="mx-auto flex w-full max-w-md gap-2 px-4 pb-6 pt-4">
-        <button
-          type="button"
-          onClick={download}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-fg transition hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <MdFileDownload size={18} />
-          Скачать
-        </button>
+      <div className="mx-auto w-full max-w-md px-4 pb-6 pt-4">
+        {/* Tayyor kadrdan video — rasm qayta chizilmaydi, faqat video puli yechiladi */}
+        {onCreateVideo && (
+          <button
+            type="button"
+            onClick={() => onCreateVideo(item.image)}
+            className="mb-2 flex w-full items-center justify-center gap-2 rounded bg-accent py-3 text-sm font-semibold text-accent-fg transition hover:bg-accent-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <MdMovie size={18} />
+            Создать видео
+            <span className="font-normal opacity-90">
+              · {formatCurrency(VIDEO_PRICE)} сум
+            </span>
+          </button>
+        )}
 
-        <button
-          type="button"
-          onClick={() => {
-            onDelete(item.id);
-            onClose();
-          }}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-white/10 py-3 text-sm font-semibold text-white transition hover:bg-danger focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <MdDelete size={18} />
-          Удалить из памяти
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={download}
+            className="flex flex-1 items-center justify-center gap-2 rounded border border-white/20 bg-white/10 py-3 text-sm font-semibold text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <MdFileDownload size={18} />
+            Скачать
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              onDelete(item.id);
+              onClose();
+            }}
+            className="flex flex-1 items-center justify-center gap-2 rounded bg-white/10 py-3 text-sm font-semibold text-white transition hover:bg-danger focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <MdDelete size={18} />
+            Удалить из памяти
+          </button>
+        </div>
       </div>
     </div>,
     document.body,

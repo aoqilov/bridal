@@ -6,6 +6,22 @@
 /** Bitta rasm generatsiyasi */
 export const GENERATION_PRICE = 3_000;
 
+/**
+ * Tayyor rasmdan video yasash.
+ *
+ * VAQTINCHALIK QIYMAT: Seedance 2.5 narxi model sahifasida ko'rsatilmagan.
+ * Bir nechta test generatsiyasidan keyin javobdagi `usage.cost` ni o'lchab,
+ * shu raqamni haqiqiy tannarxga qarab qo'ying — video rasmdan o'nlab marta qimmat.
+ */
+export const VIDEO_PRICE = 45_000;
+
+/**
+ * "Видео" rejimining to'liq narxi — avval rasm chiziladi, keyin undan video.
+ * Pul boshida bitta summa bo'lib yechiladi; mijoz rasmni tasdiqlamasa
+ * video qismi (`VIDEO_PRICE`) qaytariladi, rasm esa galereyada qoladi.
+ */
+export const VIDEO_TOTAL_PRICE = GENERATION_PRICE + VIDEO_PRICE;
+
 /** Hamyonni tez to'ldirish summalari */
 export const TOPUP_PRESETS = [10_000, 30_000, 50_000, 100_000];
 

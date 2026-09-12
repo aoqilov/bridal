@@ -3,6 +3,7 @@ export const ROUTES = {
   CATALOG: '/catalog',
   ITEM: '/catalog/:slug',
   NEW_ARRIVALS: '/new',
+  NEW_ARRIVALS_CALENDAR: '/new/calendar',
   BOOKING: '/booking',
   FAVORITES: '/favorites',
   GARDEROB: '/garderob',
@@ -22,6 +23,11 @@ export function itemPath(slug: string): string {
 
 /** Katalogni "Категории" ko'rinishida ochish (param — `features/catalog/hooks/useViewMode.ts`) */
 export const CATALOG_CATEGORIES_PATH = `${ROUTES.CATALOG}?view=categories`;
+
+/** Lentani ma'lum kundan ochish — kalendar sahifasi shu yo'l bilan qaytadi */
+export function newArrivalsDatePath(date: string): string {
+  return `${ROUTES.NEW_ARRIVALS}?date=${date}`;
+}
 
 export function newsPath(slug: string): string {
   return `/news/${slug}`;

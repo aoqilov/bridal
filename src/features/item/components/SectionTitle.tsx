@@ -12,7 +12,7 @@ type Props = {
 export default function SectionTitle({ children, action, className }: Props) {
   return (
     <div className={cn('mb-3 flex items-baseline justify-between gap-3', className)}>
-      <h2 className="font-serif text-xl font-semibold text-foreground">{children}</h2>
+      <h2 className="font-serif text-[19px] leading-tight text-foreground">{children}</h2>
       {action}
     </div>
   );

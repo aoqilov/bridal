@@ -1,3 +1,4 @@
+import type { HemLength } from '@/features/catalog';
 import { describeModel, EXPRESSION } from './modelOptions';
 
 /**
@@ -14,6 +15,7 @@ export type RefKind =
   | 'dress'
   | 'veil'
   | 'jewelry'
+  | 'shoes'
   | 'pose'
   | 'hair'
   | 'scarf';
@@ -56,6 +58,9 @@ function referenceText(
     case 'jewelry':
       return 'the JEWELLERY — product reference only. Reproduce its exact shape, material and color, worn naturally in its proper place (necklace at the neck, earrings at the ears, bracelet on the wrist). If another person, model or mannequin is visible in this image, ignore them completely: take only the jewellery, never the place this photo was taken in — its background, lighting and shadows stay out of the output. It must not cover or alter the dress.';
 
+    case 'shoes':
+      return 'the BRIDAL SHOES — product reference only. Reproduce this exact pair: the shape of the shoe, the height and shape of the heel, the toe, the straps, the material, the colour and every piece of decoration on them. The same pair goes on both feet, worn normally and standing flat on the floor. If another person, model or mannequin appears in this image, take the shoes alone from it — never their body, their legs or their clothing — and never the place this photo was taken in: its background, its surface, its lighting and its shadows stay out of the output. The shoes change nothing about the dress: its hemline stays exactly where the dress reference puts it.';
+
     case 'hair':
       return 'the HAIRSTYLE REFERENCE — styling reference only. Take from it ONLY the way the hair is styled: its shape, where it is parted, how it is swept back, where the volume sits, how the bun, braid or ponytail is formed and placed, and which strands are left loose around the face. The head it sits on is a faceless display mannequin, not a person. Everything else in this image stays out of the output: the mannequin itself, its skin, its neck and shoulders, any garment or fabric at the edge of the frame, any earring or other jewellery, and the background. Her HAIR COLOUR, HAIR LENGTH and HAIR TEXTURE come from the face reference image and from there alone — this image never changes them. If the face reference shows red hair, the hair stays red; if it shows short hair, it stays short and is styled as closely to this shape as that length allows.';
 
@@ -92,6 +97,7 @@ export function buildBridalPrompt(
   kinds: RefKind[],
   model: Record<string, string>,
   hijab = false,
+  hemLength: HemLength = 'floor',
 ): string {
   const { height, build, pose, hair, scarf } = describeModel(model, hijab);
 
@@ -102,6 +108,7 @@ export function buildBridalPrompt(
     .filter(Boolean);
   const veilNumber = kinds.indexOf('veil') + 1;
   const jewelryNumber = kinds.indexOf('jewelry') + 1;
+  const shoesNumber = kinds.indexOf('shoes') + 1;
   const poseNumber = kinds.indexOf('pose') + 1;
   const hairNumber = kinds.indexOf('hair') + 1;
   const scarfNumber = kinds.indexOf('scarf') + 1;
@@ -109,6 +116,19 @@ export function buildBridalPrompt(
   const faceImage = `IMAGE ${faceNumber}`;
   const dressImage = imageLabel(dressNumbers);
   const manyDressViews = dressNumbers.length > 1;
+
+  /**
+   * Etak polgacha yetmasa oyoq ko'rinadi — va shu bilan promptning bir nechta
+   * bandi o'zgaradi: LENGTH LOCK, FOOTWEAR va DO NOT ro'yxati.
+   *
+   * Polgacha ko'ylakda `DO NOT` da "no short dress, no mini dress" turadi —
+   * kalta ko'ylakda o'sha band aynan kerakli natijani taqiqlab qo'yadi.
+   */
+  const feetVisible = hemLength !== 'floor';
+  const hemWords =
+    hemLength === 'short'
+      ? 'at or above the knee, exactly where the reference puts it'
+      : 'at mid-calf, exactly where the reference puts it';
 
   let seenDress = false;
   const referenceBlock = kinds
@@ -184,6 +204,28 @@ This is the ONLY thing about the gown that may differ from the reference. Everyt
 `
     : '';
 
+  /**
+   * Oyoq kiyim — faqat etak polgacha yetmaganda. Polgacha ko'ylakda oyoq etak
+   * ostida qoladi, ya'ni bu bo'lim ham, tufli referensi ham keraksiz.
+   *
+   * Tufli tanlanmagan bo'lsa ham bo'lim yoziladi: oyoq ko'rinib turganda model
+   * baribir biror poyabzal chizadi — qanday bo'lishini aytmasak, u har safar
+   * boshqacha va ko'pincha ko'ylakdan diqqatni tortadigan narsa chizadi.
+   * "Yalangoyoq emas" deb yozib bo'lmaydi (inkor qoidasi) — nima borligi aytiladi.
+   */
+  const footwearSection = !feetVisible
+    ? ''
+    : shoesNumber > 0
+      ? `
+
+=== FOOTWEAR ===
+She wears the shoes from IMAGE ${shoesNumber}: the same pair on both feet, matching that image in the shape of the shoe, the height and shape of the heel, the toe, the straps, the material, the colour and every piece of decoration, worn normally and standing flat on the floor.
+They sit below the hem and leave it exactly where ${dressImage} puts it — the skirt keeps its own length and its own edge, and the shoes are simply visible beneath it.`
+      : `
+
+=== FOOTWEAR ===
+Her feet are in a plain pair of closed bridal pumps in soft ivory satin with a modest heel — the same shoe on both feet, smooth and undecorated, so that the dress stays the subject of the photograph.`;
+
   const headSection = scarf
     ? `=== HEADSCARF — AS BINDING AS THE COVERAGE LOCK ===
 Her head is wrapped in a bridal headscarf, and the wrap is ${scarf}.${
@@ -245,8 +287,13 @@ If an area is unclear in every reference view, reproduce it as simple plain fabr
 Copy the amount of detail exactly: do not increase it and do not reduce it.
 
 === LENGTH LOCK — THE SINGLE MOST IMPORTANT RULE ===
-The dress must stay exactly as long as it is in the reference. If the reference dress is floor-length, the output dress is floor-length: it reaches the floor, covers the ankles and pools or breaks on the ground exactly as the reference does.
-NEVER shorten the dress. Do not turn it into a mini, short, knee-length, midi, tea-length or cocktail dress. Do not raise, re-cut, angle, slit or restyle the hemline for any reason — not for framing, not for the aspect ratio, not to show the feet, not for the body type or height, and not for the pose.
+${
+    feetVisible
+      ? `The dress must stay exactly as long as it is in the reference, and this reference dress ends above the floor: its hem sits ${hemWords}. The output dress ends at that same height on the leg, with the same hemline shape and the same edge, so her lower legs and her feet stay in full view below it.
+The hemline comes from ${dressImage} and from nothing else. Keep it at exactly that height whatever the framing, the aspect ratio, the body type, her height or the pose. Extending the skirt down towards the floor is as wrong as raising it.`
+      : `The dress must stay exactly as long as it is in the reference. If the reference dress is floor-length, the output dress is floor-length: it reaches the floor, covers the ankles and pools or breaks on the ground exactly as the reference does.
+NEVER shorten the dress. Do not turn it into a mini, short, knee-length, midi, tea-length or cocktail dress. Do not raise, re-cut, angle, slit or restyle the hemline for any reason — not for framing, not for the aspect ratio, not to show the feet, not for the body type or height, and not for the pose.`
+  }${footwearSection}
 
 === COVERAGE LOCK — AS BINDING AS THE LENGTH LOCK ===
 ${
@@ -331,6 +378,12 @@ Before finishing, compare the dress in the output against ${dressImage} part by 
 Then check the coverage: cloth must run along both arms from the shoulder to the wrist, over both shoulders, across the chest and the upper back, and the neckline must close at the throat. If any of those runs short, the image is wrong — redraw it with the gown covering them as the MODEST COVERAGE section describes.`
       : ''
   }
+${
+    shoesNumber > 0
+      ? `
+Then check her feet: both of them must wear the shoes from IMAGE ${shoesNumber}, matching that image in shape, heel, material, colour and decoration. If the shoes differ from it, or if the two feet do not match each other, the image is wrong — redraw it with that pair on both feet.`
+      : ''
+  }
 Then check her hands and the room: if she is holding anything at all, or if anything besides her appears in the studio, the image is wrong — redraw it with her hands empty and the studio bare. The wall behind her must be bright white and the floor beneath her must be warm brown wood, with the hem and train lying visibly on that brown floor.
 Finally check her head: her face must be square to the camera, with both cheeks in view, and must read as the same person as ${faceImage}. If the head has rotated to one side or the face no longer matches, the image is wrong — redraw it with the face frontal.
 Then check how her face is lit: it must sit in the same light as the rest of the picture, with the same brightness, the same warmth, the same softness of shadow and the same sharpness as her hands and her gown. If the face reads as brighter, darker, cooler, warmer, flatter or crisper than the body — if it looks placed into the picture rather than photographed in it — the image is wrong and must be redrawn with the face lit by this studio.${
@@ -360,7 +413,13 @@ ${
     modest
       ? 'Cloth along the whole of both arms down to the wrist, cloth over both shoulders and across the chest and the upper back, and a neckline closed at the throat — in every part of the picture.\n'
       : ''
-  }No short dress, no mini dress, no cocktail dress, no knee-length or midi dress, no altered or raised hemline, no open mouth, no teeth or gums showing, no grin, no laugh, no arm moved out of the pose, no hand resting on the waist or hip unless the pose diagram shows it there, no redesigned dress, no different dress, ${
+  }${
+    // Etagi kalta ko'ylakda "no short dress" bandi kerakli natijaning o'zini
+    // taqiqlaydi — shuning uchun u yerda taqiq emas, talab yoziladi
+    feetVisible
+      ? 'A hemline at exactly the height the dress reference shows, with her lower legs and both feet in clear view below it, no altered hemline, '
+      : 'No short dress, no mini dress, no cocktail dress, no knee-length or midi dress, no altered or raised hemline, '
+  }no open mouth, no teeth or gums showing, no grin, no laugh, no arm moved out of the pose, no hand resting on the waist or hip unless the pose diagram shows it there, no redesigned dress, no different dress, ${
     // Yopiq образ rejimida bu yerga "sleeveless", "bare arms" kabi otlar
     // yozilmaydi — inkor qoidasi (CLAUDE.md): model otni ko'radi, "no" ni emas.
     modest

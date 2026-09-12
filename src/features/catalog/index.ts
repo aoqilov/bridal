@@ -12,6 +12,7 @@ export type {
   Neckline,
   Sleeve,
   Fabric,
+  HemLength,
   Shade,
   AccessoryType,
   Currency,
@@ -24,6 +25,7 @@ export {
   NECKLINES,
   SLEEVES,
   FABRICS,
+  HEM_LENGTHS,
   SHADES,
   ACCESSORY_TYPES,
   CURRENCIES,
@@ -48,7 +50,13 @@ export {
 export { primaryPrice, secondaryPrice, offerPrice, discountPercent } from './utils/price';
 export type { PriceView } from './utils/price';
 
-export { defaultVariant, isHijabItem, HIJAB_CATEGORY_ID } from './utils/item';
+export {
+  defaultVariant,
+  isHijabItem,
+  hemLengthOf,
+  showsFeet,
+  HIJAB_CATEGORY_ID,
+} from './utils/item';
 
 export {
   KIND_LABELS,
@@ -58,6 +66,7 @@ export {
   NECKLINE_LABELS,
   SLEEVE_LABELS,
   FABRIC_LABELS,
+  HEM_LENGTH_LABELS,
   SHADE_LABELS,
   ACCESSORY_TYPE_LABELS,
 } from './utils/labels';

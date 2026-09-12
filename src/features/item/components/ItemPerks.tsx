@@ -36,11 +36,11 @@ export default function ItemPerks() {
       {PERKS.map((perk) => (
         <li
           key={perk.title}
-          className="flex flex-col items-center gap-1 rounded-2xl border border-border-subtle bg-surface px-2 py-3 text-center"
+          className="flex flex-col items-center gap-1.5 rounded border border-border bg-surface px-2 py-3.5 text-center"
         >
           <span className="text-primary">{perk.icon}</span>
-          <span className="text-xs font-semibold text-foreground">{perk.title}</span>
-          <span className="text-[10px] leading-tight text-muted">{perk.note}</span>
+          <span className="text-[12px] text-foreground">{perk.title}</span>
+          <span className="text-[10px] leading-tight text-subtle">{perk.note}</span>
         </li>
       ))}
     </ul>

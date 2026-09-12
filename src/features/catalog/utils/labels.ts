@@ -1,6 +1,7 @@
 import type {
   AccessoryType,
   Fabric,
+  HemLength,
   ItemKind,
   Neckline,
   OfferType,
@@ -32,6 +33,12 @@ export const SILHOUETTE_LABELS: Record<Silhouette, string> = {
   mermaid: 'Русалка',
   princess: 'Пышное',
   straight: 'Прямое',
+  short: 'Короткое',
+};
+
+export const HEM_LENGTH_LABELS: Record<HemLength, string> = {
+  floor: 'В пол',
+  midi: 'Миди',
   short: 'Короткое',
 };
 

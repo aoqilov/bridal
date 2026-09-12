@@ -161,6 +161,20 @@ barqaror emas, shuning uchun `generateTryOn.ts` blok xatosida bir marta qayta ur
 Modelni almashtirsangiz `MAX_INPUT_REFERENCES` ni ham yangi limitga moslang —
 limitlar `GET https://openrouter.ai/api/v1/images/models` da.
 
+**Tufli va etak uzunligi:** oyoq kiyim faqat etagi polgacha yetmaydigan ko'ylakda
+ma'noli — polgacha ko'ylakda oyoq etak ostida qoladi. Uzunlik manbai —
+`Dress.hemLength` (`'floor' | 'midi' | 'short'`), o'qish uchun `hemLengthOf(item)`
+va `showsFeet(item)` (`catalog/utils/item.ts`); maydon yozilmagan bo'lsa siluetdan
+taxmin qilinadi. "Туфли" bo'limi `GenerationStep` da shu shart bilan qo'shiladi,
+`GenerateBar` esa polgacha ko'ylakda `shoesImage` ni umuman yubormaydi.
+
+Prompt uchta joyda uzunlikka qarab boshqacha yoziladi: `LENGTH LOCK`, `FOOTWEAR`
+va `DO NOT` ro'yxati. Oxirgisi muhim — polgacha ko'ylak uchun yozilgan
+"no short dress, no mini dress" bandi kalta ko'ylakda aynan kerakli natijani
+taqiqlab qo'yadi, shuning uchun u yerda taqiq emas, talab turadi. `FOOTWEAR`
+bo'limi tufli tanlanmaganda ham yoziladi: oyoq ko'rinib turganda model baribir
+biror poyabzal chizadi, qanday ekanini aytmasak — har safar boshqacha.
+
 **Hijab:** ko'ylak hijab kategoriyasidanmi — `isHijabItem(item)` (`categoryId === 'hijab'`).
 `neckline: 'closed'` bo'yicha aniqlamang: yopiq yoqa oddiy ko'ylaklarda ham bor.
 Bosh rejimi — `headMode(model, hijab)` (`constants/setupsModel.ts`): `model.head`

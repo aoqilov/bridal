@@ -50,15 +50,15 @@ export default function ItemPricing({ item, offer, onOfferChange }: Props) {
         />
       )}
 
-      <div className="rounded-2xl border border-border-subtle bg-surface p-4">
+      <div className="rounded border border-border bg-surface p-4">
         {price ? (
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="text-[26px] font-bold leading-none text-foreground">
+            <span className="text-[26px] font-bold leading-none text-foreground tabular-nums">
               {formatCurrency(price.amount)}
               <span className="ml-1 text-sm font-normal text-muted">сум</span>
             </span>
             {price.old && (
-              <span className="text-sm text-muted line-through">
+              <span className="text-sm text-muted line-through tabular-nums">
                 {formatCurrency(price.old)}
               </span>
             )}

@@ -67,7 +67,7 @@ export default function ItemTopBar({
       ref={anchorRef}
       className={cn(
         'sticky top-0 z-30 -mb-14 h-14 transition-colors duration-300',
-        solid && 'border-b border-border-subtle bg-background/90 backdrop-blur',
+        solid && 'border-b border-border-subtle bg-background',
       )}
     >
       <div className="mx-auto flex h-full max-w-md items-center gap-2 px-2">
@@ -80,7 +80,7 @@ export default function ItemTopBar({
 
         <h2
           className={cn(
-            'min-w-0 flex-1 truncate font-serif text-lg font-semibold text-foreground transition-opacity duration-300',
+            'min-w-0 flex-1 truncate font-serif text-lg text-foreground transition-opacity duration-300',
             solid ? 'opacity-100' : 'opacity-0',
           )}
           aria-hidden={!solid}

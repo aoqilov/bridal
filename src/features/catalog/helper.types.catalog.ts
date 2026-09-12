@@ -33,6 +33,14 @@ export const NECKLINES = [
 ] as const;
 export type Neckline = (typeof NECKLINES)[number];
 
+/**
+ * Etak uzunligi — silueti bilan aralashtirmang: `silhouette: 'short'` shakl haqida,
+ * bu esa etak qayerda tugashi haqida. Примерка generatsiyasi shu maydonga qaraydi:
+ * oyoq etak ostidan chiqmasa tufli umuman ko'rinmaydi.
+ */
+export const HEM_LENGTHS = ['floor', 'midi', 'short'] as const;
+export type HemLength = (typeof HEM_LENGTHS)[number];
+
 /** Yeng turi */
 export const SLEEVES = ['none', 'strap', 'short', 'long', 'transparent'] as const;
 export type Sleeve = (typeof SLEEVES)[number];
@@ -182,6 +190,11 @@ export type Dress = BaseItem & {
   fabrics: Fabric[];
   shade: Shade;
   sizes: DressSize[];
+  /**
+   * Etak qayerda tugaydi. Ko'rsatilmasa `hemLengthOf()` siluetdan taxmin qiladi
+   * (`utils/item.ts`) — shuning uchun eski mockdata yozuvlari ham ishlayveradi.
+   */
+  hemLength?: HemLength;
   /** Shleyf uzunligi, sm */
   trainLength?: number;
   hasCorset?: boolean;

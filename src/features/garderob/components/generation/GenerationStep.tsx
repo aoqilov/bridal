@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { NO_CATEGORY, useFacesStore, useWardrobeStore } from '@/store/zustand';
-import { MOCK_CATALOG, getItemById, defaultVariant } from '@/features/catalog';
+import { MOCK_CATALOG, getItemById, defaultVariant, showsFeet } from '@/features/catalog';
 import GenerateBar from '../GenerateBar';
 import { MODEL_GROUP_COUNT, useModelChosenCount } from '../ModelSetup';
-import CategoryRow, { type PickTab } from './CategoryRow';
+import CategoryRow, { PICK_TABS, type PickTab } from './CategoryRow';
 import FacePickRow from './FacePickRow';
 import ModelSetupSheet from './ModelSetupSheet';
 import OutfitPickRow from './OutfitPickRow';
@@ -15,11 +15,12 @@ const EMPTY_TEXT: Record<PickTab, string> = {
   dress: 'Выберите платье — оно появится здесь.',
   veil: 'Выберите фату или оставьте образ без неё.',
   jewelry: 'Выберите украшения или оставьте образ без них.',
+  shoes: 'Выберите туфли — под коротким платьем их будет видно.',
 };
 
 type Props = {
-  /** Rasm tayyor bo'lgach — "Изображения" bo'limiga o'tish */
-  onDone: () => void;
+  /** Natija tayyor bo'lgach — "Изображения" bo'limiga o'tish */
+  onDone: (kind: 'image' | 'video') => void;
   /** Balans yetmasa — "Оплата" bo'limiga o'tish */
   onNeedTopUp: () => void;
 };
@@ -41,6 +42,20 @@ export default function GenerationStep({ onDone, onNeedTopUp }: Props) {
   const faces = useFacesStore((s) => s.items);
   const faceSelectedId = useFacesStore((s) => s.selected[NO_CATEGORY]);
   const selected = useWardrobeStore((s) => s.selected);
+
+  // Tanlangan ko'ylak etagi kalta bo'lsagina tufli bo'limi chiqadi: polgacha
+  // ko'ylakda oyoq etak ostida qoladi va tanlangan tufli natijada ko'rinmaydi
+  const dressItem = selected.dress ? getItemById(selected.dress, MOCK_CATALOG) : null;
+  const feetVisible = showsFeet(dressItem);
+  const tabs = useMemo<PickTab[]>(
+    () => (feetVisible ? [...PICK_TABS, 'shoes'] : PICK_TABS),
+    [feetVisible],
+  );
+
+  // Uzun ko'ylakka almashtirilsa tufli bo'limi yo'qoladi — bo'sh tabda qolmaslik uchun
+  useEffect(() => {
+    if (!tabs.includes(tab)) setTab('face');
+  }, [tabs, tab]);
 
   const setupChosen = useModelChosenCount();
 
@@ -64,6 +79,7 @@ export default function GenerationStep({ onDone, onNeedTopUp }: Props) {
     dress: Boolean(selected.dress),
     veil: Boolean(selected.veil),
     jewelry: Boolean(selected.jewelry),
+    shoes: Boolean(selected.shoes),
   };
 
   return (
@@ -76,6 +92,7 @@ export default function GenerationStep({ onDone, onNeedTopUp }: Props) {
 
       <div className="sticky bottom-0 z-[9] border-t border-border-subtle bg-background/95 backdrop-blur">
         <CategoryRow
+          tabs={tabs}
           value={tab}
           onChange={setTab}
           filled={filled}

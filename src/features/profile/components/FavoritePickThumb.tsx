@@ -38,7 +38,7 @@ export default function FavoritePickThumb({ item, selected, onToggle }: Props) {
         className={cn(
           'absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full border-2 transition',
           selected
-            ? 'border-primary bg-primary text-primary-fg'
+            ? 'border-accent bg-accent text-accent-fg'
             : 'border-white/80 bg-overlay-dark text-transparent',
         )}
       >

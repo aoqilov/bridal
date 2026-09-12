@@ -21,7 +21,7 @@ export const OUTFIT_CATEGORY_LABELS: Record<OutfitCategory, string> = {
  * Garderobga olish uchun ochiq bo'limlar — qolganlari qulflangan ("скоро").
  * Yangi bo'lim tayyor bo'lganda shu ro'yxatga qo'shiladi.
  */
-export const UNLOCKED_CATEGORIES: OutfitCategory[] = ['dress', 'veil', 'jewelry'];
+export const UNLOCKED_CATEGORIES: OutfitCategory[] = ['dress', 'veil', 'jewelry', 'shoes'];
 
 /**
  * Примерка uchun tanlanishi shart bo'lgan bo'limlar — qolganlari ixtiyoriy

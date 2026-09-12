@@ -14,8 +14,8 @@ export default defineConfig({
         short_name: 'Amira Bridal',
         description:
           'Свадебные платья и аксессуары: аренда, продажа, пошив. Запись на примерку онлайн.',
-        theme_color: '#B08D57',
-        background_color: '#FFFDFB',
+        theme_color: '#7D5411',
+        background_color: '#F3F2F2',
         display: 'standalone',
         start_url: '/',
         scope: '/',

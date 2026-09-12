@@ -24,7 +24,11 @@ export default function ItemBadges({ item, size = 'md', className }: Props) {
   return (
     <div className={cn('flex flex-col items-start gap-1', className)}>
       {item.isNew && (
-        <CusBadge variant="accent-solid" size={badgeSize} className="uppercase">
+        <CusBadge
+          variant="accent-solid"
+          size={badgeSize}
+          className="uppercase tracking-[0.13em]"
+        >
           Новинка
         </CusBadge>
       )}

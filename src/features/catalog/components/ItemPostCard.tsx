@@ -38,7 +38,7 @@ export default function ItemPostCard({ item, gallery = false, className }: Props
           <p className="line-clamp-1 text-sm font-semibold text-foreground">
             {typeLabel}
             {item.offerTypes.includes('tailoring') && (
-              <span className="ml-1.5 rounded-full bg-accent-soft px-1.5 py-0.5 text-[10px] font-medium text-accent">
+              <span className="ml-1.5 rounded-full bg-accent-soft px-1.5 py-0.5 text-[10px] font-medium text-primary">
                 Пошив на заказ
               </span>
             )}

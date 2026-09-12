@@ -31,7 +31,7 @@ export default function FeaturePromotionDetail() {
         <h1 className="text-lg font-semibold text-foreground">Акция не найдена</h1>
         <Link
           to="/promotions"
-          className="mt-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg hover:bg-primary-hover"
+          className="mt-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-fg hover:bg-accent-hover"
         >
           Все акции
         </Link>
@@ -99,7 +99,7 @@ export default function FeaturePromotionDetail() {
         {promo.ctaUrl && (
           <Link
             to={promo.ctaUrl}
-            className="mt-2 block rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-fg transition hover:bg-primary-hover"
+            className="mt-2 block rounded-xl bg-accent px-4 py-3 text-center text-sm font-semibold text-accent-fg transition hover:bg-accent-hover"
           >
             {promo.ctaLabel ?? 'Подробнее'}
           </Link>

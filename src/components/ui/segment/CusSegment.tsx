@@ -53,7 +53,7 @@ export default function CusSegment<T extends string>({
               paddingClasses,
               fullWidth && 'flex-1',
               active
-                ? 'bg-surface text-foreground shadow-card'
+                ? 'bg-accent text-accent-fg'
                 : 'text-muted hover:text-foreground',
             )}
           >

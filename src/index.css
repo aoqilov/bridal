@@ -4,26 +4,33 @@
 
 @layer base {
   :root {
-    /* Bridal light palette — ivory / champagne gold / blush */
-    --color-background: #FFFDFB;
-    --color-surface: #FAF6F2;
-    --color-surface-2: #F1E9E2;
-    --color-border: #E3D8CE;
-    --color-border-subtle: #F1E9E2;
+    /* Bridal light palette — warm neutral / bronza / oltin */
+    --color-background: #F3F2F2;
+    --color-surface: #FBF9F6;
+    --color-surface-2: #F2F1F1;
+    --color-border: rgb(32 31 29 / 0.16);
+    --color-border-subtle: rgb(32 31 29 / 0.08);
 
-    --color-foreground: #2B2320;
-    --color-muted: #8C7E75;
-    --color-subtle: #C2B4A9;
+    --color-foreground: #201F1D;
+    --color-muted: rgb(32 31 29 / 0.62);
+    --color-subtle: rgb(32 31 29 / 0.45);
 
-    --color-primary: #B08D57;
-    --color-primary-hover: #9A7A46;
-    --color-primary-fg: #FFFFFF;
-    --color-primary-soft: #F5EBDD;
+    /* Solid holatlar (tugma, faol segment, badge) — kontrast 4.5:1 dan yuqori */
+    --color-primary: #7D5411;
+    --color-primary-hover: #5A3B0A;
+    --color-primary-fg: #F8F4F4;
+    --color-primary-soft: #F2F1F1;
 
-    --color-accent: #D8A7B1;
-    --color-accent-hover: #C88F9B;
-    --color-accent-fg: #3A2A2E;
-    --color-accent-soft: #F9EDEF;
+    /*
+     * Och shampan oltini — TO'LDIRISH rangi (badge, chip, gradient).
+     * Fon sifatida ishlaydi, matn/ikonka rangi sifatida emas: oq fonda
+     * kontrasti 1.4:1, ya'ni ko'rinmaydi. Oltin "siyoh" kerak bo'lsa — primary.
+     */
+    --color-accent: #ECCB7A;
+    --color-accent-hover: #DFBA61;
+    /* To'ldirilgan accent ustidagi matn — to'q (10:1) */
+    --color-accent-fg: #201F1D;
+    --color-accent-soft: rgb(236 203 122 / 0.18);
 
     --color-danger: #C4485B;
     --color-danger-soft: #FBE9EC;
@@ -41,11 +48,32 @@
      * mavzu bilan almashmaydi (dark rejimda `.dark` ichida qayta e'lon qilinmaydi).
      */
     --color-overlay-fg: #FFFFFF;
-    --color-overlay-fg-dark: #2B2320;
+    --color-overlay-fg-dark: #201F1D;
 
     /* Scroll polosasi — fonda deyarli ko'rinmaydigan darajada */
-    --color-scrollbar: rgba(43, 35, 32, 0.10);
-    --color-scrollbar-hover: rgba(43, 35, 32, 0.22);
+    --color-scrollbar: rgb(32 31 29 / 0.10);
+    --color-scrollbar-hover: rgb(32 31 29 / 0.22);
+
+    /*
+     * Burchak radiusi — Tailwind shkalasi shu yerdan o'qiydi (tailwind.config.js).
+     * Radiusni butun app bo'yicha o'zgartirish uchun shu to'rt qiymat yetarli,
+     * markupdagi `rounded-xl` / `rounded-2xl` klasslariga tegilmaydi.
+     */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+
+    /*
+     * Brend gradienti bitta joyda — `bg-brand-gradient` ham,
+     * `border-gradient` ramkasi ham shundan oziqlanadi.
+     */
+    --brand-gradient: linear-gradient(
+      150deg,
+      var(--color-accent) 0%,
+      #9ABEA0 55%,
+      var(--color-accent) 100%
+    );
 
     /*
      * Pastki tizim paneli uchun maksimal joy.
@@ -56,25 +84,26 @@
   }
 
   .dark {
-    --color-background: #14100E;
-    --color-surface: #1E1917;
-    --color-surface-2: #2A2320;
-    --color-border: #3A312C;
-    --color-border-subtle: #241E1B;
+    --color-background: #171614;
+    --color-surface: #1E1D1A;
+    --color-surface-2: #252320;
+    --color-border: rgb(255 255 255 / 0.14);
+    --color-border-subtle: rgb(255 255 255 / 0.07);
 
-    --color-foreground: #EFE7E0;
-    --color-muted: #A2938A;
-    --color-subtle: #6E6058;
+    --color-foreground: #F2EFE9;
+    --color-muted: rgb(242 239 233 / 0.66);
+    --color-subtle: rgb(242 239 233 / 0.45);
 
-    --color-primary: #C9A063;
-    --color-primary-hover: #DBB77E;
-    --color-primary-fg: #241B10;
-    --color-primary-soft: #3A2E1C;
+    --color-primary: #C28D41;
+    --color-primary-hover: #D2A05A;
+    --color-primary-fg: #1A1815;
+    --color-primary-soft: #252320;
 
-    --color-accent: #D8A7B1;
-    --color-accent-hover: #E6BDC5;
-    --color-accent-fg: #2B1B20;
-    --color-accent-soft: #3A272C;
+    /* Och oltin to'q fonda yaxshi ishlaydi — light bilan bir xil qiymat */
+    --color-accent: #ECCB7A;
+    --color-accent-hover: #F4D996;
+    --color-accent-fg: #1A1815;
+    --color-accent-soft: rgb(236 203 122 / 0.14);
 
     --color-danger: #E06A7B;
     --color-danger-soft: #3D2027;
@@ -87,8 +116,8 @@
     --color-warning: #D9B24C;
     --color-warning-soft: #3A2F14;
 
-    --color-scrollbar: rgba(239, 231, 224, 0.10);
-    --color-scrollbar-hover: rgba(239, 231, 224, 0.24);
+    --color-scrollbar: rgb(242 239 233 / 0.10);
+    --color-scrollbar-hover: rgb(242 239 233 / 0.24);
   }
 
   html,
@@ -140,15 +169,26 @@
     background-color: var(--color-scrollbar-hover);
   }
 
-  /* Story ring / accent CTA — oltin va pudra o'tishi */
+  /* Story ring / accent CTA — brend gradienti (`--brand-gradient`) */
   .bg-brand-gradient {
-    background: linear-gradient(
-      45deg,
-      #B08D57 0%,
-      #D8A7B1 45%,
-      #E8D9C0 75%,
-      #B08D57 100%
-    );
+    background: var(--brand-gradient);
+  }
+
+  /*
+   * Gradient ramka: ichki fon `padding-box`, gradient `border-box` bo'ylab.
+   * Talab: elementda `border` eni berilgan bo'lsin va `bg-*` klass QO'YILMASIN —
+   * Tailwind background-color fonni ustidan yopadi.
+   * Ichki fonni almashtirish: `style={{ "--gradient-fill": "var(--color-surface-2)" }}`.
+   */
+  .border-gradient {
+    border-color: transparent;
+    background:
+      linear-gradient(
+          var(--gradient-fill, var(--color-surface)),
+          var(--gradient-fill, var(--color-surface))
+        )
+        padding-box,
+      var(--brand-gradient) border-box;
   }
 
   .bg-overlay-dark {
@@ -163,9 +203,25 @@
 
   .bg-overlay-gradient-b {
     background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.6) 0%,
-      rgba(0, 0, 0, 0) 60%
+      to bottom,
+      rgb(20 18 16 / 0) 38%,
+      rgb(20 18 16 / 0.42) 64%,
+      rgb(20 18 16 / 0.82) 100%
+    );
+  }
+
+  /*
+   * Bosh sahifa muqovasi uchun balandroq qoplama: soya logotip ostidan —
+   * brend nomi boshlanadigan chiziqdan yuqorida ko'rinadi. Katta rasmda
+   * `gradient-b` juda past tushadi va "Amira Bridal" oq ko'ylak ustida qoladi.
+   */
+  .bg-overlay-gradient-hero {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.3) 22%,
+      rgba(0, 0, 0, 0.6) 48%,
+      rgba(0, 0, 0, 0.72) 64%,
+      rgba(0, 0, 0, 0.98) 100%
     );
   }
 

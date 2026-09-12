@@ -43,7 +43,7 @@ export default function CategoryChips<T extends string>({
               'flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               active
-                ? 'border-primary bg-primary text-primary-fg'
+                ? 'border-accent bg-accent text-accent-fg'
                 : 'border-border text-muted hover:border-primary hover:text-foreground',
             )}
           >

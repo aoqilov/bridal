@@ -273,7 +273,7 @@ export default function FeatureProfile() {
           <button
             type="button"
             onClick={() => navigate(ROUTES.GARDEROB)}
-            className="rounded-xl bg-primary px-6 py-2 text-sm font-semibold text-primary-fg transition hover:bg-primary-hover"
+            className="rounded-xl bg-accent px-6 py-2 text-sm font-semibold text-accent-fg transition hover:bg-accent-hover"
           >
             Готово
           </button>

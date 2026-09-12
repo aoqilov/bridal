@@ -36,14 +36,14 @@ export default function ItemReviews({ item }: Props) {
       <button
         type="button"
         onClick={() => setSheetOpen(true)}
-        className="flex w-full items-center gap-3 rounded-2xl border border-border-subtle bg-surface px-3.5 py-2.5 text-left transition-colors hover:bg-surface-2"
+        className="flex w-full items-center gap-3 rounded border border-border bg-surface px-3.5 py-3 text-left transition-colors hover:bg-surface-2"
       >
-        <span className="font-serif text-2xl font-semibold leading-none text-foreground">
+        <span className="font-serif text-2xl leading-none text-foreground tabular-nums">
           {item.rating.toFixed(1)}
         </span>
         <span className="min-w-0 flex-1">
           <RatingStars rating={item.rating} showValue={false} />
-          <span className="mt-0.5 block text-xs text-muted">
+          <span className="mt-1 block text-[11px] text-muted">
             {total} {plural(total, ['отзыв', 'отзыва', 'отзывов'])} об этой модели
           </span>
         </span>

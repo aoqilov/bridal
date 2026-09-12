@@ -13,12 +13,12 @@ export default function ItemDescription({ text, collapseAfter = 180 }: Props) {
 
   return (
     <div>
-      <h2 className="mb-1.5 text-sm font-semibold text-foreground">Описание</h2>
+      <h2 className="mb-2 font-serif text-base text-foreground">Описание</h2>
 
       <div className="relative">
         <p
           className={cn(
-            'text-sm leading-relaxed text-foreground/80',
+            'text-sm leading-relaxed text-muted',
             collapsible && !open && 'line-clamp-3',
           )}
         >
@@ -33,7 +33,7 @@ export default function ItemDescription({ text, collapseAfter = 180 }: Props) {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="mt-1.5 text-xs font-medium text-primary transition-colors hover:text-primary-hover"
+          className="mt-2 text-[9.5px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-foreground"
         >
           {open ? 'Свернуть' : 'Читать полностью'}
         </button>

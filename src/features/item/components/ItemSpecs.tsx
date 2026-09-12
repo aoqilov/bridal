@@ -123,15 +123,15 @@ export default function ItemSpecs({ item }: Props) {
           <div
             key={row.label}
             className={cn(
-              'rounded-2xl border border-border-subtle bg-surface p-3',
+              'rounded border border-border bg-surface p-3',
               row.wide && 'col-span-2',
             )}
           >
-            <dt className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted">
+            <dt className="flex items-center gap-1.5 text-[9.5px] uppercase tracking-[0.14em] text-subtle">
               <span className="text-primary">{row.icon}</span>
               {row.label}
             </dt>
-            <dd className="mt-1 text-sm font-medium leading-snug text-foreground">
+            <dd className="mt-1.5 text-sm leading-snug text-foreground">
               {row.value}
             </dd>
           </div>
@@ -139,13 +139,13 @@ export default function ItemSpecs({ item }: Props) {
       </dl>
 
       {item.careInstructions && (
-        <div className="mt-3 flex gap-3 rounded-2xl border border-border-subtle bg-surface p-4">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">
+        <div className="mt-3 flex gap-3 rounded border border-border bg-surface p-4">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded bg-surface-2 text-primary">
             <MdOutlineWaterDrop size={18} />
           </span>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Уход</h3>
-            <p className="mt-1 text-sm leading-relaxed text-foreground/80">
+            <h3 className="font-serif text-base text-foreground">Уход</h3>
+            <p className="mt-1 text-sm leading-relaxed text-muted">
               {item.careInstructions}
             </p>
           </div>

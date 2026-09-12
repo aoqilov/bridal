@@ -1,4 +1,5 @@
 import { FiCheck } from 'react-icons/fi';
+import { CusPlate } from '@/components/ui';
 import { cn } from '@/utils/cn';
 import type { Category } from '@/features/catalog';
 
@@ -22,6 +23,8 @@ type Tile = {
   selected: boolean;
   /** "Все модели" tanlangan bo'lsa alohida subkategoriya ortiqcha */
   disabled?: boolean;
+  /** Butun qatorni egallaydi — birinchi ("Все модели") kartochka */
+  wide?: boolean;
   onClick: () => void;
 };
 
@@ -61,6 +64,7 @@ export default function SubcategoryGrid({
             image: category.image,
             count: total,
             selected: wholeSelected,
+            wide: true,
             onClick: () => onToggleCategory(category.id, subIds),
           },
           ...subs.map<Tile>((sub) => ({
@@ -76,14 +80,14 @@ export default function SubcategoryGrid({
 
         return (
           <section key={category.id}>
-            <div className="sticky top-0 z-[1] -mx-3 flex items-baseline justify-between gap-2 bg-background/95 px-3 pb-2 pt-3 backdrop-blur">
-              <h2 className="truncate font-serif text-lg font-semibold text-foreground">
+            <div className="sticky top-0 z-[1] -mx-3 flex items-baseline justify-between gap-2 bg-background px-3 pb-2.5 pt-3">
+              <h2 className="truncate font-serif text-[19px] leading-tight text-foreground">
                 {category.name}
               </h2>
               <span
                 className={cn(
-                  'shrink-0 text-xs',
-                  wholeSelected || subSelectedCount > 0 ? 'text-primary' : 'text-muted',
+                  'shrink-0 text-[9.5px] uppercase tracking-[0.14em]',
+                  wholeSelected || subSelectedCount > 0 ? 'text-primary' : 'text-subtle',
                 )}
               >
                 {wholeSelected
@@ -104,16 +108,14 @@ export default function SubcategoryGrid({
                   aria-pressed={tileItem.selected}
                   className={cn(
                     'group text-left focus:outline-none',
+                    tileItem.wide && 'col-span-2',
                     tileItem.disabled && 'pointer-events-none opacity-50',
                   )}
                 >
-                  <div
-                    className={cn(
-                      'relative aspect-square overflow-hidden rounded-2xl bg-surface-2 shadow-card transition',
-                      'group-hover:shadow-card-hover group-focus-visible:ring-2 group-focus-visible:ring-primary',
-                      tileItem.selected &&
-                        'ring-2 ring-primary ring-offset-2 ring-offset-background',
-                    )}
+                  <CusPlate
+                    ratio={tileItem.wide ? 'aspect-[16/7]' : 'aspect-[3/4]'}
+                    active={tileItem.selected}
+                    className="group-hover:shadow-card-hover group-focus-visible:border-primary"
                   >
                     {tileItem.image && (
                       <img
@@ -124,23 +126,21 @@ export default function SubcategoryGrid({
                       />
                     )}
 
-                    <span className="absolute right-2 top-2 rounded-full bg-surface/90 px-2 py-0.5 text-[11px] font-semibold text-foreground backdrop-blur">
+                    <span className="absolute right-1.5 top-1.5 rounded-full bg-overlay-light px-2 py-0.5 text-[11px] font-semibold text-foreground backdrop-blur">
                       {tileItem.count}
                     </span>
 
                     {tileItem.selected && (
-                      <span className="absolute left-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-primary text-primary-fg shadow-card">
+                      <span className="absolute left-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full bg-primary text-primary-fg shadow-card">
                         <FiCheck size={14} strokeWidth={3} />
                       </span>
                     )}
-                  </div>
+                  </CusPlate>
 
                   <span
                     className={cn(
                       'mt-2 block text-center text-xs',
-                      tileItem.selected
-                        ? 'font-semibold text-primary'
-                        : 'font-medium text-foreground',
+                      tileItem.selected ? 'text-primary' : 'text-muted',
                     )}
                   >
                     {tileItem.name}

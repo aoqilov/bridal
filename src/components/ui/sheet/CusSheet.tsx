@@ -10,6 +10,11 @@ type Props = {
   side?: 'bottom' | 'right';
   /** Kontent o'ramining klasslari — standart ichki bo'shliqni almashtirish uchun */
   contentClassName?: string;
+  /**
+   * Panelning o'zi uchun klasslar — o'lcham va radiusni bosib o'tish uchun
+   * (masalan butun ekranni egallovchi filtr: `max-w-none rounded-none`).
+   */
+  panelClassName?: string;
 };
 
 export default function CusSheet({
@@ -19,6 +24,7 @@ export default function CusSheet({
   children,
   side = 'bottom',
   contentClassName,
+  panelClassName,
 }: Props) {
   useEffect(() => {
     if (!open) return;
@@ -46,10 +52,14 @@ export default function CusSheet({
           'relative z-10 flex flex-col overflow-hidden bg-background text-foreground shadow-xl',
           side === 'bottom' && 'animate-sheet-up mt-auto max-h-[85vh] w-full rounded-t-2xl',
           side === 'right' && 'animate-sheet-right ml-auto h-full w-full max-w-sm rounded-l-2xl',
+          panelClassName,
         )}
       >
-        {side === 'bottom' && (
+        {/* Tortish tayoqchasi — pastdagi panelda gorizontal, yondagida vertikal */}
+        {side === 'bottom' ? (
           <div className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border" />
+        ) : (
+          <div className="absolute left-1.5 top-1/2 h-10 w-1 -translate-y-1/2 rounded-full bg-border" />
         )}
 
         {title && (

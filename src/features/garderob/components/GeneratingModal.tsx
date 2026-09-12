@@ -6,13 +6,15 @@ import GenerationNote from './GenerationNote';
 
 type Props = {
   open: boolean;
+  /** Nima yasalayotgani — matn shunga qarab o'zgaradi */
+  kind?: 'image' | 'video';
 };
 
 /**
  * Генерация kutish oynasi — yopilmaydi, jarayon tugagach o'zi ketadi.
  * Kutish zerikarli bo'lmasin deb sitatalar 10 soniyada almashib turadi.
  */
-export default function GeneratingModal({ open }: Props) {
+export default function GeneratingModal({ open, kind = 'image' }: Props) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -46,10 +48,12 @@ export default function GeneratingModal({ open }: Props) {
         <span className="mx-auto mb-4 block h-12 w-12 animate-spin rounded-full border-2 border-border border-t-primary" />
 
         <p className="font-serif text-xl font-semibold text-foreground">
-          Создаём ваш образ…
+          {kind === 'video' ? 'Снимаем ваше видео…' : 'Создаём ваш образ…'}
         </p>
         <p className="mt-1.5 text-xs leading-relaxed text-muted">
-          Вы — воплощение красоты, платье лишь подчеркнёт её.
+          {kind === 'video'
+            ? 'Это занимает несколько минут — не закрывайте страницу.'
+            : 'Вы — воплощение красоты, платье лишь подчеркнёт её.'}
         </p>
 
         <div className="mt-5 min-h-[76px] rounded-xl bg-surface-2 px-4 py-3">

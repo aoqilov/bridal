@@ -48,7 +48,7 @@ export default function FeatureFavorites() {
           </p>
           <Link
             to={ROUTES.CATALOG}
-            className="mt-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-fg hover:bg-primary-hover"
+            className="mt-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-fg hover:bg-accent-hover"
           >
             В каталог
           </Link>

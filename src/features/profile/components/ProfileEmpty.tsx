@@ -20,7 +20,7 @@ export default function ProfileEmpty({ icon, title, text, action }: Props) {
       {action && (
         <Link
           to={action.to}
-          className="mt-2 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-fg transition hover:bg-primary-hover"
+          className="mt-2 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-accent-fg transition hover:bg-accent-hover"
         >
           {action.label}
         </Link>

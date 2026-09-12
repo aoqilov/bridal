@@ -6,16 +6,12 @@ import {
   MdSell,
 } from 'react-icons/md';
 
-/** Rang urg'usi — har bir variant o'z class map'iga o'giradi */
-export type AdvantageTone = 'primary' | 'accent' | 'success' | 'warning';
-
 export type Advantage = {
   id: string;
   title: string;
   /** Sarlavha yonidagi qisqa izoh */
   short: string;
   body: string;
-  tone: AdvantageTone;
   icon: ComponentType<{ size?: number; className?: string }>;
 };
 
@@ -27,6 +23,8 @@ export const BRAND_INFO = {
   // Salon egasi o'z logotipini shu yerga qo'yadi (public/ yoki src/assets/ dan yo'l)
   // Bo'sh bo'lsa — initial fallback ko'rsatiladi
   logo: '' as string,
+  // Bosh sahifadagi muqova fotosi (public/ dagi yo'l). Bo'sh bo'lsa — neytral joy egallagich
+  cover: '/assets/homebg.webp' as string,
 };
 
 /** Salonning asosiy biznes ustunliklari — bosh sahifadagi accordion uchun */
@@ -36,7 +34,6 @@ export const ADVANTAGES: Advantage[] = [
     title: 'Аренда платья',
     short: '3 дня · химчистка включена',
     body: 'Платье выдаётся на 3 дня, химчистка после свадьбы уже входит в стоимость. Залог фиксированный, указан на странице модели, и возвращается полностью при возврате в срок и без повреждений.',
-    tone: 'primary',
     icon: MdCheckroom,
   },
   {
@@ -44,7 +41,6 @@ export const ADVANTAGES: Advantage[] = [
     title: 'Продажа',
     short: 'Платье остаётся у вас',
     body: 'Понравившуюся модель можно выкупить — она остаётся у вас навсегда. Базовая подгонка по фигуре входит в стоимость: ушить корсет или подшить длину не будет стоить дополнительно.',
-    tone: 'accent',
     icon: MdSell,
   },
   {
@@ -52,7 +48,6 @@ export const ADVANTAGES: Advantage[] = [
     title: 'Пошив на заказ',
     short: 'По вашим меркам · 30–45 дней',
     body: 'Шьём по индивидуальным меркам: вы выбираете силуэт, ткань и отделку, мы отшиваем платье, которого нет ни у кого. Занимает 30–45 дней, поэтому приходите минимум за два месяца до даты.',
-    tone: 'success',
     icon: MdContentCut,
   },
   {
@@ -60,7 +55,6 @@ export const ADVANTAGES: Advantage[] = [
     title: 'Бесплатная примерка',
     short: 'Час времени, без обязательств',
     body: 'Примерка бесплатная и длится около часа — за визит успеваем показать 5–7 платьев. Отметьте модели в «Избранном», и мы подготовим их к вашему приходу. Ничего не подошло — просто приходите снова.',
-    tone: 'warning',
     icon: MdEventAvailable,
   },
 ];

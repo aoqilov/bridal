@@ -6,9 +6,11 @@ import {
   GENERATION_PACKS,
   GENERATION_PRICE,
   TOPUP_PRESETS,
+  VIDEO_PRICE,
   packDiscount,
 } from '@/constants/pricing';
 import { useWalletStore } from '@/store/zustand';
+import { VIDEO_DURATION } from '../api/video/model';
 import TopUpSheet from './TopUpSheet';
 
 /** "Оплата" bo'limi — hamyon, to'ldirish, tariflar va amallar tarixi */
@@ -21,6 +23,8 @@ export default function WalletPanel() {
   const [topUp, setTopUp] = useState<{ amount: number; note?: string } | null>(null);
 
   const left = Math.floor(balance / GENERATION_PRICE);
+  // Video alohida hisoblanadi — narxi rasmnikidan ancha yuqori
+  const videosLeft = Math.floor(balance / VIDEO_PRICE);
 
   return (
     <div className="px-4 pb-8 pt-4">
@@ -38,6 +42,8 @@ export default function WalletPanel() {
             {left > 0
               ? `Хватит на ${left} ${plural(left, 'генерацию', 'генерации', 'генераций')}`
               : 'Пополните кошелёк, чтобы создавать образы'}
+            {videosLeft > 0 &&
+              ` · ${videosLeft} ${plural(videosLeft, 'видео', 'видео', 'видео')}`}
             {!freeUsed && ' · первая генерация бесплатно'}
           </p>
         </div>
@@ -65,6 +71,17 @@ export default function WalletPanel() {
           <span className="text-sm text-foreground">1 генерация</span>
           <span className="text-sm font-semibold text-foreground">
             {formatCurrency(GENERATION_PRICE)} сум
+          </span>
+        </div>
+
+        {/* Video tayyor rasmdan yasaladi — shuning uchun alohida tarif */}
+        <div className="flex items-center justify-between rounded-xl bg-surface px-4 py-3">
+          <span className="text-sm text-foreground">
+            1 видео
+            <span className="ml-1.5 text-[11px] text-subtle">{VIDEO_DURATION} сек</span>
+          </span>
+          <span className="text-sm font-semibold text-foreground">
+            {formatCurrency(VIDEO_PRICE)} сум
           </span>
         </div>
 
