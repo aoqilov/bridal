@@ -118,11 +118,20 @@ export type DressSize = {
   available: boolean;
 };
 
-/** Rang varianti — har birida o'z rasm to'plami */
+/**
+ * Variant turi — bitta modelning uch xil taqdimoti. Rang emas: modelning rangi
+ * bitta (`Dress.shade`), variantlar esa nima ko'rsatilishini ajratadi.
+ *
+ * - `brand`    — salon/brend fotolari, katalog kartochkasi va galereyaning asosiysi
+ * - `komplekt` — to'liq komplekt (fata, kamar va h.k. bilan) fotolari
+ * - `ai`       — примерка generatsiyasi uchun toza foto (`variantOfKind`)
+ */
+export const VARIANT_KINDS = ['brand', 'komplekt', 'ai'] as const;
+export type VariantKind = (typeof VARIANT_KINDS)[number];
+
 export type ItemVariant = {
   id: string;
-  colorName: string; // "Айвори"
-  colorHex: string; // "#F5EFE6" — chip / preview uchun
+  kind: VariantKind;
   mainImage: string;
   otherImages: string[];
 };

@@ -68,6 +68,13 @@ src/
 
 `isDress(item)` / `isAccessory(item)` — type guard'lar. Yangi maydon qo'shganda ikkala shoxni ham tekshir (`ItemSpecs`, `ItemInfo`, `useSearchItems`).
 
+**Variantlar:** `ItemVariant` — rang emas, **taqdimot turi**: `kind: 'brand' | 'komplekt' | 'ai'`
+(бренд fotolari / to'liq komplekt / примерка uchun toza foto). Modelning rangi `Dress.shade` da,
+variantda rang maydoni yo'q. Variant id'si `<tovar id>-<kind>`; mockdata'ga
+`photoVariants(baseId, files)` (real fayllar) yoki `seedVariants(baseId, seed)` (picsum) orqali
+yoziladi. Kerakli turdagini olish — `variantOfKind(item, kind)`, yo'q bo'lsa `defaultVariant` ga
+qaytadi. Hozircha uchala variant bir xil rasmni ko'rsatadi: alohida fotolar hali suratga olinmagan.
+
 **Narx:** hech qachon `item.rentPrice` ni to'g'ridan-to'g'ri ko'rsatma — `primaryPrice(item)` / `secondaryPrice(item)` / `offerPrice(item, offer)` / `discountPercent(item)` (`utils/price.ts`) ishlat. Ijara mavjud bo'lsa u ustuvor; `offerPrice` — foydalanuvchi tanlagan taklif turi bo'yicha (tovar sahifasidagi "Аренда / Покупка / Пошив" pereklyuchateli).
 
 **Yorliqlar:** enum qiymatini ekranda ko'rsatish uchun `utils/labels.ts` dagi `*_LABELS` map'lari (`SILHOUETTE_LABELS`, `FABRIC_LABELS`, ...; tor joylar uchun `OFFER_SHORT_LABELS`). Rus matnini inline yozma.
@@ -154,6 +161,10 @@ barqaror emas, shuning uchun `generateTryOn.ts` blok xatosida bir marta qayta ur
 
 **To'lov:** pul so'rovdan oldin yechiladi, xato bo'lsa qaytariladi
 (`GenerateBar.tsx` — `refundFree()` yoki `topUp()`).
+
+**Qaysi foto ketadi:** ko'ylak rasmi `variantOfKind(item, 'ai')` dan olinadi
+(`GenerateBar.tsx`), UI dagi preview'lar esa `defaultVariant` da qoladi — mijoz brend
+fotosini ko'radi, model esa generatsiya uchun tayyorlangan fotoni oladi.
 
 **Rasm o'lchamlari:** yuz `768×768` (`fileToSquarePhoto.ts`), ko'ylak `2048px`
 (`DETAIL_MAX_SIDE`). Ko'ylakni kichraytirsangiz model dantelni loyqa chizadi.

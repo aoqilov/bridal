@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 import { MdOutlineZoomOutMap } from 'react-icons/md';
 import 'swiper/css';
-import type { ItemVariant } from '@/features/catalog';
+import { VARIANT_KIND_LABELS, type ItemVariant } from '@/features/catalog';
 import ItemLightbox from './ItemLightbox';
 
 type Props = {
@@ -46,7 +46,7 @@ export default function ItemGallery({
             >
               <img
                 src={src}
-                alt={`${itemName} — ${variant.colorName} (${idx + 1})`}
+                alt={`${itemName} — ${VARIANT_KIND_LABELS[variant.kind]} (${idx + 1})`}
                 className="h-full w-full object-cover"
                 loading={idx === 0 ? 'eager' : 'lazy'}
               />

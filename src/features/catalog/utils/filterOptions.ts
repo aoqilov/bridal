@@ -8,12 +8,10 @@ export type FilterOption = {
   label: string;
   /** Shu variantga to'g'ri keladigan tovarlar soni */
   count: number;
-  /** Rang bo'limi uchun — chipdagi nuqta rangi */
-  hex?: string;
 };
 
 /** Filtrlanadigan xususiyatlar — URL parametri nomi ham shundan olinadi */
-export type AttributeKey = 'brands' | 'colors' | 'materials' | 'stones';
+export type AttributeKey = 'brands' | 'materials' | 'stones';
 
 /**
  * Aksessuardagi `material` — erkin matn ("Экокожа, атлас"), ya'ni bitta tovarda
@@ -36,8 +34,6 @@ export function itemAttributeValues(item: CatalogItem, key: AttributeKey): strin
   switch (key) {
     case 'brands':
       return item.brand ? [item.brand] : [];
-    case 'colors':
-      return [...new Set(item.variants.map((v) => v.colorName).filter(Boolean))];
     case 'materials': {
       if (isDress(item)) return item.fabrics;
       // Toshlar aksessuarda `material` matni ichida ham yozilgan
@@ -57,15 +53,6 @@ function optionLabel(key: AttributeKey, value: string): string {
   return FABRIC_LABELS[value as keyof typeof FABRIC_LABELS] ?? value;
 }
 
-/** Rang chipidagi nuqta uchun — shu nom bilan uchragan birinchi variant rangi */
-function colorHex(items: CatalogItem[], colorName: string): string | undefined {
-  for (const item of items) {
-    const variant = item.variants.find((v) => v.colorName === colorName);
-    if (variant) return variant.colorHex;
-  }
-  return undefined;
-}
-
 function collect(items: CatalogItem[], key: AttributeKey): FilterOption[] {
   const counts = new Map<string, number>();
   for (const item of items) {
@@ -79,7 +66,6 @@ function collect(items: CatalogItem[], key: AttributeKey): FilterOption[] {
       value,
       label: optionLabel(key, value),
       count,
-      hex: key === 'colors' ? colorHex(items, value) : undefined,
     }))
     // Ko'p uchragani yuqorida — foydalanuvchi ko'pincha shularni qidiradi
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'ru'));
@@ -95,7 +81,6 @@ export function buildFilterOptions(
 ): Record<AttributeKey, FilterOption[]> {
   return {
     brands: collect(items, 'brands'),
-    colors: collect(items, 'colors'),
     materials: collect(items, 'materials'),
     stones: collect(items, 'stones'),
   };

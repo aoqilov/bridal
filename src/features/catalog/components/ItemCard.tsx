@@ -6,7 +6,6 @@ import type { CatalogItem } from '../helper.types.catalog';
 import { defaultVariant } from '../utils/item';
 import { primaryPrice } from '../utils/price';
 import ItemBadges from './ItemBadges';
-import ItemColorDots from './ItemColorDots';
 import ItemCollage from './ItemCollage';
 
 type Props = {
@@ -48,8 +47,6 @@ export default function ItemCard({ item, gallery = false, className }: Props) {
         )}
 
         <ItemBadges item={item} className="absolute left-2 top-2" />
-
-        <ItemColorDots variants={item.variants} className="absolute bottom-2 left-2" />
       </div>
 
       {/* Narx pastga yopishadi — qatordagi qo'shni kartada ham bir tekisda turadi */}

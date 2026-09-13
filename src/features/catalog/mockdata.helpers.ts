@@ -1,4 +1,4 @@
-import type { DressSize, ItemVariant } from './helper.types.catalog';
+import { VARIANT_KINDS, type DressSize, type ItemVariant } from './helper.types.catalog';
 
 /** Placeholder rasm (keyinchalik CDN URL bilan almashtiriladi) */
 export const img = (seed: string, w = 900, h = 1200): string =>
@@ -25,21 +25,18 @@ export function sizes(available: number[], missing: number[] = []): DressSize[] 
   );
 }
 
-/** Rang varianti — bitta asosiy + bir nechta qo'shimcha rasm */
-export function variant(
-  id: string,
-  colorName: string,
-  colorHex: string,
-  seed: string,
-  extra = 3,
-): ItemVariant {
-  return {
-    id,
-    colorName,
-    colorHex,
+/**
+ * Bitta modelning uchala varianti — picsum placeholder rasmlar bilan.
+ * `baseId` tovarning `id` si: variant id'lari `<baseId>-brand` ko'rinishida
+ * chiqadi, ya'ni `defaultVariantId` ni ham shu qoidadan yozish mumkin.
+ */
+export function seedVariants(baseId: string, seed: string, extra = 3): ItemVariant[] {
+  return VARIANT_KINDS.map((kind) => ({
+    id: `${baseId}-${kind}`,
+    kind,
     mainImage: img(`${seed}-0`),
     otherImages: Array.from({ length: extra }, (_, i) => img(`${seed}-${i + 1}`)),
-  };
+  }));
 }
 
 /** Bugundan N kun keyingi sana, "YYYY-MM-DD" — band kunlar demo uchun */
@@ -66,15 +63,21 @@ export function photoSet(base: string, count: number, ext = 'webp'): string[] {
 }
 
 /**
- * Rang varianti — lokal fayllar bilan. Birinchi rasm asosiy (kartochkada ko'rinadi).
- * photoVariant('d-amira-ivory', 'Айвори', '#F5EFE6', photoSet('amira-ivory', 4))
+ * Bitta modelning uchala varianti — lokal fayllar bilan. Birinchi rasm asosiy
+ * (kartochkada ko'rinadi).
+ *   photoVariants('d-amira', [photo('amira-1.jpg'), photo('amira-2.jpg')])
+ *
+ * Hozircha uchala variant ham bir xil rasmni ko'rsatadi: salonda brend /
+ * komplekt / примерка uchun alohida fotolar hali yo'q. Foto tayyor bo'lganda
+ * shu funksiya emas, o'sha modelning qatori o'zgartiriladi — qolganlari
+ * joyida qoladi.
  */
-export function photoVariant(
-  id: string,
-  colorName: string,
-  colorHex: string,
-  files: string[],
-): ItemVariant {
+export function photoVariants(baseId: string, files: string[]): ItemVariant[] {
   const [main, ...rest] = files;
-  return { id, colorName, colorHex, mainImage: main, otherImages: rest };
+  return VARIANT_KINDS.map((kind) => ({
+    id: `${baseId}-${kind}`,
+    kind,
+    mainImage: main,
+    otherImages: rest,
+  }));
 }

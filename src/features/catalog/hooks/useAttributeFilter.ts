@@ -4,7 +4,7 @@ import type { CatalogItem } from '../helper.types.catalog';
 import { itemAttributeValues, type AttributeKey } from '../utils/filterOptions';
 
 /** URL parametri nomi = xususiyat kaliti (`?brands=Amira,Rosa`) */
-const KEYS: AttributeKey[] = ['brands', 'colors', 'materials', 'stones'];
+const KEYS: AttributeKey[] = ['brands', 'materials', 'stones'];
 
 function toSet(param: string | null): Set<string> {
   if (!param) return new Set();
@@ -12,7 +12,7 @@ function toSet(param: string | null): Set<string> {
 }
 
 /**
- * Brend / rang / material / tosh filtri — kategoriya filtridan alohida
+ * Brend / material / tosh filtri — kategoriya filtridan alohida
  * (`useCategoryFilter`), chunki bular tovarning xususiyati, joylashuvi emas.
  * Holat URL'da: havolani ulashganda tanlov ham ketadi.
  */
@@ -22,7 +22,6 @@ export function useAttributeFilter() {
   const selected = useMemo<Record<AttributeKey, Set<string>>>(
     () => ({
       brands: toSet(searchParams.get('brands')),
-      colors: toSet(searchParams.get('colors')),
       materials: toSet(searchParams.get('materials')),
       stones: toSet(searchParams.get('stones')),
     }),

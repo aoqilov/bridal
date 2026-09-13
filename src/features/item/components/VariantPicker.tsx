@@ -1,5 +1,5 @@
 import { FiCheck } from 'react-icons/fi';
-import type { ItemVariant } from '@/features/catalog';
+import { VARIANT_KIND_LABELS, type ItemVariant } from '@/features/catalog';
 import { PLATE_FRAME, PLATE_BORDER, PLATE_BORDER_ACTIVE } from '@/components/ui';
 import { cn } from '@/utils/cn';
 
@@ -9,22 +9,27 @@ type Props = {
   onChange: (id: string) => void;
 };
 
+/**
+ * Variant tanlash — rang emas, taqdimot turi: бренд / комплектация / для примерки.
+ * Tanlov galereyani almashtiradi, narxga ta'sir qilmaydi.
+ */
 export default function VariantPicker({ variants, selected, onChange }: Props) {
   if (variants.length < 2) return null;
 
   return (
     <div>
-      <p className="mb-2.5 text-[9.5px] uppercase tracking-[0.14em] text-subtle">Цвет</p>
+      <p className="mb-2.5 text-[9.5px] uppercase tracking-[0.14em] text-subtle">Вариант</p>
 
       <div className="flex flex-wrap gap-2.5">
         {variants.map((v) => {
           const active = v.id === selected.id;
+          const label = VARIANT_KIND_LABELS[v.kind];
           return (
             <button
               key={v.id}
               type="button"
               onClick={() => onChange(v.id)}
-              aria-label={v.colorName}
+              aria-label={label}
               aria-pressed={active}
               className="flex w-14 flex-col gap-1 focus:outline-none"
             >
@@ -48,24 +53,17 @@ export default function VariantPicker({ variants, selected, onChange }: Props) {
                       <FiCheck size={12} />
                     </span>
                   )}
-                  {!active && (
-                    <span
-                      className="absolute right-1 top-1 h-3.5 w-3.5 rounded-full border border-overlay-fg shadow"
-                      style={{ backgroundColor: v.colorHex }}
-                      aria-hidden
-                    />
-                  )}
                 </span>
               </span>
 
-              {/* Rang nomi — kartochka ostida */}
+              {/* Variant nomi — kartochka ostida */}
               <span
                 className={cn(
-                  'line-clamp-1 text-center text-[10px] leading-tight',
+                  'line-clamp-2 text-center text-[10px] leading-tight',
                   active ? 'text-foreground' : 'text-muted',
                 )}
               >
-                {v.colorName}
+                {label}
               </span>
             </button>
           );

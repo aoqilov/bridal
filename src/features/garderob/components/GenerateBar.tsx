@@ -13,7 +13,7 @@ import {
 import {
   MOCK_CATALOG,
   getItemById,
-  defaultVariant,
+  variantOfKind,
   isHijabItem,
   hemLengthOf,
 } from '@/features/catalog';
@@ -35,11 +35,17 @@ function item(id: string | null | undefined) {
   return id ? getItemById(id, MOCK_CATALOG) : null;
 }
 
-/** Katalogdagi tovarning rasm(lar)i — tanlanmagan bo'lsa bo'sh ro'yxat */
+/**
+ * Katalogdagi tovarning rasm(lar)i — tanlanmagan bo'lsa bo'sh ro'yxat.
+ *
+ * Generatsiya `ai` variantidan oziqlanadi: brend fotolari ko'chada olingan va
+ * ularning foni/yorug'ligi natijaga sizib chiqadi. `ai` fotosi yo'q modelda
+ * `variantOfKind` brend fotosiga qaytadi.
+ */
 function itemImages(id: string | null | undefined): string[] {
   const found = item(id);
   if (!found) return [];
-  const variant = defaultVariant(found);
+  const variant = variantOfKind(found, 'ai');
   return [variant.mainImage, ...variant.otherImages].filter(Boolean);
 }
 

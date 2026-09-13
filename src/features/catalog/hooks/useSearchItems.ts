@@ -28,7 +28,6 @@ export function useSearchItems(
       if (item.name.toLowerCase().includes(q)) return true;
       if (item.description?.toLowerCase().includes(q)) return true;
       if (item.tags?.some((t) => t.toLowerCase().includes(q))) return true;
-      if (item.variants.some((v) => v.colorName.toLowerCase().includes(q))) return true;
 
       if (isDress(item)) {
         if (SILHOUETTE_LABELS[item.silhouette].toLowerCase().includes(q)) return true;

@@ -45,12 +45,6 @@ export default function ItemThumb({ item, gallery = false, className }: Props) {
       )}
 
       <ItemBadges item={item} size="sm" className="absolute left-1 top-1" />
-
-      {item.variants.length > 1 && (
-        <span className="absolute right-1 top-1 rounded-full bg-overlay-dark px-1.5 py-0.5 text-[9px] font-semibold text-overlay-fg">
-          +{item.variants.length}
-        </span>
-      )}
     </Link>
   );
 }

@@ -8,6 +8,7 @@ import type {
   Shade,
   Silhouette,
   Sleeve,
+  VariantKind,
 } from '../helper.types.catalog';
 
 export const KIND_LABELS: Record<ItemKind, string> = {
@@ -26,6 +27,13 @@ export const OFFER_SHORT_LABELS: Record<OfferType, string> = {
   rent: 'Аренда',
   sale: 'Покупка',
   tailoring: 'Пошив',
+};
+
+/** Tovar sahifasidagi variant pereklyuchateli */
+export const VARIANT_KIND_LABELS: Record<VariantKind, string> = {
+  brand: 'Бренд',
+  komplekt: 'Комплектация',
+  ai: 'Для примерки',
 };
 
 export const SILHOUETTE_LABELS: Record<Silhouette, string> = {

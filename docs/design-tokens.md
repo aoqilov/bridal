@@ -446,7 +446,7 @@ Biznes: **ijara (аренда) + sotuv (продажа) + o'lchov bo'yicha tikis
 
 **Accessory:** `accessoryType`, `material?`, `oneSize?`, `sizeLabels?[]`.
 
-**ItemVariant:** `id`, `colorName`, `colorHex`, `mainImage`, `otherImages[]`.
+**ItemVariant:** `id`, `kind` (`brand` | `komplekt` | `ai`), `mainImage`, `otherImages[]`.
 
 ### Enumlar va ruscha yorliqlari
 

@@ -66,10 +66,12 @@ export type DressSize = {
   available: boolean;  // hozir salonda bormi
 };
 
+export const VARIANT_KINDS = ['brand', 'komplekt', 'ai'] as const;
+export type VariantKind = (typeof VARIANT_KINDS)[number];
+
 export type ItemVariant = {
   id: string;
-  colorName: string;   // "Айвори"
-  colorHex: string;    // "#F5EFE6"
+  kind: VariantKind;   // 'brand' | 'komplekt' | 'ai'
   mainImage: string;   // "/assets/w-sweetheart-1-1.jpg"
   otherImages: string[];
 };
@@ -251,23 +253,34 @@ export type CatalogItem = Dress | Accessory;
 
 ---
 
-## 6. ItemVariant — rang + fotolar
+## 6. ItemVariant — taqdimot turi + fotolar
 
 ```ts
-{ id, colorName, colorHex, mainImage, otherImages[] }
+{ id, kind, mainImage, otherImages[] }
 ```
+
+Variant **rang emas**: bitta model bitta rangda bo'ladi (`Dress.shade`).
+Variant o'sha modelning qaysi fotolari ko'rsatilishini ajratadi.
+
+| `kind` | Ekranda | Nima uchun |
+|---|---|---|
+| `brand` | Бренд | salon/brend fotolari — katalog kartochkasi va galereyaning asosiysi |
+| `komplekt` | Комплектация | to'liq komplekt (fata, kamar va h.k. bilan) fotolari |
+| `ai` | Для примерки | примерка generatsiyasi uchun toza foto |
 
 | Maydon | Kontrol | Izoh |
 |---|---|---|
-| `colorName` | text | «Айвори», «Белый», «Шампань» |
-| `colorHex` | color picker + hex text | rang nuqtasi va chip uchun |
+| `kind` | select | uchta qiymatdan biri, modelda takrorlanmaydi |
 | `mainImage` | fayl nomi | **kartochkada shu rasm** ko'rinadi |
 | `otherImages` | fayl nomlari ro'yxati | galereya, drag bilan tartiblash |
 
 - Rasmlar `public/assets/` da, yo'l `/assets/<fayl>`. Backend yo'q — adminka fayl yuklamaydi, faqat nom yozadi.
 - Nomlash: `<prefiks>-<model№>-<foto№>.<ext>` → `w-sweetheart-1-3.jpg`.
+- Variant id'si `<tovar id>-<kind>`: `d-w-sweetheart-4-brand`. `photoVariants()` shu qoida bo'yicha yasaydi.
 - `defaultVariantId` variantlar orasidan topilmasa — `variants[0]` olinadi (`defaultVariant()`).
-- Kamida **1 variant** bo'lishi shart, aks holda galereya buziladi.
+- Kamida **1 variant** bo'lishi shart, aks holda galereya buziladi. Ikkitadan kam
+  bo'lsa tovar sahifasidagi pereklyuchatel ko'rinmaydi (`VariantPicker`).
+- Generatsiya `variantOfKind(item, 'ai')` dan foto oladi — `ai` yo'q bo'lsa brendnikiga qaytadi.
 
 ---
 

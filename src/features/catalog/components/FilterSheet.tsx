@@ -12,7 +12,6 @@ import type { KindValue } from '../hooks/useKindFilter';
 /** Xususiyat bo'limlari — tartibi ekranda ko'rinadigan tartib */
 const ATTRIBUTE_SECTIONS: { key: AttributeKey; title: string; placeholder: string }[] = [
   { key: 'brands', title: 'Бренд', placeholder: 'Любой бренд' },
-  { key: 'colors', title: 'Цвет', placeholder: 'Любой цвет' },
   { key: 'materials', title: 'Материал', placeholder: 'Любой материал' },
   { key: 'stones', title: 'Камни', placeholder: 'Любые камни' },
 ];
@@ -33,7 +32,7 @@ type Props = {
   selectedSubcategoryIds: Set<string>;
   onToggleCategory: (categoryId: string, subIds: string[]) => void;
   onToggleSubcategory: (subcategoryId: string, categoryId: string) => void;
-  /** Brend / rang / material / tosh tanlovi */
+  /** Brend / material / tosh tanlovi */
   selectedAttributes: Record<AttributeKey, Set<string>>;
   onToggleAttribute: (key: AttributeKey, value: string) => void;
   onClear: () => void;

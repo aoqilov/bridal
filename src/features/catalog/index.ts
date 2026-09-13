@@ -6,6 +6,7 @@ export type {
   Accessory,
   DressSize,
   ItemVariant,
+  VariantKind,
   ItemKind,
   OfferType,
   Silhouette,
@@ -20,6 +21,7 @@ export type {
 
 export {
   ITEM_KINDS,
+  VARIANT_KINDS,
   OFFER_TYPES,
   SILHOUETTES,
   NECKLINES,
@@ -52,6 +54,7 @@ export type { PriceView } from './utils/price';
 
 export {
   defaultVariant,
+  variantOfKind,
   isHijabItem,
   hemLengthOf,
   showsFeet,
@@ -60,6 +63,7 @@ export {
 
 export {
   KIND_LABELS,
+  VARIANT_KIND_LABELS,
   OFFER_LABELS,
   OFFER_SHORT_LABELS,
   SILHOUETTE_LABELS,

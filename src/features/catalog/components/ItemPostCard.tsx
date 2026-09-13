@@ -8,7 +8,6 @@ import { ACCESSORY_TYPE_LABELS, SILHOUETTE_LABELS } from '../utils/labels';
 import { defaultVariant } from '../utils/item';
 import { primaryPrice } from '../utils/price';
 import ItemBadges from './ItemBadges';
-import ItemColorDots from './ItemColorDots';
 import ItemCollage from './ItemCollage';
 
 type Props = {
@@ -66,12 +65,6 @@ export default function ItemPostCard({ item, gallery = false, className }: Props
 
         {/* Overlaylar rasm ustida suzadi — bosish ostidagi havolaga o'tsin */}
         <ItemBadges item={item} className="pointer-events-none absolute left-3 top-3" />
-
-        <ItemColorDots
-          variants={item.variants}
-          size="md"
-          className="pointer-events-none absolute bottom-3 left-3"
-        />
       </div>
 
       <div className="space-y-1.5 px-4 pt-3">

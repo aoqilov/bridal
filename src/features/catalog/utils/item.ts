@@ -1,12 +1,26 @@
-import type { CatalogItem, HemLength, ItemVariant } from '../helper.types.catalog';
+import type {
+  CatalogItem,
+  HemLength,
+  ItemVariant,
+  VariantKind,
+} from '../helper.types.catalog';
 import { isDress } from '../helper.types.catalog';
 
 /**
- * Kartochkalarda ko'rsatiladigan rang varianti.
+ * Kartochkalarda ko'rsatiladigan variant (odatda `brand`).
  * `defaultVariantId` topilmasa — birinchisi (mockdata to'liq bo'lmasligi mumkin).
  */
 export function defaultVariant(item: CatalogItem): ItemVariant {
   return item.variants.find((v) => v.id === item.defaultVariantId) ?? item.variants[0];
+}
+
+/**
+ * Kerakli turdagi variant. Yo'q bo'lsa — `defaultVariant`, ya'ni chaqiruvchi
+ * hech qachon bo'sh qolmaydi: `ai` fotosi hali yuklanmagan model ham
+ * генерацияga brend fotosi bilan tushaveradi.
+ */
+export function variantOfKind(item: CatalogItem, kind: VariantKind): ItemVariant {
+  return item.variants.find((v) => v.kind === kind) ?? defaultVariant(item);
 }
 
 /** "Платья с хиджабом" kategoriyasi — `mockdata.categories.real.ts` dagi `id` */
