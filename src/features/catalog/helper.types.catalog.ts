@@ -149,6 +149,11 @@ type BaseItem = {
   /** Brend / kolleksiya nomi — filtrda alohida bo'lim */
   brand?: string;
   /**
+   * Qayerda tikilgan / qayerdan kelgan («Узбекистан», «Турция», salon nomi).
+   * Yozilmagan bo'lsa tovar sahifasi `DEFAULT_ORIGIN` ni ko'rsatadi.
+   */
+  origin?: string;
+  /**
    * Bezakdagi toshlar ("Кристаллы", "Жемчуг", ...) — erkin matn, chunki
    * ro'yxat salon assortimentiga qarab o'zgaradi. Filtr variantlari
    * katalogdagi qiymatlardan yig'iladi (`buildFilterOptions`).

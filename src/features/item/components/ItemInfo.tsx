@@ -9,7 +9,6 @@ import ItemPricing from './ItemPricing';
 import VariantPicker from './VariantPicker';
 import ItemSizes from './ItemSizes';
 import ItemDescription from './ItemDescription';
-import ItemPerks from './ItemPerks';
 
 type Props = {
   item: CatalogItem;
@@ -55,8 +54,6 @@ export default function ItemInfo({
       {/* <ItemAvailability item={item} /> */}
 
       {item.description && <ItemDescription text={item.description} />}
-
-      <ItemPerks />
     </section>
   );
 }

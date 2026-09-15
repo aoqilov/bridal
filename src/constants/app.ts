@@ -8,6 +8,14 @@ export const HEADER_TITLE = 'iCatalog';
  * Fayl qo'yilmagan bo'lsa header faqat matnni ko'rsatadi.
  */
 export const HEADER_LOGO_SRC = '/assets/icons/logo.svg';
+/**
+ * Tovar sahifasidagi «Бренд» qatori — tovarda `brand` yozilmagan bo'lsa shu chiqadi.
+ * Salon o'z nomi ostida sotadi, shuning uchun header nomi bilan bitta manba.
+ */
+export const DEFAULT_BRAND = HEADER_TITLE;
+/** Tovarda `origin` yo'q bo'lsa — «Производство» qatoridagi standart qiymat */
+export const DEFAULT_ORIGIN = 'Узбекистан';
+
 /** Barcha localStorage kalitlari shu prefiks bilan */
 export const STORAGE_PREFIX = 'bridal-';
 export const APP_LOCALE = 'ru-RU';

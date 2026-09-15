@@ -1,24 +1,13 @@
 import type { ReactNode } from 'react';
 import {
-  MdOutlineStyle,
-  MdOutlineCheckroom,
+  MdOutlinePlace,
+  MdOutlineStorefront,
   MdOutlineLayers,
-  MdOutlinePalette,
-  MdOutlineStraighten,
+  MdOutlineDiamond,
   MdOutlineWaterDrop,
-  MdOutlineCalendarMonth,
-  MdOutlineCategory,
 } from 'react-icons/md';
-import {
-  isDress,
-  ACCESSORY_TYPE_LABELS,
-  FABRIC_LABELS,
-  NECKLINE_LABELS,
-  SHADE_LABELS,
-  SILHOUETTE_LABELS,
-  SLEEVE_LABELS,
-  type CatalogItem,
-} from '@/features/catalog';
+import { isDress, FABRIC_LABELS, type CatalogItem } from '@/features/catalog';
+import { DEFAULT_BRAND, DEFAULT_ORIGIN } from '@/constants/app';
 import { cn } from '@/utils/cn';
 import SectionTitle from './SectionTitle';
 
@@ -36,79 +25,44 @@ type Props = {
 
 const ICON_SIZE = 16;
 
-function buildRows(item: CatalogItem): Row[] {
-  const rows: Row[] = [];
-
+/** Ko'ylakda — matolar ro'yxati, aksessuarda — erkin matnli material */
+function materialOf(item: CatalogItem): string {
   if (isDress(item)) {
-    rows.push({
-      icon: <MdOutlineStyle size={ICON_SIZE} />,
-      label: 'Силуэт',
-      value: SILHOUETTE_LABELS[item.silhouette],
-    });
-    rows.push({
-      icon: <MdOutlineCheckroom size={ICON_SIZE} />,
-      label: 'Вырез',
-      value: NECKLINE_LABELS[item.neckline],
-    });
-    rows.push({
-      icon: <MdOutlineCheckroom size={ICON_SIZE} />,
-      label: 'Рукав',
-      value: SLEEVE_LABELS[item.sleeve],
-    });
-    rows.push({
-      icon: <MdOutlinePalette size={ICON_SIZE} />,
-      label: 'Оттенок',
-      value: SHADE_LABELS[item.shade],
-    });
-    if (item.trainLength) {
-      rows.push({
-        icon: <MdOutlineStraighten size={ICON_SIZE} />,
-        label: 'Шлейф',
-        value: `${item.trainLength} см`,
-      });
-    }
-    if (item.hasCorset !== undefined) {
-      rows.push({
-        icon: <MdOutlineCheckroom size={ICON_SIZE} />,
-        label: 'Корсет',
-        value: item.hasCorset ? 'Есть' : 'Нет',
-      });
-    }
-    if (item.collectionYear) {
-      rows.push({
-        icon: <MdOutlineCalendarMonth size={ICON_SIZE} />,
-        label: 'Коллекция',
-        value: String(item.collectionYear),
-      });
-    }
-    rows.push({
-      icon: <MdOutlineLayers size={ICON_SIZE} />,
-      label: 'Ткань',
-      value: item.fabrics.map((f) => FABRIC_LABELS[f]).join(', '),
-      wide: true,
-    });
-    return rows;
+    return item.fabrics.map((f) => FABRIC_LABELS[f]).join(', ') || '—';
   }
+  return item.material ?? '—';
+}
 
-  rows.push({
-    icon: <MdOutlineCategory size={ICON_SIZE} />,
-    label: 'Тип',
-    value: ACCESSORY_TYPE_LABELS[item.accessoryType],
-  });
-  rows.push({
-    icon: <MdOutlineStraighten size={ICON_SIZE} />,
-    label: 'Размер',
-    value: item.oneSize ? 'Один размер' : (item.sizeLabels?.join(', ') ?? '—'),
-  });
-  if (item.material) {
-    rows.push({
+/**
+ * Uch qator: yuqorida ishlab chiqarilgan joy va brend yonma-yon, pastda
+ * material va toshlar — ikkalasi ham vergul bilan sanaladi, shuning uchun
+ * butun enni egallaydi.
+ */
+function buildRows(item: CatalogItem): Row[] {
+  return [
+    {
+      icon: <MdOutlinePlace size={ICON_SIZE} />,
+      label: 'Производство',
+      value: item.origin ?? DEFAULT_ORIGIN,
+    },
+    {
+      icon: <MdOutlineStorefront size={ICON_SIZE} />,
+      label: 'Бренд',
+      value: item.brand ?? DEFAULT_BRAND,
+    },
+    {
       icon: <MdOutlineLayers size={ICON_SIZE} />,
       label: 'Материал',
-      value: item.material,
+      value: materialOf(item),
       wide: true,
-    });
-  }
-  return rows;
+    },
+    {
+      icon: <MdOutlineDiamond size={ICON_SIZE} />,
+      label: 'Камни',
+      value: item.stones?.length ? item.stones.join(', ') : 'Нет',
+      wide: true,
+    },
+  ];
 }
 
 export default function ItemSpecs({ item }: Props) {
