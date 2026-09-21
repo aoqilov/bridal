@@ -98,6 +98,7 @@ qaytadi. Hozircha uchala variant bir xil rasmni ko'rsatadi: alohida fotolar hali
 - `useRecentlyViewedStore` (`bridal-recent`)
 - `useUserStore` (`bridal-user`), `useThemeStore` (`bridal-theme`)
 - `useFacesStore` (`bridal-faces`) — garderob uchun yuklangan yuz suratlari (`createPhotoStore`)
+- `useBodyPhotosStore` (`bridal-body-photos`) — sodda generatsiya uchun to'liq bo'y suratlari (`createPhotoStore`). `useFacesStore` dan alohida: kesim boshqa, o'lcham boshqa
 - `useWardrobeStore` (`bridal-wardrobe`) — sevimlilardan garderobga olingan tovarlar (`MAX_PICKED`), model sozlamalari va tayyor generatsiya rasmlari
 - `useWalletStore` (`bridal-wallet`) — generatsiya uchun hamyon: balans, tranzaksiyalar, bepul birinchi generatsiya. Narxlar — `constants/pricing.ts`
 
@@ -111,18 +112,21 @@ Server state (API cache) uchun Zustand ishlatma — kerak bo'lsa alohida yechim 
 "Генерация" bosqichi to'liq `components/generation/` da:
 
 ```
-GenerationStep.tsx   yuqorida preview, pastda ikki qator — hammasini yig'adi
+GenerationStep.tsx   FAQAT rejim almashtirgichi (CusSegment: Обычная / Простая)
+FullGeneration.tsx     to'liq oqim — yuz + ko'ylak + fata/taqinchoq/tufli + Настройка
+SimpleGeneration.tsx   sodda oqim — to'liq bo'y surat + ko'ylak, boshqa hech nima
 OutfitPreview.tsx    faol bo'limda nima tanlanganini ko'rsatadi
-CategoryRow.tsx      1-qator: Лицо · Платье · Фата · Украшения · Настройка →
+CategoryRow.tsx      1-qator chiplari — generic, ikkala rejim ishlatadi
 PickRowShell.tsx     2-qatorning qobig'i (sanoq, scroll, katak o'lchami)
 PickTile.tsx           bitta katak — rasm, ✓ va ×
 FacePickRow.tsx        yuz: `useFacesStore`, "+" galereyani ochadi
+BodyPickRow.tsx        to'liq bo'y surat: `useBodyPhotosStore`, "+" galereyani ochadi
 OutfitPickRow.tsx      kiyim: `useWardrobeStore`, "+" избранное ga olib boradi
-ModelSetupSheet.tsx  "Настройка модели" — sheet ichida
+ModelSetupSheet.tsx  "Настройка модели" — sheet ichida (faqat to'liq rejimda)
 ```
 
-Faol bo'lim (`tab`) — `GenerationStep` ichidagi lokal `useState`. Global state'ga
-chiqarmang: uni boshqa hech kim o'qimaydi va saqlanishi ham shart emas.
+Faol rejim (`mode`) va faol bo'lim (`tab`) — lokal `useState`. Global state'ga
+chiqarmang: ularni boshqa hech kim o'qimaydi va saqlanishi ham shart emas.
 
 Ikki qator manbasi butunlay boshqa — yuzlar galereyadan (data URL, `MAX_PHOTOS`),
 tovarlar sevimlilardan (faqat `id`, `MAX_PICKED`). Shu sababli bitta universal
@@ -130,18 +134,102 @@ komponent emas, umumiy qobiq + ikkita yupqa adapter.
 
 ## Примерка generatsiyasi (`features/garderob/`)
 
-Yuz surati + katalogdagi ko'ylak (va ixtiyoriy fata/taqinchoq) dan realistik to'liq
-bo'y surat yasaydi. Model — OpenRouter orqali `google/gemini-3.1-flash-image`.
+Model — OpenRouter orqali `google/gemini-3.1-flash-image`. **Ikkita rejim bor:**
+
+| Rejim | Mijoz beradi | Natija | Fayllar |
+|---|---|---|---|
+| **To'liq** (`Обычная`) | yuz surati + ko'ylak + ixtiyoriy fata/taqinchoq/tufli + "Настройка модели" | studiyada noldan qurilgan to'liq bo'y kadr | `generateTryOn.ts` + `buildBridalPrompt.ts` |
+| **Sodda** (`Простая`) | o'zining to'liq bo'y surati + ko'ylak | o'sha fotoning o'zi, faqat kiyimi almashgan | `generateSwap.ts` + `buildSwapPrompt.ts` |
 
 ```
 api/
   model.ts              model nomi, rasm limiti, aspect ratio — BITTA joyda
   imageToDataUrl.ts     /assets/... rasmni kichraytirib data URL ga o'giradi
-  generateTryOn.ts      referenslarni yig'adi va so'rov yuboradi
+  requestImage.ts       OpenRouter so'rovi — IKKALA rejim uchun yagona chiqish
+  generateTryOn.ts      to'liq rejim: referenslarni yig'adi
+  generateSwap.ts       sodda rejim: foto + ko'ylak fotolari
 prompt/
   modelOptions.ts       "Настройка модели" tanlovlari → inglizcha prompt bo'laklari
-  buildBridalPrompt.ts  promptning o'zi
+  buildBridalPrompt.ts  to'liq rejim prompti
+  buildSwapPrompt.ts    sodda rejim prompti
 ```
+
+**Ikki prompt qasddan alohida.** To'liq rejimda surat noldan quriladi (fon, poza,
+gavda, soch — hammasi promptdan), sodda rejimda esa surat allaqachon bor va undan
+FAQAT bitta narsa o'zgaradi. Qulflari bir-biriga teskari: `BACKGROUND LOCK` fonni
+**yozadi**, `PHOTOGRAPH LOCK` esa fonni **saqlaydi**; `BODY` gavdani **buyuradi**,
+sodda rejim esa uni **fotodan oladi**. Bittaga qo'shsangiz bu qulflar shartlar
+ichida chalkashadi. Umumiy qoidalar (`DRESS LOCK`, `COVERAGE LOCK`, `LENGTH LOCK`,
+`MODEST COVERAGE`, inkor qoidasi) ikkalasida ham bir xil ishlaydi.
+
+**Tahrir promptida muvozanat qoidasi — `buildSwapPrompt` ga tegishdan oldin o'qing.**
+Sodda rejim promptining birinchi varianti rasmni **umuman o'zgartirmay qaytardi**.
+Sabab: "saqla" signallari "almashtir" signallaridan 7 barobar ko'p edi (102 : 15),
+`PHOTOGRAPH LOCK — HIGHEST PRIORITY` sarlavhasi ustuvorlikni saqlashga bergandi,
+matnda `The output IS IMAGE 1` degan literal "kirishni qaytar" buyrug'i turgandi va
+`DO NOT` ro'yxati 15 ta `no changed X` bandidan iborat edi — inkor qoidasi bo'yicha
+model "no" ni emas, "changed" so'zini ko'radi.
+
+Tuzatishda **teskari tomonga o'tib ketdi**: `DRESS LOCK` ga `HIGHEST PRIORITY`
+yorlig'i berilib, ko'ylak bo'limlari tepaga chiqarilgach model natija sifatida
+**ko'ylak fotosining o'zini** qaytardi. Ya'ni bu bitta yo'nalishli qoida emas,
+**muvozanat**: qaysi tomon og'sa — o'sha tomonning kirish rasmi qaytadi.
+
+Uchinchi joylashuv — quyidagi simmetrik tartib — **sinab ko'rilgan va ishlaydi**.
+Ikkala chetga og'ish ham real, shuning uchun bu yerga "yaxshilash" niyatida
+tegishdan oldin natijani sinab ko'ring:
+
+```
+THE OUTPUT FRAME     ikkala yarmini bitta joyda bog'laydi ("u — o'z joyida — o'sha ko'ylakda")
+THE GOWN ON HER      o'zgarish
+WHAT SHE KEEPS       saqlanadigani
+DRESS LOCK …         ko'ylak tafsilotlari (ustuvorlik yorlig'isiz)
+```
+
+Qoidalar: birorta bo'limga `HIGHEST PRIORITY` yozmang (u avtomatik g'olib chiqadi),
+`DO NOT` ga `no changed …` bandlari qo'shmang (inkor qoidasi), va o'zgartirgandan
+keyin muvozanatni o'lchang — promptni chiqarib ko'ylak so'zlari (`gown|dress|lace`)
+va odam so'zlari (`she|her|woman|photograph`) nisbatini sanang.
+
+**Rasmlar tomoni ham shu muvozanatga kiradi — va u yerda og'ish kuchliroq.**
+Matn muvozanatlangani bilan kirish pikseli nomutanosib bo'lsa natija baribir
+ko'ylakka og'adi. Sodda rejimda shuning uchun uchta chora bor (`generateSwap.ts`):
+
+- `MAX_SWAP_DRESS_REFERENCES = 2` — to'liq rejimdagi 4 emas;
+- ko'ylak referensi o'lchami **fotoga bog'langan**, qat'iy `DETAIL_MAX_SIDE` emas;
+- foto `MIN_DRESS_SIDE` dan kichik bo'lsa ko'ylak referensi **bittaga** tushadi.
+
+Sabab: `fileToPortraitPhoto` suratni hech qachon kattalashtirmaydi, ya'ni mijoz
+800px foto yuklasa u 800px bo'lib qoladi. Ko'ylak qat'iy 2048px da ketganda bu
+~13 barobar ko'p piksel bo'lardi va model ko'ylak fotosining o'zini qaytarardi —
+og'ish foydalanuvchi qaysi suratni yuklaganiga qarab paydo bo'lib, yo'qolib
+turardi. Endi nisbat har qanday fotoda ~2× atrofida qoladi.
+
+Muvozanat `console.info('[swap] …')` da chop etiladi: foto o'lchami, tanlangan
+nisbat, ko'ylak referenslari va `og'irlik ko'ylak/foto` ko'rsatkichi. Natija yana
+chetga og'sa — birinchi navbatda shu qatorga qarang.
+
+**Sodda rejimda "Настройка модели" yo'q va bo'lmaydi ham** — poza, gavda, soch, fon
+va yorug'lik mijoz fotosidan keladi, ularni sozlash fotodagi haqiqiy holatga qarshi
+ishlaydi. Hijab ko'ylagi bundan mustasno: `isHijabItem` bo'lsa prompt yeng va
+bo'yinni yopadi hamda boshga ko'ylak matosidagi ro'mol qo'shadi — yuzga tegilmaydi.
+
+**Suratlar ikki xil store'da:** `useFacesStore` — kvadrat yuz kesimlari (768×768,
+`fileToSquarePhoto`), `useBodyPhotosStore` — nisbati saqlangan to'liq bo'y kadrlari
+(1280px, `fileToPortraitPhoto`). Birlashtirmang: mijoz yuz kesimini sodda rejimga
+yoki butun bo'y suratini yuz referensiga tanlab qo'yadi — ikkala holda ham natija
+buziladi. `imageToDataUrl` data URL ni o'zgarishsiz o'tkazadi, ya'ni saqlangan
+o'lcham modelga ketadigan o'lchamning o'zi.
+
+**Kadr nisbati — `SUPPORTED_ASPECT_RATIOS` ni taxmin bilan qisqartirmang.** Sodda
+rejimda chiqish nisbati mijoz fotosidan hisoblanadi (`nearestAspectRatio`), ro'yxat
+esa `GET /api/v1/images/models` dagi haqiqiy qiymatlardan olingan. Boshida u yerda
+uchta qiymat bor edi (`1:1 · 3:4 · 9:16`) va 2:3 foto eng yaqin 3:4 ga o'tkazilardi
+— rasm 12% enga cho'zilib, mijoz **pakana va enli** bo'lib chiqardi. Model 14 ta
+nisbatni qo'llaydi; ulardan lenta shaklidagilari (`1:4`, `1:8`, `4:1`, `8:1`)
+chiqarib tashlangan, qolgani ro'yxatda. Buning ustiga promptdagi
+`HER HEIGHT AND PROPORTIONS` bandi bo'y va oyoq uzunligini kadrdagi nuqtalarga
+bog'lab qulflaydi — ikkalasi birga ishlaydi, bittasini olib tashlamang.
 
 **Eng muhim qoida:** promptdagi `IMAGE 1`, `IMAGE 2` raqamlari so'rovdagi
 `input_references` massivining tartibiga bog'langan. Raqamlar qo'lda yozilmaydi —
@@ -151,12 +239,15 @@ tartibni o'zgartirsangiz prompt o'zi moslashadi; qo'lda raqam yozsangiz — buzi
 **Kalit:** `.env` dagi `VITE_OPENROUTER_API_KEY` (shablon — `.env.example`).
 `VITE_` prefiksi qiymatni bundle'ga qo'shadi, ya'ni kalit brauzerda **ochiq**.
 Ommaga chiqarishdan oldin so'rovni serverga ko'chirish kerak — o'shanda faqat
-`generateTryOn.ts` o'zgaradi, prompt va qolgan kod joyida qoladi.
+`requestImage.ts` o'zgaradi, ikkala prompt ham, qolgan kod ham joyida qoladi.
+**Kalitni hech qachon kodga yozmang:** `.env` gitignore'da, kod esa commit bo'ladi
+va OpenRouter ommaviy repolardan topilgan kalitni avtomatik bekor qiladi
+(`401 User not found`).
 
 **Provayder:** so'rov `IMAGE_PROVIDER` (`model.ts`) orqali **Vertex**'ga yo'naltiriladi.
 Buni olib tashlamang: modelni ikki provayder beradi va `google-ai-studio` yuz surati
 asosidagi generatsiyani muntazam bloklaydi (`400`, `block_reason: OTHER`). Filtr
-barqaror emas, shuning uchun `generateTryOn.ts` blok xatosida bir marta qayta uradi
+barqaror emas, shuning uchun `requestImage.ts` blok xatosida bir marta qayta uradi
 (`MAX_ATTEMPTS`) — boshqa xatolarda urinmaydi.
 
 **To'lov:** pul so'rovdan oldin yechiladi, xato bo'lsa qaytariladi
@@ -265,6 +356,30 @@ ko'ylak etagi oq polda ko'rinmay ketadi. Matn bir xillik uchun juda aniq
 yozilgan, lekin baribir piksel darajasida bir xil fon bermaydi — buning uchun
 tayyor fon rasmi kerak (`RefKind` ga `background` qo'shib, poza diagrammasi
 kabi referens qilib yuboriladi).
+
+**To'q fon sinab ko'rilgan va rad etilgan** (`public/bgimage.jpg` — qora devor,
+qora pol, burchakda vazalar). Sabab: fon rasmi referens sifatida yuborilganda
+qorong'i xona modelning ekspozitsiyasini ham tortib ketadi — "xona to'q, model
+yorug'" degan bandni promptda qanchalik ajratib yozmang, natija xira chiqadi.
+Qaytadan urinmoqchi bo'lsangiz oldin shu muammoni hal qiling, sahnani
+qo'shish — oson qismi.
+
+**Taqinchoq — naqsh ko'ylakka sizib o'tadi.** Katalogdagi taqinchoq fotolari
+(`nabor-*.jpg`) buyum emas, **sahna**: baxmal tagliklarda komplekt, atrofida
+atirgul, sham va atlas mato. Rasm matndan kuchli bo'lgani uchun model o'sha
+kristall-gul naqshini KO'YLAKKA ko'chiradi va ko'ylakka o'zidan bezak qo'shadi —
+`DRESS LOCK` dagi "ADD NOTHING" bandi bunga yolg'iz bardosh bermaydi. Shuning
+uchun `case 'jewelry'` tavsifida uchta narsa alohida yoziladi: rasmda nima bor,
+undan faqat buyumlar olinadi, va **`THE GOWN TAKES NOTHING FROM THIS IMAGE`**.
+`OUTPUT` da ham alohida band bor — u ko'ylakdan nimadir yo'qolganini emas,
+ko'ylakka nimadir QO'SHILGANINI tekshiradi (band faqat taqinchoq tanlanganda
+chiqadi). Yangi taqinchoq fotosi qo'shsangiz shu xavfni yodda tuting: fon qancha
+"boy" bo'lsa, ko'ylakka shuncha ko'p narsa sizadi.
+
+Hijab rejimida sirg'a tushmaydi — ro'mol quloqni yopadi, ya'ni "earrings at the
+ears" bandi `HEADSCARF` bilan ziddiyatga tushardi. Shu sababli `scarfMode` da
+tavsif ham, `accessoryLines` ham boshqacha yoziladi: sirg'a "do'konda qoladi",
+qolgan buyumlar taqiladi.
 
 **Gavda tavsifi:** `BUILD` jadvaliga yorliq emas, anatomiya yoziladi (yelka, qo'l,
 ko'krak, qorin, son, yuz — alohida-alohida). Modelning "kelin fotosi = ozg'in

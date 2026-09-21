@@ -56,7 +56,15 @@ function referenceText(
         : 'the BRIDAL VEIL / HEADPIECE — product reference only. Reproduce its exact shape, length, fabric and embellishment, placed naturally on the head. If another person, model or mannequin is visible in this image, ignore them completely: take only the veil itself, never their face, hair, body or dress, and never the place this photo was taken in — its background, lighting and shadows stay out of the output. It must not cover, shorten or alter the dress.';
 
     case 'jewelry':
-      return 'the JEWELLERY — product reference only. Reproduce its exact shape, material and color, worn naturally in its proper place (necklace at the neck, earrings at the ears, bracelet on the wrist). If another person, model or mannequin is visible in this image, ignore them completely: take only the jewellery, never the place this photo was taken in — its background, lighting and shadows stay out of the output. It must not cover or alter the dress.';
+      // Bu rasm naqshga to'la (kristall, gul motivi) va ko'pincha atlas mato,
+      // gul, sham bilan suratga olinadi. Loyihaning asosiy qoidasi bo'yicha
+      // rasm matndan kuchli, shuning uchun o'sha naqsh KO'YLAKKA sizib o'tadi
+      // va model ko'ylakka o'zidan bezak qo'shadi. Shu sababli bu yerda uchta
+      // narsa alohida aytiladi: rasmda nima bor, undan nima olinadi, va
+      // ko'ylak undan HECH NARSA olmasligi.
+      return scarfMode
+        ? 'the JEWELLERY — product reference only, and it documents pieces, not a scene. This photograph shows one or more finished pieces, laid out or displayed for sale, and each piece is a separate object: read them one by one and put each one where it is worn — a necklace at the base of the neck, a bracelet around a wrist, a ring on a finger. Because her head is wrapped as the HEADSCARF section describes, any ear ornament shown here stays in the shop and is not worn in this photograph; everything else in the set is. TAKE FROM THIS IMAGE ONLY THE PIECES THEMSELVES — their exact shape, their metal, their stones and their colour, at the size real jewellery has on a real body. Everything else in the frame belongs to the shop and stays there: whatever the pieces rest on or are held by, whatever is arranged around them, whatever cloth they lie on, and the place, the light and the shadows of that photograph. THE GOWN TAKES NOTHING FROM THIS IMAGE. Its fabric, its colour and every piece of its decoration are fixed by the DRESS LOCK and come from the dress reference alone — this photograph never adds a stone, a pattern, a texture or a shine to the dress, and the gown stays exactly as its own reference shows it right up to where these pieces sit against it.'
+        : 'the JEWELLERY — product reference only, and it documents pieces, not a scene. This photograph shows one or more finished pieces, laid out or displayed for sale, and each piece is a separate object: read them one by one and put each one where it is worn — a necklace at the base of the neck, earrings at the ears, a bracelet around a wrist, a ring on a finger. TAKE FROM THIS IMAGE ONLY THE PIECES THEMSELVES — their exact shape, their metal, their stones and their colour, at the size real jewellery has on a real body. Everything else in the frame belongs to the shop and stays there: whatever the pieces rest on or are held by, whatever is arranged around them, whatever cloth they lie on, and the place, the light and the shadows of that photograph. THE GOWN TAKES NOTHING FROM THIS IMAGE. Its fabric, its colour and every piece of its decoration are fixed by the DRESS LOCK and come from the dress reference alone — this photograph never adds a stone, a pattern, a texture or a shine to the dress, and the gown stays exactly as its own reference shows it right up to where these pieces sit against it.';
 
     case 'shoes':
       return 'the BRIDAL SHOES — product reference only. Reproduce this exact pair: the shape of the shoe, the height and shape of the heel, the toe, the straps, the material, the colour and every piece of decoration on them. The same pair goes on both feet, worn normally and standing flat on the floor. If another person, model or mannequin appears in this image, take the shoes alone from it — never their body, their legs or their clothing — and never the place this photo was taken in: its background, its surface, its lighting and its shadows stay out of the output. The shoes change nothing about the dress: its hemline stays exactly where the dress reference puts it.';
@@ -165,7 +173,9 @@ export function buildBridalPrompt(
         ? `She wears the veil from IMAGE ${veilNumber}, laid over the headscarf and pinned above it, so the wrap stays fully visible underneath and keeps covering the crown, the ears and the neck, and without covering or shortening the dress.`
         : `She wears the veil from IMAGE ${veilNumber}, placed over or behind the hairstyle without flattening, hiding or replacing it, and without covering or shortening the dress.`),
     jewelryNumber > 0 &&
-      `She wears the jewellery from IMAGE ${jewelryNumber}, in its proper place and at a natural scale.`,
+      (scarf
+        ? `She wears the jewellery from IMAGE ${jewelryNumber} — each piece in the place it is worn and at the size real jewellery has, with the neck, the wrists and the hands carrying what that set provides for them. The wrap stays closed over her ears exactly as the HEADSCARF section describes, so what the set provides for the ears stays in the shop. The gown itself is untouched by all of this: it keeps its own fabric and its own decoration, exactly as its reference shows them.`
+        : `She wears the jewellery from IMAGE ${jewelryNumber} — each piece in the place it is worn and at the size real jewellery has, never enlarged to show it off. The gown itself is untouched by it: it keeps its own fabric and its own decoration, exactly as its reference shows them, wherever a piece lies against it.`),
     'HER HANDS ARE EMPTY. Both hands are bare and open, the fingers visible and relaxed, resting exactly where the pose puts them and carrying nothing whatsoever — she holds no object of any kind, and nothing rests in, hangs from or is gripped by either hand.',
     scarf
       ? 'Everything she wears is accounted for above. The dress, the wrap on her head, and whatever a reference image shows are the complete list: anything not named there is simply absent from this photograph. Her head carries nothing but that wrap unless a reference image shows a headpiece, her arms and hands are bare unless a reference image shows something on them, and her waist is exactly as the dress reference shows it.'
@@ -382,6 +392,14 @@ ${
     shoesNumber > 0
       ? `
 Then check her feet: both of them must wear the shoes from IMAGE ${shoesNumber}, matching that image in shape, heel, material, colour and decoration. If the shoes differ from it, or if the two feet do not match each other, the image is wrong — redraw it with that pair on both feet.`
+      : ''
+  }${
+    // Taqinchoq rasmidagi naqsh ko'ylakka sizib o'tishi — aynan shu bo'limning
+    // asosiy xatosi. Ko'ylakdan nimadir YO'QOLGANINI yuqoridagi band tekshiradi,
+    // bu esa ko'ylakka nimadir QO'SHILGANINI.
+    jewelryNumber > 0
+      ? `
+Then compare the gown against ${dressImage} once more, looking this time for anything that has been ADDED to it: a stone, a crystal, a bead, a sparkle, a floral or leaf motif, a pattern or a shine that the dress reference does not have. Decoration of that kind belongs to the pieces in IMAGE ${jewelryNumber} and to nowhere else in the picture. If any of it has spread onto the bodice, the skirt, the sleeves or the neckline, the image is wrong — redraw the gown exactly as ${dressImage} shows it, with the jewellery kept to the neck, the ears, the wrists and the hands.`
       : ''
   }
 Then check her hands and the room: if she is holding anything at all, or if anything besides her appears in the studio, the image is wrong — redraw it with her hands empty and the studio bare. The wall behind her must be bright white and the floor beneath her must be warm brown wood, with the hem and train lying visibly on that brown floor.

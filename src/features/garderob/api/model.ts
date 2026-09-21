@@ -21,8 +21,61 @@ export const MAX_INPUT_REFERENCES = 14;
  */
 export const MAX_DRESS_REFERENCES = 4;
 
+/**
+ * Sodda rejimda ko'ylak referenslari chegarasi — qasddan kichik.
+ *
+ * U yerda kirish nomutanosib: ko'ylak `DETAIL_MAX_SIDE` (2048px) da ketadi,
+ * mijoz fotosi esa 1280px da. To'rtta ko'ylak rasmi fotodan ~10 barobar ko'p
+ * piksel beradi va model natija sifatida ko'ylak fotosining o'zini qaytaradi.
+ * Ikkitasi naqsh uchun yetadi, muvozanat esa saqlanadi.
+ */
+export const MAX_SWAP_DRESS_REFERENCES = 2;
+
 /** To'liq bo'y примерка kadri — vertikal. */
 export const ASPECT_RATIO = '9:16';
+
+/**
+ * Sodda rejim uchun — natija mijoz suratining nisbatini saqlashi kerak,
+ * shuning uchun nisbat foto o'lchamidan hisoblanadi (`nearestAspectRatio`).
+ *
+ * Ro'yxat `GET https://openrouter.ai/api/v1/images/models` dan olingan
+ * (`google/gemini-3.1-flash-image` → `supported_parameters.aspect_ratio`).
+ * TAXMIN QILMANG: avval bu yerda uchta qiymat bor edi va 2:3 foto eng yaqin
+ * 3:4 ga o'tkazilardi — rasm 12% enga cho'zilib, odam pakana bo'lib qolardi.
+ *
+ * Model beradigan 14 tadan 1:4, 1:8, 4:1, 8:1 chiqarib tashlangan: ular lenta
+ * shaklidagi kadrlar va ularga eng yaqin deb tushgan surat baribir buziladi.
+ */
+export const SUPPORTED_ASPECT_RATIOS = [
+  '9:16',
+  '2:3',
+  '3:4',
+  '4:5',
+  '1:1',
+  '5:4',
+  '4:3',
+  '3:2',
+  '16:9',
+] as const;
+
+export type AspectRatio = string;
+
+/** Surat o'lchamiga eng yaqin qo'llab-quvvatlanadigan nisbatni tanlaydi */
+export function nearestAspectRatio(width: number, height: number): AspectRatio {
+  if (!width || !height) return ASPECT_RATIO;
+  const target = width / height;
+  let best: AspectRatio = SUPPORTED_ASPECT_RATIOS[0];
+  let bestGap = Infinity;
+  for (const ratio of SUPPORTED_ASPECT_RATIOS) {
+    const [w, h] = ratio.split(':').map(Number);
+    const gap = Math.abs(w / h - target);
+    if (gap < bestGap) {
+      bestGap = gap;
+      best = ratio;
+    }
+  }
+  return best;
+}
 
 /** Chiqish o'lchami — model qo'llaydigan qiymatlardan. */
 export const RESOLUTION = '2K';

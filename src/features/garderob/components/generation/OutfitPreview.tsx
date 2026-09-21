@@ -39,7 +39,7 @@ export default function OutfitPreview({ image, caption, emptyText }: Props) {
           />
           {caption && (
             <p className="max-w-full shrink-0 truncate text-xs font-medium text-muted">
-              {caption}222
+              {caption}
             </p>
           )}
         </>

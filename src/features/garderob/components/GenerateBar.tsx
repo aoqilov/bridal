@@ -6,6 +6,7 @@ import { formatCurrency } from '@/utils/formatCurrency';
 import { GENERATION_PRICE, VIDEO_PRICE, VIDEO_TOTAL_PRICE } from '@/constants/pricing';
 import {
   NO_CATEGORY,
+  useBodyPhotosStore,
   useFacesStore,
   useWalletStore,
   useWardrobeStore,
@@ -18,16 +19,27 @@ import {
   hemLengthOf,
 } from '@/features/catalog';
 import { generateTryOn } from '../api/generateTryOn';
+import { generateSwap } from '../api/generateSwap';
+import type { ImageResult } from '../api/requestImage';
 import { useVideoGeneration } from '../hooks/useVideoGeneration';
 import GeneratingModal from './GeneratingModal';
 import GenerateModeModal, { type GenerateMode } from './GenerateModeModal';
 import ConfirmLookModal from './ConfirmLookModal';
+
+/** Qaysi generatsiya oqimi — to'liq образ yoki sodda (foto + ko'ylak) */
+export type GenerationVariant = 'full' | 'simple';
 
 type Props = {
   /** Natija tayyor bo'lgach chaqiriladi — "Изображения" bo'limiga o'tish uchun */
   onDone: (kind: GenerateMode) => void;
   /** Balans yetmasa chaqiriladi — "Оплата" bo'limiga o'tish uchun */
   onNeedTopUp: () => void;
+  /**
+   * Sukut bo'yicha to'liq oqim. Sodda rejimda mijozning to'liq bo'y suratidagi
+   * kiyim ko'ylakka almashtiriladi — образ qismlari va model sozlamalari
+   * ishlatilmaydi.
+   */
+  variant?: GenerationVariant;
 };
 
 /** Katalogdagi tovar — tanlanmagan bo'lsa `null` */
@@ -57,9 +69,17 @@ function itemImages(id: string | null | undefined): string[] {
  * bo'lsa qaytariladi. Video rejimida to'liq summa boshida yechiladi: rasm
  * chiqqach mijoz uni tasdiqlaydi va faqat o'shandan keyin video yasaladi —
  * tasdiqlamasa video qismi qaytariladi, rasm esa galereyada qoladi.
+ *
+ * To'lov va video oqimi ikkala generatsiya rejimida bir xil — farq faqat
+ * `createImage` ichida, qaysi API chaqirilishida.
  */
-export default function GenerateBar({ onDone, onNeedTopUp }: Props) {
+export default function GenerateBar({ onDone, onNeedTopUp, variant = 'full' }: Props) {
+  const simple = variant === 'simple';
+
   const faceImage = useFacesStore(
+    (s) => s.items.find((x) => x.id === s.selected[NO_CATEGORY])?.image ?? null,
+  );
+  const bodyImage = useBodyPhotosStore(
     (s) => s.items.find((x) => x.id === s.selected[NO_CATEGORY])?.image ?? null,
   );
   const dressId = useWardrobeStore((s) => s.selected.dress);
@@ -94,34 +114,44 @@ export default function GenerateBar({ onDone, onNeedTopUp }: Props) {
     };
   }, []);
 
-  const ready = Boolean(faceImage && dressId);
+  const photo = simple ? bodyImage : faceImage;
+  const ready = Boolean(photo && dressId);
   const free = !freeUsed;
 
   /** Rasm generatsiyasi — ikkala rejimda ham birinchi qadam */
   const createImage = async (): Promise<string | null> => {
-    if (!faceImage) return null;
-
+    const dress = item(dressId);
+    const dressImages = itemImages(dressId);
+    // Hijab ko'ylagi bo'lsa образ yopiq chiziladi — "Настройка модели" ni
+    // ochmagan mijoz ham to'g'ri natija oladi
+    const hijab = isHijabItem(dress);
     // Etak polgacha bo'lsa tufli natijada ko'rinmaydi — tanlangan bo'lsa ham
-    // yuborilmaydi. Bo'lim ham o'sha shart bilan ochiladi (`GenerationStep`),
+    // yuborilmaydi. Bo'lim ham o'sha shart bilan ochiladi (`FullGeneration`),
     // lekin ko'ylak keyin almashtirilgan bo'lishi mumkin.
-    const hemLength = hemLengthOf(item(dressId));
+    const hemLength = hemLengthOf(dress);
 
-    const result = await generateTryOn({
-      faceImage,
-      dressImages: itemImages(dressId),
-      veilImage: itemImages(veilId)[0] ?? null,
-      jewelryImage: itemImages(jewelryId)[0] ?? null,
-      shoesImage: hemLength === 'floor' ? null : (itemImages(shoesId)[0] ?? null),
-      hemLength,
-      model,
-      // Hijab ko'ylagi bo'lsa bosh sukut bo'yicha ro'mol bilan chiziladi —
-      // "Настройка модели" ni ochmagan mijoz ham to'g'ri natija oladi
-      hijab: isHijabItem(item(dressId)),
-    });
+    let result: ImageResult;
+
+    if (simple) {
+      if (!bodyImage) return null;
+      result = await generateSwap({ bodyImage, dressImages, hijab, hemLength });
+    } else {
+      if (!faceImage) return null;
+      result = await generateTryOn({
+        faceImage,
+        dressImages,
+        veilImage: itemImages(veilId)[0] ?? null,
+        jewelryImage: itemImages(jewelryId)[0] ?? null,
+        shoesImage: hemLength === 'floor' ? null : (itemImages(shoesId)[0] ?? null),
+        hemLength,
+        model,
+        hijab,
+      });
+    }
 
     // Tannarx — `GENERATION_PRICE` ni shu raqamga qarab belgilaymiz
     console.info(
-      `[image] ✓ tayyor · ${
+      `[${simple ? 'swap' : 'image'}] ✓ tayyor · ${
         result.cost === null ? 'narx qaytarilmadi' : `$${result.cost.toFixed(4)}`
       }`,
     );
@@ -211,7 +241,7 @@ export default function GenerateBar({ onDone, onNeedTopUp }: Props) {
     onDone(ok ? 'video' : 'image');
   };
 
-  /** Obraz yoqmadi — video puli qaytadi, rasm galereyada qoladi */
+  /** Образ yoqmadi — video puli qaytadi, rasm galereyada qoladi */
   const handleCancel = () => {
     setPendingImage(null);
     topUp(VIDEO_PRICE, 'Возврат: видео не создано');
@@ -247,7 +277,9 @@ export default function GenerateBar({ onDone, onNeedTopUp }: Props) {
           </p>
         ) : (
           <p className="mt-1.5 text-center text-[11px] text-subtle">
-            Выберите фото и платье — остальное по желанию.
+            {simple
+              ? 'Добавьте фото в полный рост и выберите платье.'
+              : 'Выберите фото и платье — остальное по желанию.'}
           </p>
         )}
       </div>
